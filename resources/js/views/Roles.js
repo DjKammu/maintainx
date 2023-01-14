@@ -2,9 +2,9 @@ require('../app');
 import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route, Switch, Link } from 'react-router-dom'
-import LeadList from '../components/SznList/LeadList'
-import NewLead from '../components/SznList/NewLead'
-import EditLead from '../components/SznList/EditLead'
+import List from '../components/roles/List'
+import New from '../components/roles/New'
+import Edit from '../components/roles/Edit'
 import '../variables'
 import {createStore} from 'redux';
 import rootReducer from '../redux/reducers/index'
@@ -17,6 +17,8 @@ const myStore = createStore(
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
+
+
 function App() {
 	//set reducer
 	const myDispatch = useDispatch();
@@ -24,8 +26,6 @@ function App() {
 
 	//get reducer
     const activeComponent = useSelector(state => state.activeComponentReducer);
-
-    console.log(activeComponent)
 	
 	return (
 		<React.Fragment>
@@ -33,31 +33,32 @@ function App() {
 			<div className="page-header">
 				<h3 className="page-title">
 					<span className="page-title-icon bg-gradient-primary text-white mr-2">
-						{ activeComponent && activeComponent == 'LeadList' ?  
-						<i className="mdi mdi-account-multiple"></i> : (activeComponent && activeComponent == 'NewLead' ? <i className="mdi mdi-account-plus"></i> : 
-						(activeComponent && activeComponent == 'EditLead' ? <i className="mdi mdi-folder-account"></i> : '' ) )
+						{ activeComponent && activeComponent == 'List' ?  
+						<i className="mdi mdi-account-multiple"></i> : (activeComponent && activeComponent == 'New' ? <i className="mdi mdi-account-plus"></i> : 
+						(activeComponent && activeComponent == 'Edit' ? <i className="mdi mdi-folder-account"></i> : '' ) )
 					}
 					</span>
-				 	{ activeComponent && activeComponent == 'LeadList' ?  
-						'All Leads' : (activeComponent && activeComponent == 'NewLead' ? 'New Lead' : 
-						(activeComponent && activeComponent == 'EditLead' ? 'Edit Lead' : '' ) )
+				 	{ activeComponent && activeComponent == 'List' ?  
+						'All Roles' : (activeComponent && activeComponent == 'New' ? 'New Role' : 
+						(activeComponent && activeComponent == 'EditLead' ? 'Edit Role' : '' ) )
 					}
 				</h3>
 				<nav aria-label="breadcrumb">
-					{ activeComponent && activeComponent != 'LeadList' ?  
-						<Link to='/lead/list' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-arrow-left-bold btn-icon-prepend"></i>&nbsp; Back</Link> : <Link to='/lead/new' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-account-plus btn-icon-prepend"></i>&nbsp; New</Link>
+					{ activeComponent && activeComponent != 'List' ?  
+						<Link to='/roles' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-arrow-left-bold btn-icon-prepend"></i>&nbsp; Back</Link> : <Link to='/roles/create' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-account-plus btn-icon-prepend"></i>&nbsp; New</Link>
 					}
 				</nav>
+				
 			</div>
 			<div className="row">
 				<div className="col-lg-12 grid-margin stretch-card">
-					
-						<Switch>
-							<Route exact path='/lead/list' > <LeadList /> </Route>
-							<Route path='/lead/new' > <NewLead /> </Route>
-							<Route path='/lead/edit/:id' component={EditLead} /> 
+						  
+						  <Switch>
+							<Route exact path='/roles' > <List /> </Route>
+							<Route path='/roles/create' > <New /> </Route>
+							<Route path='/roles/:id' component={Edit} /> 
 						</Switch>
-					
+
 				</div>
 			</div>
 			</BrowserRouter>

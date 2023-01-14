@@ -6,7 +6,7 @@
 
 @endsection
 
-@extends('user.layout.master')
+@extends('layout.master')
 
 @section('container')
 	<div id="app"></div>

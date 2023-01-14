@@ -18,14 +18,14 @@
   </head>
   <body>
     <div class="container-scroller">
-      @include('user.layout.partials._navbar')
+      @include('layout.partials._navbar')
       <div class="container-fluid page-body-wrapper">
-        @include('user.layout.partials._sidebar')
+        @include('layout.partials._sidebar')
         <div class="main-panel">
           <div class="content-wrapper">
             @yield('container')
           </div>
-          @include('user.layout.partials._footer')
+          @include('layout.partials._footer')
         </div>
       </div>
     </div>
@@ -39,6 +39,6 @@
     @include('global_script')
     @yield('scripts')
     <!-- endinject -->
-    @include('user.layout.partials._toaster-message')
+    @include('layout.partials._toaster-message')
   </body>
 </html>

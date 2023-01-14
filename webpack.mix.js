@@ -11,9 +11,11 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.react('resources/js/app.js', 'public/js')
+mix.js('resources/js/app.js', 'public/js')
    .react('resources/js/views/Dashboard.js', 'public/js/views')
    .react('resources/js/views/Login.js', 'public/js/views')
    .react('resources/js/views/Leads.js', 'public/js/views')
+   .react('resources/js/views/Setup.js', 'public/js/views')
+   .react('resources/js/views/Roles.js', 'public/js/views')
    .sass('resources/sass/app.scss', 'public/css')
    .sass('resources/sass/Leads.scss', 'public/css');

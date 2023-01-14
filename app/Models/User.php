@@ -38,4 +38,44 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Lead', 'user_id', 'id');
     }
+
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_users')->withTimestamps();
+    }
+   
+    /**
+     * Checks if User is Admin.
+     */
+     
+     public function isAdmin(){
+        return (auth()->user()->id == 1) ?? false;
+     }
+
+     /**
+     * Checks if User has access to $permissions.
+     */
+    public function hasAccess(string $permissions) : bool
+    {
+        // check if the permission is available in any role
+        foreach ($this->roles as $role) {
+            if($role->hasAccess($permissions)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Checks if the user belongs to role.
+     */
+    public function inRole(string $roleSlug)
+    {
+        return $this->roles()->where('slug', $roleSlug)->count() == 1;
+    }
+
+    public function properties()
+    {
+        return $this->belongsToMany(Property::class, 'property_users')->withTimestamps();
+    }
 }

@@ -1,5 +1,5 @@
 @section('title')
-Leads
+Set Up
 @endsection
 
 @section('styles')
@@ -19,5 +19,6 @@ Leads
 <script>
     var authUser = @json(Auth::user());
 </script>
-<script src="{{ asset('js/views/Leads.js') }}"></script>
+
+<script src="{{ asset('js/views/Setup.js') }}"></script>
 @endsection
