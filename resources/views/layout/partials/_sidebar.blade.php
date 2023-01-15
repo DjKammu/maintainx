@@ -20,7 +20,7 @@
                 <i class="mdi mdi-home menu-icon"></i>
               </a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a class="nav-link" data-toggle="collapse" href="#lead-routes" aria-expanded="false" aria-controls="lead-routes">
                 <span class="menu-title">Leads</span>
                 <i class="menu-arrow"></i>
@@ -32,7 +32,7 @@
                   <li class="nav-item"> <a class="nav-link" href="{{ route('NewLead') }}">New</a></li>
                 </ul>
               </div>
-            </li>
+            </li> -->
             <li class="nav-item">
               <a class="nav-link" href="/setup">
                 <span class="menu-title">Set Up</span>
