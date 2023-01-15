@@ -165,7 +165,6 @@ function Edit(props) {
                             <div className="form-group">
                               <label>Permissions
                               </label>
-                              {simpleValidator.current.message('permissions', state.permissions, 'required')}
                               <div className="input-group input-group-sm">
                               <label className=" text-sm font-medium text-gray-700 mr-1" htmlFor="view">
                         <span className="mr-1">View</span>
