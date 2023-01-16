@@ -6,5 +6,6 @@
     "/js/views/Leads.js": "/js/views/Leads.js",
     "/js/views/Login.js": "/js/views/Login.js",
     "/js/views/Roles.js": "/js/views/Roles.js",
-    "/js/views/Setup.js": "/js/views/Setup.js"
+    "/js/views/Setup.js": "/js/views/Setup.js",
+    "/js/views/Users.js": "/js/views/Users.js"
 }

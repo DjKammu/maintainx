@@ -12,15 +12,8 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/clearapp', function () {
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
-    Artisan::call('view:clear');
-    Session::flush();
-    return redirect('/');
-});
 
-
+// Auth Routes 
 Route::group(['middleware' => ['guest', 'web']], function () {
     Route::get('/', 'AuthController@redirectToIndex');
 
@@ -32,22 +25,20 @@ Route::group(['middleware' => ['guest', 'web']], function () {
     Route::post('/registration', 'AuthController@signup');
 });
 
-
-
 // Set Up Routes // 
 
 Route::get('/setup', [App\Http\Controllers\HomeController::class, 'setup'])
      ->name('setup');
 
-//Route::resource('roles', RoleController::class)->middleware('can:add_users');
-// Route::resource('users', App\Http\Controllers\UserController::class)->middleware('can:add_users');
-
 Route::group(['middleware' => ['can:add_users']], function () {
     
-    //react route
     Route::get('/roles', 'RoleController@index')->name('roles.index');
     Route::get('/roles/create', 'RoleController@index')->name('roles.create');
     Route::get('/roles/{role}', 'RoleController@index')->name('roles.show');
+
+    Route::get('/users', 'UserController@index')->name('roles.index');
+    Route::get('/users/create', 'UserController@index')->name('roles.create');
+    Route::get('/users/{role}', 'UserController@index')->name('roles.show');
 
 
 });
@@ -67,22 +58,24 @@ Route::group(['middleware' => ['can:add_users']], function () {
 // Route::resource('realtors', App\Http\Controllers\RealtorController::class);
 
 
+// Dashborad Roues 
+
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/logout', 'HomeController@logout')->name('Logout');
     Route::get('/home', 'HomeController@index')->name('Dashboard');
-    
-    //react route
-    Route::get('/lead/list', 'LeadController@index')->name('Leads');
-    Route::get('/lead/new', 'LeadController@index')->name('NewLead');
-    Route::get('/lead/edit/{id}', 'LeadController@index')->name('EditLead');
-
-
 });
 
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 
 // Migration Routes
+
+Route::get('/clearapp', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Session::flush();
+    return redirect('/');
+});
 
 Route::get('/linkstorage', function () {
     Artisan::call('storage:link');

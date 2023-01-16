@@ -17,5 +17,11 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::post('/roles/update', 'Api\RoleController@update');
      Route::post('/roles/destroy', 'Api\RoleController@destroy');
 
+     Route::get('/users', 'Api\UserController@index');
+     Route::get('/users/create', 'Api\UserController@create');
+     Route::post('/users', 'Api\UserController@store');
+     Route::post('/users/update', 'Api\UserController@update');
+     Route::post('/users/destroy', 'Api\UserController@destroy');
+
 
 });

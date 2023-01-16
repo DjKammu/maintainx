@@ -42,6 +42,7 @@ function App() {
 				<div className="col-lg-12 grid-margin stretch-card">
 						<div className="form-group text-center">
 						<a className="btn btn-gradient-primary btn-md mr-2" href="/roles">Roles</a>
+						<a className="btn btn-gradient-primary btn-md mr-2" href="/users">Users</a>
 						</div>
 				</div>
 			</div>
