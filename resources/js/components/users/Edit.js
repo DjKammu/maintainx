@@ -25,7 +25,7 @@ function Edit(props) {
         email: props.location.state.email ? props.location.state.email : '',
         password: props.location.state.password ? props.location.state.password : '',
         confirm_password: props.location.state.confirm_password ? props.location.state.confirm_password : '',
-        role: props.location.state.roles ? props.location.state.roles[0].id : '',
+        role: props.location.state.roles[0] ? props.location.state.roles[0].id : null,
         properties: props.location.state.properties ? props.location.state.properties : [],
         loading: false,
         authUser: props.authUserProp
