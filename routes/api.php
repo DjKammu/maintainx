@@ -11,6 +11,10 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::post('/lead/destroy', 'Api\LeadController@destroy');
 
      Route::get('/dashboard-data', 'Api\HomeController@getData');
+});
+
+
+Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], function () {
 
      Route::get('/roles', 'Api\RoleController@index');
      Route::post('/roles', 'Api\RoleController@store');

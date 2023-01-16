@@ -226,6 +226,12 @@ class UserController extends Controller
                 'status' => 'error'
             ]);
         }
+         if($request['id']== auth()->id()){
+            return response()->json([
+                'message' => "User Login Can't deleted",
+                'status' => 'error'
+            ]);
+        }
 
         $delete  = $user->delete();
 
