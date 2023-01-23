@@ -27,5 +27,9 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::post('/users/update', 'Api\UserController@update');
      Route::post('/users/destroy', 'Api\UserController@destroy');
 
+     Route::get('/properties', 'Api\PropertyController@index');
+     Route::post('/properties', 'Api\PropertyController@store');
+     Route::post('/properties/update', 'Api\PropertyController@update');
+     Route::post('/properties/destroy', 'Api\PropertyController@destroy');
 
 });

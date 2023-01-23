@@ -39,10 +39,16 @@ function App() {
 				
 			</div>
 			<div className="row">
-				<div className="col-lg-12 grid-margin stretch-card">
+				<div className="col-lg-12 stretch-card">
 						<div className="form-group text-center">
-						<a className="btn btn-gradient-primary btn-md mr-2" href="/roles">Roles</a>
-						<a className="btn btn-gradient-primary btn-md mr-2" href="/users">Users</a>
+						 <a className="btn btn-gradient-primary btn-md mr-2" href="/roles">Roles</a>
+						 <a className="btn btn-gradient-primary btn-md mr-2" href="/users">Users</a>
+						</div>
+				</div>
+
+				<div className="col-lg-12 stretch-card">
+						<div className="form-group text-center">
+						 <a className="btn btn-gradient-primary btn-md mr-2" href="/properties">Property</a>
 						</div>
 				</div>
 			</div>

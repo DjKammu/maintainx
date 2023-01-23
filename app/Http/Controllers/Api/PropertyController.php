@@ -4,13 +4,13 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
-// use App\Models\Property;
+use App\Models\Property;
 use App\Models\User;
 use App\Models\Role;
 use Gate;
 use Validator;
 
-class UserController extends Controller
+class PropertyController extends Controller
 {
    /**
      * Create a new controller instance.
@@ -33,24 +33,24 @@ class UserController extends Controller
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $users = User::orderBy($sortBy, $sortType);
+        $properties = Property::orderBy($sortBy, $sortType);
 
         if ($request['query'] != '') {
-            $users->where('name', 'like', '%' . $request['query'] . '%');
+            $properties->where('name', 'like', '%' . $request['query'] . '%');
         }
          
-        $users = $users->paginate($perPage);
+        $properties = $properties->paginate($perPage);
 
-        $users->data = @collect($users->items())->filter(function($user){
-             @$user->roles->filter(function($role){
-                  $role->label = $role->name;
-                  $role->value = $role->id;
-                  return $role;
-              });
+
+        $properties->data = @collect($properties->items())->filter(function($property){
+              $media =  @$property->getMediaPathWithExtension()['file'] ? [@$property->getMediaPathWithExtension()] : @$property->getMediaPathWithExtension();
+              $property->layout_attachment = @collect($media)->where('name','layout_attachment')->first(); 
+              $property->extra_attachment =  @collect($media)->where('name','extra_attachment')->first(); 
+
         });
 
         return response()->json([
-            'message' => $users,
+            'message' => $properties,
             'status' => 'success'
         ]);
     }
@@ -94,20 +94,15 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-      
-        $data = $request->except('api_token');
+        if(Gate::denies('add')) {
+               return abort('401');
+        } 
 
+        $data = $request->except('api_token');
+  
         $validate = Validator::make($request->all(),[
-              'name' => 'required|string',
-               'email' => [
-                    'required',
-                    'string',
-                    'email',
-                    Rule::unique(User::class),
-                ],
-              'password' => ['required', 'string', 'password', 'confirmed']
+              'name' => 'required|string'
         ]);
-       
 
         if ($validate->fails()) {
             return response()->json([
@@ -115,19 +110,22 @@ class UserController extends Controller
                 'status' => 'validation-error'
             ], 401);
         }
-        
-        $user =  User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
 
-       if ($user) {
-            $user->roles()->sync($data['role']); 
-            // $user->properties()->sync($data['properties']); 
+         $property =  Property::create($data); 
+
+       if ($property) {
+         
+            if($request->hasFile('layout_attachment') && $request->file('layout_attachment')->isValid()){
+               $request->merge(['layout_attachment_coulumn' => 'layout_attachment']); 
+                $property->toPath(Property::LAYOUT_ATTACHMENTS)->storeFile('layout_attachment',false,'layout_attachment_coulumn');
+            }
+            if($request->hasFile('extra_attachment') && $request->file('extra_attachment')->isValid()){
+               $request->merge(['extra_attachment_coulumn' => 'extra_attachment']); 
+                $property->toPath(Property::LAYOUT_ATTACHMENTS)->storeFile('extra_attachment',false,'extra_attachment_coulumn');
+            }
 
             return response()->json([
-                'message' => 'User successfully saved',
+                'message' => 'Property successfully saved',
                 'status' => 'success'
             ]);
         } else {
@@ -171,33 +169,36 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {    
-        $data = $request->except(['api_token','password','password_confirmation']);
-    
+        $data = $request->except(['api_token','extra_attachment','layout_attachment','id']   );
+  
         $validate = Validator::make($request->all(),[
-              'name' => 'required|max:255',
-              'email' => 'required|email|max:255|unique:users,id,:id',
-              'password' => 'nullable|sometimes|min:6|confirmed|required_with:password'
+              'name' => 'required|string'
         ]);
-       
+
         if ($validate->fails()) {
             return response()->json([
                 'message' => $validate->errors(),
                 'status' => 'validation-error'
             ], 401);
         }
-        
-        ($request->filled('password')) ? $data['password'] = \Hash::make($request->password) 
-        : '';
+         
+         $property =  Property::find($request['id']);
 
-        $user = User::find($request['id']);
-
-       if ($user) {
-            $user->update($data);
-            $user->roles()->sync($data['role']); 
-            // $user->properties()->sync($data['properties']); 
-
+       if ($property) {
+            $property->update($data);
+            if($request->hasFile('layout_attachment') && $request->file('layout_attachment')->isValid()){
+               $property->deleteFile(['name' => 'layout_attachment']);
+               $request->merge(['layout_attachment_coulumn' => 'layout_attachment']); 
+                $property->toPath(Property::LAYOUT_ATTACHMENTS)->storeFile('layout_attachment',false,'layout_attachment_coulumn');
+            }
+            if($request->hasFile('extra_attachment') && $request->file('extra_attachment')->isValid()){
+               $property->deleteFile(['name' => 'extra_attachment']);
+               $request->merge(['extra_attachment_coulumn' => 'extra_attachment']); 
+               $property->toPath(Property::LAYOUT_ATTACHMENTS)->storeFile('extra_attachment',false,'extra_attachment_coulumn');
+            }
+          
             return response()->json([
-                'message' => 'User successfully saved',
+                'message' => 'Property successfully saved',
                 'status' => 'success'
             ]);
         } else {
@@ -218,26 +219,26 @@ class UserController extends Controller
    
     public function destroy(Request $request)
     {
-         $user = User::where('id',$request['id'])->first();
+        $property = Property::where('id',$request['id'])->first();
                   
-        if (empty($user)) {
+        if (empty($property)) {
             return response()->json([
-                'message' => 'User Not Found',
+                'message' => 'Property Not Found',
                 'status' => 'error'
             ]);
         }
          if($request['id']== auth()->id()){
             return response()->json([
-                'message' => "User Login Can't deleted",
+                'message' => "Property Login Can't deleted",
                 'status' => 'error'
             ]);
         }
-
-        $delete  = $user->delete();
+        $property->deleteFile();
+        $delete  = $property->delete();
 
         if ($delete) {
             return response()->json([
-                'message' => 'User successfully deleted',
+                'message' => 'Property successfully deleted',
                 'status' => 'success'
             ]);
         } else {

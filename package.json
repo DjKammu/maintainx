@@ -28,8 +28,13 @@
         "vue-template-compiler": "^2.7.14"
     },
     "dependencies": {
+        "@emotion/react": "^11.10.5",
+        "@emotion/styled": "^11.10.5",
+        "@mui/icons-material": "^5.11.0",
+        "@mui/material": "^5.11.5",
         "animate.css": "^3.7.2",
         "izitoast": "^1.4.0",
+        "material-react-table": "^1.5.9",
         "moment": "^2.24.0",
         "react-animations": "^1.0.0",
         "react-bootstrap": "^1.0.0",

@@ -36,13 +36,16 @@ Route::group(['middleware' => ['can:add_users']], function () {
     Route::get('/roles/create', 'RoleController@index')->name('roles.create');
     Route::get('/roles/{role}', 'RoleController@index')->name('roles.show');
 
-    Route::get('/users', 'UserController@index')->name('roles.index');
-    Route::get('/users/create', 'UserController@index')->name('roles.create');
-    Route::get('/users/{role}', 'UserController@index')->name('roles.show');
-
-
+    Route::get('/users', 'UserController@index')->name('users.index');
+    Route::get('/users/create', 'UserController@index')->name('users.create');
+    Route::get('/users/{role}', 'UserController@index')->name('users.show');
 });
 
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/properties', 'PropertyController@index')->name('properties.index');
+    Route::get('/properties/create', 'PropertyController@index')->name('properties.create');
+    Route::get('/properties/{role}', 'PropertyController@index')->name('properties.show');
+});
 
 // Route::resource('properties', App\Http\Controllers\PropertyController::class);
 // Route::post('properties/quick-add', [App\Http\Controllers\PropertyController::class,
@@ -56,6 +59,9 @@ Route::group(['middleware' => ['can:add_users']], function () {
 // Route::resource('tenant-uses', App\Http\Controllers\TenantUseController::class);
 // Route::resource('tenants', App\Http\Controllers\TenantController::class);
 // Route::resource('realtors', App\Http\Controllers\RealtorController::class);
+
+
+
 
 
 // Dashborad Roues 
