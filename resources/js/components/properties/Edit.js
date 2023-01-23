@@ -311,7 +311,7 @@ const handleFileChange = (e) => {
 
                                           {state.layout_attachment && state.layout_attachment.file && 
                                           <a href={state.layout_attachment.file} target="_blank" >
-                                          <img className="ext-img" src={`/images/${state.layout_attachment.ext}.png`} />
+                                          <img className="ext-img" src={`/public/images/${state.layout_attachment.ext}.png`} />
                                           </a>}
 
                                         </div>
@@ -330,7 +330,7 @@ const handleFileChange = (e) => {
 
                                            {state.extra_attachment && state.extra_attachment.file && 
                                           <a href={state.extra_attachment.file} target="_blank" >
-                                          <img className="ext-img" src={`/images/${state.extra_attachment.ext}.png`} />
+                                          <img className="ext-img" src={`/public/images/${state.extra_attachment.ext}.png`} />
                                           </a>}
 
 
