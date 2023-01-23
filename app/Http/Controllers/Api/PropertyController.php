@@ -227,12 +227,7 @@ class PropertyController extends Controller
                 'status' => 'error'
             ]);
         }
-         if($request['id']== auth()->id()){
-            return response()->json([
-                'message' => "Property Login Can't deleted",
-                'status' => 'error'
-            ]);
-        }
+         
         $property->deleteFile();
         $delete  = $property->delete();
 

@@ -340,7 +340,7 @@ const handleFileChange = (e) => {
 
                                         <div className="form-group text-center">
                                             <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Update</button>
-                                            <Link to='/users' className="btn btn-inverse-secondary btn-md">Cancel</Link>
+                                            <Link to='/properties' className="btn btn-inverse-secondary btn-md">Cancel</Link>
                                         </div>
                                     </form>
                                 </LoadingOverlay>
