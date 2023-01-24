@@ -5,6 +5,8 @@
     "/js/views/Dashboard.js": "/js/views/Dashboard.js",
     "/js/views/Leads.js": "/js/views/Leads.js",
     "/js/views/Login.js": "/js/views/Login.js",
+    "/js/views/OrderStatuses.js": "/js/views/OrderStatuses.js",
+    "/js/views/Priorities.js": "/js/views/Priorities.js",
     "/js/views/Properties.js": "/js/views/Properties.js",
     "/js/views/Roles.js": "/js/views/Roles.js",
     "/js/views/Setup.js": "/js/views/Setup.js",

@@ -47,9 +47,15 @@ function App() {
 				</div>
 
 				<div className="col-lg-12 stretch-card">
-						<div className="form-group text-center">
-						 <a className="btn btn-gradient-primary btn-md mr-2" href="/properties">Property</a>
-						</div>
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/properties">Properties</a>
+					</div>
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/order-statuses">Order Statuses</a>
+					</div>
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/priorities">Priorities</a>
+					</div>
 				</div>
 			</div>
 			</BrowserRouter>

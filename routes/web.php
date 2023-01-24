@@ -34,33 +34,26 @@ Route::group(['middleware' => ['can:add_users']], function () {
     
     Route::get('/roles', 'RoleController@index')->name('roles.index');
     Route::get('/roles/create', 'RoleController@index')->name('roles.create');
-    Route::get('/roles/{role}', 'RoleController@index')->name('roles.show');
+    Route::get('/roles/{id}', 'RoleController@index')->name('roles.show');
 
     Route::get('/users', 'UserController@index')->name('users.index');
     Route::get('/users/create', 'UserController@index')->name('users.create');
-    Route::get('/users/{role}', 'UserController@index')->name('users.show');
+    Route::get('/users/{id}', 'UserController@index')->name('users.show');
 });
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::get('/properties', 'PropertyController@index')->name('properties.index');
-    Route::get('/properties/create', 'PropertyController@index')->name('properties.create');
-    Route::get('/properties/{role}', 'PropertyController@index')->name('properties.show');
+    Route::get('/properties', 'SetupController@properties')->name('properties.index');
+    Route::get('/properties/create', 'SetupController@properties')->name('properties.create');
+    Route::get('/properties/{id}', 'SetupController@properties')->name('properties.show');
+
+    Route::get('/order-statuses', 'SetupController@orderStatuses')->name('order-statuses.index');
+    Route::get('/order-statuses/create', 'SetupController@orderStatuses')->name('order-statuses.create');
+    Route::get('/order-statuses/{id}', 'SetupController@orderStatuses')->name('order-statuses.show');
+
+    Route::get('/priorities', 'SetupController@priorities')->name('priorities.index');
+    Route::get('/priorities/create', 'SetupController@priorities')->name('priorities.create');
+    Route::get('/priorities/{id}', 'SetupController@priorities')->name('priorities.show');
 });
-
-// Route::resource('properties', App\Http\Controllers\PropertyController::class);
-// Route::post('properties/quick-add', [App\Http\Controllers\PropertyController::class,
-//     'quickAdd'])->name('properties.quick-add'); 
-// Route::resource('showing-status', App\Http\Controllers\ShowingStatusController::class);
-// Route::resource('leasing-status', App\Http\Controllers\LeasingStatusController::class);
-// Route::resource('suites', App\Http\Controllers\SuiteController::class);
-
-// Route::get('get-suites', [App\Http\Controllers\SuiteController::class, 'getSuites'])->name('suites.properties');
-// Route::resource('document-types', App\Http\Controllers\DocumentTypeController::class);
-// Route::resource('tenant-uses', App\Http\Controllers\TenantUseController::class);
-// Route::resource('tenants', App\Http\Controllers\TenantController::class);
-// Route::resource('realtors', App\Http\Controllers\RealtorController::class);
-
-
 
 
 

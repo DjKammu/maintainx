@@ -32,4 +32,14 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::post('/properties/update', 'Api\PropertyController@update');
      Route::post('/properties/destroy', 'Api\PropertyController@destroy');
 
+     Route::get('/order-statuses', 'Api\OrderStatusController@index');
+     Route::post('/order-statuses', 'Api\OrderStatusController@store');
+     Route::post('/order-statuses/update', 'Api\OrderStatusController@update');
+     Route::post('/order-statuses/destroy', 'Api\OrderStatusController@destroy');
+
+     Route::get('/priorities', 'Api\PriorityController@index');
+     Route::post('/priorities', 'Api\PriorityController@store');
+     Route::post('/priorities/update', 'Api\PriorityController@update');
+     Route::post('/priorities/destroy', 'Api\PriorityController@destroy');
+
 });

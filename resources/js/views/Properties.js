@@ -38,7 +38,7 @@ function App() {
 					</span>
 				 	{ activeComponent && activeComponent == 'List' ?  
 						'All Properties' : (activeComponent && activeComponent == 'New' ? 'New Property' : 
-						(activeComponent && activeComponent == 'EditLead' ? 'Edit Property' : '' ) )
+						(activeComponent && activeComponent == 'Edit' ? 'Edit Property' : '' ) )
 					}
 				</h3>
 				<nav aria-label="breadcrumb">

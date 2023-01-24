@@ -19,5 +19,7 @@ mix.js('resources/js/app.js', 'public/js')
    .react('resources/js/views/Roles.js', 'public/js/views')
    .react('resources/js/views/Users.js', 'public/js/views')
    .react('resources/js/views/Properties.js', 'public/js/views')
+   .react('resources/js/views/OrderStatuses.js', 'public/js/views')
+   .react('resources/js/views/Priorities.js', 'public/js/views')
    .sass('resources/sass/app.scss', 'public/css')
    .sass('resources/sass/Leads.scss', 'public/css');

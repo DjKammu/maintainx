@@ -1,10 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Models\Role;
 use Gate;
 
-class PropertyController extends Controller
+class SetupController extends Controller
 {
    /**
      * Create a new controller instance.
@@ -21,7 +20,7 @@ class PropertyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function properties()
     {
          if(Gate::denies('view')) {
                return abort('401');
@@ -34,9 +33,12 @@ class PropertyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function orderStatuses()
     {
-       //
+       if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.order-statuses');
     }
 
     /**
@@ -45,9 +47,12 @@ class PropertyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function priorities(Request $request)
     {
-        //
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.priorities');
 
     }
 

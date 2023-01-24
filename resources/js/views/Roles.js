@@ -40,7 +40,7 @@ function App() {
 					</span>
 				 	{ activeComponent && activeComponent == 'List' ?  
 						'All Roles' : (activeComponent && activeComponent == 'New' ? 'New Role' : 
-						(activeComponent && activeComponent == 'EditLead' ? 'Edit Role' : '' ) )
+						(activeComponent && activeComponent == 'Edit' ? 'Edit Role' : '' ) )
 					}
 				</h3>
 				<nav aria-label="breadcrumb">

@@ -2,9 +2,9 @@ require('../app');
 import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route, Switch, Link } from 'react-router-dom'
-import List from '../components/users/List'
-import New from '../components/users/New'
-import Edit from '../components/users/Edit'
+import List from '../components/priorities/List'
+import New from '../components/priorities/New'
+import Edit from '../components/priorities/Edit'
 import '../variables'
 import {createStore} from 'redux';
 import rootReducer from '../redux/reducers/index'
@@ -17,8 +17,6 @@ const myStore = createStore(
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-
-
 function App() {
 	//set reducer
 	const myDispatch = useDispatch();
@@ -26,7 +24,8 @@ function App() {
 
 	//get reducer
     const activeComponent = useSelector(state => state.activeComponentReducer);
-	
+
+
 	return (
 		<React.Fragment>
 			<BrowserRouter>
@@ -39,24 +38,23 @@ function App() {
 					}
 					</span>
 				 	{ activeComponent && activeComponent == 'List' ?  
-						'All Users' : (activeComponent && activeComponent == 'New' ? 'New User' : 
-						(activeComponent && activeComponent == 'Edit' ? 'Edit User' : '' ) )
+						'All Priorities' : (activeComponent && activeComponent == 'New' ? 'New Priority' : 
+						(activeComponent && activeComponent == 'Edit' ? 'Edit Order Status' : '' ) )
 					}
 				</h3>
 				<nav aria-label="breadcrumb">
 					{ activeComponent && activeComponent != 'List' ?  
-						<Link to='/users' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-arrow-left-bold btn-icon-prepend"></i>&nbsp; Back</Link> : <Link to='/users/create' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-account-plus btn-icon-prepend"></i>&nbsp; New</Link>
+						<Link to='/priorities' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-arrow-left-bold btn-icon-prepend"></i>&nbsp; Back</Link> : <Link to='/priorities/create' className="btn btn-social-icon-text btn-linkedin"><i className="mdi mdi-account-plus btn-icon-prepend"></i>&nbsp; New</Link>
 					}
 				</nav>
 				
 			</div>
 			<div className="row">
 				<div className="col-lg-12 grid-margin stretch-card">
-						  
-						  <Switch>
-							<Route exact path='/users'  > <List /> </Route>
-							<Route path='/users/create' > <New /> </Route>
-							<Route path='/users/:id' component={Edit} /> 
+						   <Switch>
+							<Route exact path='/priorities'  > <List /> </Route>
+							<Route path='/priorities/create' > <New /> </Route>
+							<Route path='/priorities/:id' component={Edit} /> 
 						</Switch>
 
 				</div>
