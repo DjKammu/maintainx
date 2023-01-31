@@ -53,6 +53,22 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/priorities', 'SetupController@priorities')->name('priorities.index');
     Route::get('/priorities/create', 'SetupController@priorities')->name('priorities.create');
     Route::get('/priorities/{id}', 'SetupController@priorities')->name('priorities.show');
+
+    Route::get('/document-types', 'SetupController@documentTypes')->name('document-types.index');
+    Route::get('/document-types/create', 'SetupController@documentTypes')->name('document-types.create');
+    Route::get('/document-types/{id}', 'SetupController@documentTypes')->name('document-types.show');
+
+    Route::get('/asset-types', 'SetupController@assetTypes')->name('asset-types.index');
+    Route::get('/asset-types/create', 'SetupController@assetTypes')->name('asset-types.create');
+    Route::get('/asset-types/{id}', 'SetupController@assetTypes')->name('asset-types.show');
+
+    Route::get('/order-types', 'SetupController@orderTypes')->name('order-types.index');
+    Route::get('/order-types/create', 'SetupController@orderTypes')->name('order-types.create');
+    Route::get('/order-types/{id}', 'SetupController@orderTypes')->name('order-types.show');
+
+    Route::get('/asset-works', 'SetupController@assetWorks')->name('asset-works.index');
+    Route::get('/asset-works/create', 'SetupController@assetWorks')->name('asset-works.create');
+    Route::get('/asset-works/{id}', 'SetupController@assetWorks')->name('asset-works.show');
 });
 
 

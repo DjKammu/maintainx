@@ -9,14 +9,11 @@ import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
 
-function Edit(props) {
-    
-    const [isLoading, setIsLoading] = useState(true);
-   
+function New(props) {
     const [state, setState] = useState({
-        id: props.location.state.id ? props.location.state.id : '',
-        name: props.location.state.name ? props.location.state.name : '',
-        account_number: props.location.state.account_number ? props.location.state.account_number : '',
+        name: "",
+        account_number: "",
+        notes: '',
         loading: false,
         authUser: props.authUserProp
     });
@@ -31,9 +28,8 @@ function Edit(props) {
     }));
 
     useEffect(() => {
-        document.title = 'Edit Order Status';
-        props.setActiveComponentProp('Edit');
-
+        document.title = 'New Order Type';
+        props.setActiveComponentProp('New');
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -43,10 +39,10 @@ function Edit(props) {
             [name] : value
         });
     }
+    
 
     const onSubmitHandle = (e) =>{
         e.preventDefault();
-        
         if (simpleValidator.current.allValid()) {
             setState({
                 ...state,
@@ -56,13 +52,14 @@ function Edit(props) {
             var formData = new FormData();
             formData.append('name', state.name);
             formData.append('account_number', state.account_number);
-
-            axios.post('/api/v1/order-statuses/update', formData,{
-                params: {
-                    api_token: authUser.api_token,
-                    id: state.id
-                }
-            }).then(response => {
+          
+            axios.post(
+              '/api/v1/order-types',formData,{
+              params: {
+                   api_token: authUser.api_token
+              }
+            })
+            .then(response => {
                 setState({
                     ...state,
                     loading: false
@@ -87,12 +84,10 @@ function Edit(props) {
                         type : 'success',
                         message : response.data.message
                     });
-                    history.push('/order-statuses')
+                    history.push('/order-types')
                 }
             })
             .catch((error) => {
-                console.log(error);
-                
                 setState({
                     ...state,
                     loading: false
@@ -123,48 +118,46 @@ function Edit(props) {
 
     return (
         <React.Fragment>
-            
-                <div className="card animated fadeIn">
-                    <div className="card-body">
-                        <div className="row new-lead-wrapper d-flex justify-content-center">
-                            <div className="col-md-8 ">
-                                <LoadingOverlay
-                                    active={state.loading}
-                                    spinner={<BeatLoader />}
-                                    styles={{
-                                        overlay: (base) => ({
-                                            ...base,
-                                            opacity: '0.5',
-                                            filter: 'alpha(opacity=50)',
-                                            background: 'white'
-                                        })
-                                    }}
-                                >
-                                    <form className="edit-lead-form border" onSubmit={onSubmitHandle}>
-                                        <input type="hidden" name="api_token" value={state.authUser.api_token} />
-                                        <input type="hidden" name="id" value={state.id} />
-                                        <div className="form-group">
-                                            <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
-                                                <li className="nav-item">
-                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT ORDER STATUS</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Name</label>
-                                            <div className="input-group input-group-sm">
-                                                <div className="input-group-prepend">
-                                                    <span className="input-group-text bg-gradient-success text-white">
-                                                        <i className="mdi mdi-account"></i>
-                                                    </span>
-                                                </div>
-                                                <input type="text" className="form-control form-control-sm" id="name" name="name" placeholder="Name" 
-                                                value={state.name} onChange={onChangeHandle}/>
+            <div className="card animated fadeIn">
+                <div className="card-body">
+                    <div className="row new-lead-wrapper d-flex justify-content-center">
+                        <div className="col-md-8 ">
+                            <LoadingOverlay
+                                active={state.loading}
+                                spinner={<BeatLoader />}
+                                styles={{
+                                    overlay: (base) => ({
+                                        ...base,
+                                        opacity: '0.5',
+                                        filter: 'alpha(opacity=50)',
+                                        background: 'white'
+                                    })
+                                }}
+                            >
+                                <form className="new-lead-form border" onSubmit={onSubmitHandle}>
+                                    <input type="hidden" name="api_token" value={state.authUser.api_token} />
+                                    <div className="form-group">
+                                        <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
+                                            <li className="nav-item">
+                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW ORDER TYPE</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Name</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
                                             </div>
-                                            {simpleValidator.current.message('name', state.name, 'required')}
+                                            <input type="text" className="form-control form-control-sm" id="name" name="name" placeholder="Name" 
+                                            value={state.name} onChange={onChangeHandle}/>
                                         </div>
-                                                    
-                                    {/* account_number */}
+                                        {simpleValidator.current.message('name', state.name, 'required')}
+                                    </div>
+
+                                     {/* account_number */}
                                         <div className="form-group">
                                           <label>
                                             <span>Account Number</span>
@@ -183,17 +176,19 @@ function Edit(props) {
                                        
                                           </div> 
 
+                   
+                      
 
-                                        <div className="form-group text-center">
-                                            <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Update</button>
-                                            <Link to='/order-statuses' className="btn btn-inverse-secondary btn-md">Cancel</Link>
-                                        </div>
-                                    </form>
-                                </LoadingOverlay>
-                            </div>
+                       <div className="form-group text-center">
+                            <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Save</button>
+                            <Link to='/order-types' className="btn btn-inverse-secondary btn-md">Cancel</Link>
+                        </div>
+                                </form>
+                            </LoadingOverlay>
                         </div>
                     </div>
                 </div>
+            </div>
         </React.Fragment>
     );
 }
@@ -214,4 +209,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Edit)
+export default connect(mapStateToProps, mapDispatchToProps)(New)

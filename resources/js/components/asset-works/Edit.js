@@ -31,7 +31,7 @@ function Edit(props) {
     }));
 
     useEffect(() => {
-        document.title = 'Edit Order Status';
+        document.title = 'Edit Asset Work';
         props.setActiveComponentProp('Edit');
 
     }, []);
@@ -57,7 +57,7 @@ function Edit(props) {
             formData.append('name', state.name);
             formData.append('account_number', state.account_number);
 
-            axios.post('/api/v1/order-statuses/update', formData,{
+            axios.post('/api/v1/asset-works/update', formData,{
                 params: {
                     api_token: authUser.api_token,
                     id: state.id
@@ -87,7 +87,7 @@ function Edit(props) {
                         type : 'success',
                         message : response.data.message
                     });
-                    history.push('/order-statuses')
+                    history.push('/asset-works')
                 }
             })
             .catch((error) => {
@@ -146,7 +146,7 @@ function Edit(props) {
                                         <div className="form-group">
                                             <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
                                                 <li className="nav-item">
-                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT ORDER STATUS</span>
+                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT ASSET WORK</span>
                                                 </li>
                                             </ul>
                                         </div>
@@ -186,7 +186,7 @@ function Edit(props) {
 
                                         <div className="form-group text-center">
                                             <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Update</button>
-                                            <Link to='/order-statuses' className="btn btn-inverse-secondary btn-md">Cancel</Link>
+                                            <Link to='/asset-works' className="btn btn-inverse-secondary btn-md">Cancel</Link>
                                         </div>
                                     </form>
                                 </LoadingOverlay>

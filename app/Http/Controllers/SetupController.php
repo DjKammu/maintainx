@@ -62,9 +62,13 @@ class SetupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function assetTypes (Request $request)
     {
-    
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.asset-types');
+
     }
 
     /**
@@ -73,9 +77,13 @@ class SetupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function orderTypes (Request $request)
     {
-        //
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.order-types');
+
     }
 
     /**
@@ -85,8 +93,12 @@ class SetupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {    
+    public function assetWorks (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.asset-works');
 
     }
 
@@ -96,8 +108,12 @@ class SetupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function documentTypes (Request $request)
     {
-        
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.document-types');
+
     }
 }

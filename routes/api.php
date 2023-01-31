@@ -40,6 +40,26 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::get('/priorities', 'Api\PriorityController@index');
      Route::post('/priorities', 'Api\PriorityController@store');
      Route::post('/priorities/update', 'Api\PriorityController@update');
-     Route::post('/priorities/destroy', 'Api\PriorityController@destroy');
+     Route::post('/priorities/destroy', 'Api\PriorityController@destroy'); 
+
+     Route::get('/document-types', 'Api\DocumentTypeController@index');
+     Route::post('/document-types', 'Api\DocumentTypeController@store');
+     Route::post('/document-types/update', 'Api\DocumentTypeController@update');
+     Route::post('/document-types/destroy', 'Api\DocumentTypeController@destroy');
+
+     Route::get('/asset-types', 'Api\AssetTypeController@index');
+     Route::post('/asset-types', 'Api\AssetTypeController@store');
+     Route::post('/asset-types/update', 'Api\AssetTypeController@update');
+     Route::post('/asset-types/destroy', 'Api\AssetTypeController@destroy');
+
+     Route::get('/order-types', 'Api\OrderTypeController@index');
+     Route::post('/order-types', 'Api\OrderTypeController@store');
+     Route::post('/order-types/update', 'Api\OrderTypeController@update');
+     Route::post('/order-types/destroy', 'Api\OrderTypeController@destroy');
+     
+     Route::get('/asset-works', 'Api\AssetWorkController@index');
+     Route::post('/asset-works', 'Api\AssetWorkController@store');
+     Route::post('/asset-works/update', 'Api\AssetWorkController@update');
+     Route::post('/asset-works/destroy', 'Api\AssetWorkController@destroy');
 
 });
