@@ -62,4 +62,20 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::post('/asset-works/update', 'Api\AssetWorkController@update');
      Route::post('/asset-works/destroy', 'Api\AssetWorkController@destroy');
 
+     Route::get('/areas', 'Api\AreaController@index');
+     Route::post('/areas', 'Api\AreaController@store');
+     Route::get('/areas/properties', 'Api\AreaController@properties');
+     Route::post('/areas/update', 'Api\AreaController@update');
+     Route::post('/areas/destroy', 'Api\AreaController@destroy');
+
+     Route::get('/vendors', 'Api\VendorController@index');
+     Route::post('/vendors', 'Api\VendorController@store');
+     Route::post('/vendors/update', 'Api\VendorController@update');
+     Route::post('/vendors/destroy', 'Api\VendorController@destroy');
+
+     Route::get('/contractors', 'Api\ContractorController@index');
+     Route::post('/contractors', 'Api\ContractorController@store');
+     Route::post('/contractors/update', 'Api\ContractorController@update');
+     Route::post('/contractors/destroy', 'Api\ContractorController@destroy');
+
 });

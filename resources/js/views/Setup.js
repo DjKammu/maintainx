@@ -69,6 +69,20 @@ function App() {
 					 <a className="btn btn-gradient-primary btn-md mr-2" href="/asset-types">Asset Types</a>
 					</div>
 				</div>
+
+				<div className="col-lg-12 stretch-card">
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/areas">Areas</a>
+					</div>
+
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/contractors">Contractors</a>
+					</div>
+
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/vendors">Vendors</a>
+					</div>
+				</div>
 			</div>
 			</BrowserRouter>
 		</React.Fragment>

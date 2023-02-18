@@ -2,8 +2,10 @@
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
     "/css/Leads.css": "/css/Leads.css",
+    "/js/views/Areas.js": "/js/views/Areas.js",
     "/js/views/AssetTypes.js": "/js/views/AssetTypes.js",
     "/js/views/AssetWorks.js": "/js/views/AssetWorks.js",
+    "/js/views/Contractors.js": "/js/views/Contractors.js",
     "/js/views/Dashboard.js": "/js/views/Dashboard.js",
     "/js/views/DocumentTypes.js": "/js/views/DocumentTypes.js",
     "/js/views/Leads.js": "/js/views/Leads.js",
@@ -14,5 +16,6 @@
     "/js/views/Properties.js": "/js/views/Properties.js",
     "/js/views/Roles.js": "/js/views/Roles.js",
     "/js/views/Setup.js": "/js/views/Setup.js",
-    "/js/views/Users.js": "/js/views/Users.js"
+    "/js/views/Users.js": "/js/views/Users.js",
+    "/js/views/Vendors.js": "/js/views/Vendors.js"
 }

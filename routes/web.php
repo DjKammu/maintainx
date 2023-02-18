@@ -68,7 +68,19 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/asset-works', 'SetupController@assetWorks')->name('asset-works.index');
     Route::get('/asset-works/create', 'SetupController@assetWorks')->name('asset-works.create');
-    Route::get('/asset-works/{id}', 'SetupController@assetWorks')->name('asset-works.show');
+    Route::get('/asset-works/{id}', 'SetupController@assetWorks')->name('asset-works.show'); 
+
+    Route::get('/areas', 'SetupController@areas')->name('areas.index');
+    Route::get('/areas/create', 'SetupController@areas')->name('areas.create');
+    Route::get('/areas/{id}', 'SetupController@areas')->name('areas.show');
+
+    Route::get('/contractors', 'SetupController@contractors')->name('contractors.index');
+    Route::get('/contractors/create', 'SetupController@contractors')->name('contractors.create');
+    Route::get('/contractors/{id}', 'SetupController@contractors')->name('contractors.show');
+
+    Route::get('/vendors', 'SetupController@vendors')->name('vendors.index');
+    Route::get('/vendors/create', 'SetupController@vendors')->name('vendors.create');
+    Route::get('/vendors/{id}', 'SetupController@vendors')->name('vendors.show');
 });
 
 

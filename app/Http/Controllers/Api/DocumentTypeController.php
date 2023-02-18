@@ -148,6 +148,14 @@ class DocumentTypeController extends Controller
          $update =  DocumentType::find($request['id']);
          $data['slug'] = \Str::slug($request->name);
 
+        if(in_array($update->name, DocumentType::$notEditable)){
+             return response()->json([
+                'message' => 'Document Type '.$update->name.' Can`t be Updated!',
+                'status' => 'error'
+            ]);
+        }
+
+
        if ($update) {
             $update->update($data);
             return response()->json([
@@ -177,6 +185,13 @@ class DocumentTypeController extends Controller
         if (empty($destroy)) {
             return response()->json([
                 'message' => 'Document Type Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        if(in_array($destroy->name, DocumentType::$notEditable)){
+             return response()->json([
+                'message' => 'Document Type '.$destroy->name.' Can`t be Deleted!',
                 'status' => 'error'
             ]);
         }

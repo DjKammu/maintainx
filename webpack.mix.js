@@ -25,5 +25,8 @@ mix.js('resources/js/app.js', 'public/js')
    .react('resources/js/views/DocumentTypes.js', 'public/js/views')
    .react('resources/js/views/AssetTypes.js', 'public/js/views')
    .react('resources/js/views/AssetWorks.js', 'public/js/views')
+   .react('resources/js/views/Areas.js', 'public/js/views')
+   .react('resources/js/views/Contractors.js', 'public/js/views')
+   .react('resources/js/views/Vendors.js', 'public/js/views')
    .sass('resources/sass/app.scss', 'public/css')
    .sass('resources/sass/Leads.scss', 'public/css');

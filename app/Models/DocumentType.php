@@ -8,10 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentType extends Model
 {
     use HasFactory;
+    
 
-     protected $fillable = [
+    CONST PROPERTY     = 'Property';
+    CONST CONTRACTOR  = 'Contractor';
+    CONST VENDOR  = 'Vendor';
+
+    protected $fillable = [
         'name', 
         'slug', 
         'account_number'
+    ];
+
+    public static $notEditable = [
+      self::PROPERTY , self::CONTRACTOR, self::VENDOR
     ];
 }

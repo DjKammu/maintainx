@@ -116,4 +116,33 @@ class SetupController extends Controller
          return view('setup.document-types');
 
     }
+
+
+    public function areas (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.areas');
+
+    }
+
+    public function vendors (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.vendors');
+
+    }  
+
+
+    public function contractors (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.contractors');
+
+    }
 }
