@@ -43,8 +43,8 @@ class AreaController extends Controller
         $data->data = @collect($data->items())->filter(function($property){
              $property->property_name = $property->property->name; 
              if(@$property->property ){
-                @$property->property->label = $property->name;
-                @$property->property->value = $property->id;
+                @$property->property->label = $property->property->name;
+                @$property->property->value = $property->property->id;
              }
 
         });

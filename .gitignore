@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /public/layout_attachments/*
+public/area_layout_attachments/*
 /storage/*.key
 /vendor
 .env

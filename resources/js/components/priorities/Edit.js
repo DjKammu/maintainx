@@ -31,7 +31,7 @@ function Edit(props) {
     }));
 
     useEffect(() => {
-        document.title = 'Edit Order Status';
+        document.title = 'Edit Priority';
         props.setActiveComponentProp('Edit');
 
     }, []);
@@ -57,7 +57,7 @@ function Edit(props) {
             formData.append('name', state.name);
             formData.append('account_number', state.account_number);
 
-            axios.post('/api/v1/order-statuses/update', formData,{
+            axios.post('/api/v1/priorities/update', formData,{
                 params: {
                     api_token: authUser.api_token,
                     id: state.id
@@ -87,7 +87,7 @@ function Edit(props) {
                         type : 'success',
                         message : response.data.message
                     });
-                    history.push('/order-statuses')
+                    history.push('/priorities')
                 }
             })
             .catch((error) => {
@@ -186,7 +186,7 @@ function Edit(props) {
 
                                         <div className="form-group text-center">
                                             <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Update</button>
-                                            <Link to='/order-statuses' className="btn btn-inverse-secondary btn-md">Cancel</Link>
+                                            <Link to='/priorities' className="btn btn-inverse-secondary btn-md">Cancel</Link>
                                         </div>
                                     </form>
                                 </LoadingOverlay>

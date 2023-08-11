@@ -23,7 +23,7 @@ class Item extends Component {
                             <td className="border px-4 py-3 w-auto">
                          <div className="szn-widget__action">
                             <Link to={{
-                                pathname: `/order-statuses/${this.props.obj.id}`,
+                                pathname: `/priorities/${this.props.obj.id}`,
                                 state: this.props.obj
                                
                             }} type="button" className="btn btn-outline-success btn-sm btn-upper">Edit</Link>&nbsp;

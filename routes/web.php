@@ -81,6 +81,30 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/vendors', 'SetupController@vendors')->name('vendors.index');
     Route::get('/vendors/create', 'SetupController@vendors')->name('vendors.create');
     Route::get('/vendors/{id}', 'SetupController@vendors')->name('vendors.show');
+
+    Route::get('/sub-areas', 'SetupController@subAreas')->name('sub-areas.index');
+    Route::get('/sub-areas/create', 'SetupController@subAreas')->name('sub-areas.create');
+    Route::get('/sub-areas/{id}', 'SetupController@subAreas')->name('sub-areas.show');
+
+    Route::get('/asset', 'SetupController@assets')->name('assets.index');
+    Route::get('/asset/create', 'SetupController@assets')->name('assets.create');
+    Route::get('/asset/{id}', 'SetupController@assets')->name('assets.show');
+
+    Route::get('/property-types', 'SetupController@propertyTypes')->name('property-types.index');
+    Route::get('/property-types/create', 'SetupController@propertyTypes')->name('property-types.create');
+    Route::get('/property-types/{id}', 'SetupController@propertyTypes')->name('property-types.show'); 
+
+    Route::get('/asset-model', 'SetupController@assetModel')->name('asset-model.index');
+    Route::get('/asset-model/create', 'SetupController@assetModel')->name('asset-model.create');
+    Route::get('/asset-model/{id}', 'SetupController@assetModel')->name('asset-model.show');
+
+    Route::get('/tenants', 'SetupController@tenants')->name('tenants.index');
+    Route::get('/tenants/create', 'SetupController@tenants')->name('tenants.create');
+    Route::get('/tenants/{id}', 'SetupController@tenants')->name('tenants.show');   
+
+    Route::get('/work-types', 'SetupController@workTypes')->name('work-types.index');
+    Route::get('/work-types/create', 'SetupController@workTypes')->name('work-types.create');
+    Route::get('/work-types/{id}', 'SetupController@workTypes')->name('work-types.show');
 });
 
 

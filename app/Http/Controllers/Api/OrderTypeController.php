@@ -136,7 +136,7 @@ class OrderTypeController extends Controller
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-              'account_number' => 'required|unique:priorities,account_number,'.$request['id'],
+              'account_number' => 'required|unique:order_types,account_number,'.$request['id'],
         ]);
 
         if ($validate->fails()) {

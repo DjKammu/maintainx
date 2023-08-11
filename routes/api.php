@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
 
      Route::get('/properties', 'Api\PropertyController@index');
      Route::post('/properties', 'Api\PropertyController@store');
+     Route::get('/properties/property-types', 'Api\PropertyController@propertyTypes');
      Route::post('/properties/update', 'Api\PropertyController@update');
      Route::post('/properties/destroy', 'Api\PropertyController@destroy');
 
@@ -68,6 +69,12 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::post('/areas/update', 'Api\AreaController@update');
      Route::post('/areas/destroy', 'Api\AreaController@destroy');
 
+     Route::get('/sub-areas', 'Api\SubAreaController@index');
+     Route::post('/sub-areas', 'Api\SubAreaController@store');
+     Route::get('/sub-areas/areas', 'Api\SubAreaController@areas');
+     Route::post('/sub-areas/update', 'Api\SubAreaController@update');
+     Route::post('/sub-areas/destroy', 'Api\SubAreaController@destroy');
+
      Route::get('/vendors', 'Api\VendorController@index');
      Route::post('/vendors', 'Api\VendorController@store');
      Route::post('/vendors/update', 'Api\VendorController@update');
@@ -76,6 +83,32 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::get('/contractors', 'Api\ContractorController@index');
      Route::post('/contractors', 'Api\ContractorController@store');
      Route::post('/contractors/update', 'Api\ContractorController@update');
-     Route::post('/contractors/destroy', 'Api\ContractorController@destroy');
+     Route::post('/contractors/destroy', 'Api\ContractorController@destroy'); 
+
+     Route::get('/asset', 'Api\AssetController@index');
+     Route::post('/asset', 'Api\AssetController@store');
+     Route::post('/asset/update', 'Api\AssetController@update');
+     Route::post('/asset/destroy', 'Api\AssetController@destroy'); 
+
+
+     Route::get('/property-types', 'Api\PropertyTypeController@index');
+     Route::post('/property-types', 'Api\PropertyTypeController@store');
+     Route::post('/property-types/update', 'Api\PropertyTypeController@update');
+     Route::post('/property-types/destroy', 'Api\PropertyTypeController@destroy'); 
+
+     Route::get('/asset-model', 'Api\AssetModelController@index');
+     Route::post('/asset-model', 'Api\AssetModelController@store');
+     Route::post('/asset-model/update', 'Api\AssetModelController@update');
+     Route::post('/asset-model/destroy', 'Api\AssetModelController@destroy');
+
+     Route::get('/tenants', 'Api\TenantController@index');
+     Route::post('/tenants', 'Api\TenantController@store');
+     Route::post('/tenants/update', 'Api\TenantController@update');
+     Route::post('/tenants/destroy', 'Api\TenantController@destroy');
+
+     Route::get('/work-types', 'Api\WorkTypeController@index');
+     Route::post('/work-types', 'Api\WorkTypeController@store');
+     Route::post('/work-types/update', 'Api\WorkTypeController@update');
+     Route::post('/work-types/destroy', 'Api\WorkTypeController@destroy'); 
 
 });

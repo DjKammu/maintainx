@@ -15,9 +15,7 @@ function Edit(props) {
     const [isLoading, setIsLoading] = useState(true);
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
 
-    console.log(selectedPropertyOption);
-   
-    const [state, setState] = useState({
+   const [state, setState] = useState({
         id: props.location.state.id ? props.location.state.id : '',
         name: props.location.state.name ? props.location.state.name : '',
         property_id: props.location.state.property ? props.location.state.property.id : null,

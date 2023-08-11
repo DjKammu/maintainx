@@ -13,6 +13,7 @@ class DocumentType extends Model
     CONST PROPERTY     = 'Property';
     CONST CONTRACTOR  = 'Contractor';
     CONST VENDOR  = 'Vendor';
+    CONST AREA  = 'Area';
 
     protected $fillable = [
         'name', 
@@ -21,6 +22,7 @@ class DocumentType extends Model
     ];
 
     public static $notEditable = [
-      self::PROPERTY , self::CONTRACTOR, self::VENDOR
+      self::PROPERTY , self::CONTRACTOR, self::VENDOR,
+       self::AREA
     ];
 }

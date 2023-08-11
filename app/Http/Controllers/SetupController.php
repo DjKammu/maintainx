@@ -127,6 +127,16 @@ class SetupController extends Controller
 
     }
 
+
+    public function subAreas (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.sub-areas');
+
+    }
+
     public function vendors (Request $request)
     {
         if(Gate::denies('view')) {
@@ -143,6 +153,52 @@ class SetupController extends Controller
                return abort('401');
          }
          return view('setup.contractors');
+
+    } 
+
+    public function assets (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.assets');
+
+    }
+
+
+    public function propertyTypes (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.property-types');
+
+    }
+
+    public function assetModel (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.asset-model');
+
+    }
+
+    public function tenants (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.tenants');
+
+    }
+
+    public function workTypes (Request $request)
+    {
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+         return view('setup.work-types');
 
     }
 }

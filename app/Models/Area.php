@@ -18,4 +18,12 @@ class Area extends Model
     {
         return $this->hasOne('App\Models\Property', 'id', 'property_id');
     }
+    
+    public function setPropertyIdAttribute($value)
+	{
+		 return ($value == 'null') ? NULL :  $value; 
+	}
+    
+    
 }
+ 

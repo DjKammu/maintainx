@@ -76,12 +76,34 @@ function App() {
 					</div>
 
 					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/sub-areas">Sub Areas</a>
+					</div>
+
+					<div className="form-group text-center">
 					 <a className="btn btn-gradient-primary btn-md mr-2" href="/contractors">Contractors</a>
 					</div>
 
 					<div className="form-group text-center">
 					 <a className="btn btn-gradient-primary btn-md mr-2" href="/vendors">Vendors</a>
 					</div>
+
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/property-types">Property Types</a>
+					</div>
+                    
+                    <div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/asset-model">Asset Model</a>
+					</div>
+
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/tenants"> Tenants</a>
+					</div>
+
+					<div className="form-group text-center">
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/work-types">Work Types</a>
+					</div>
+
+
 				</div>
 			</div>
 			</BrowserRouter>

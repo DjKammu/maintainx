@@ -10,6 +10,11 @@ import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
 
 function New(props) {
+    const [propertyTypes, setPropertyTypes] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const selectedPropertyTypeOption = null;
+    let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
+
     const [state, setState] = useState({
         name: "",
         address: "",
@@ -20,6 +25,7 @@ function New(props) {
         layout_attachment: '',
         extra_attachment: '',
         notes: '',
+        property_type_id: "",
         loading: false,
         authUser: props.authUserProp
     });
@@ -36,6 +42,7 @@ function New(props) {
     useEffect(() => {
         document.title = 'New Property';
         props.setActiveComponentProp('New');
+         loadData();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -55,6 +62,34 @@ function New(props) {
           }));  
      }
 
+     const handleSelectPropertyTypeChange = (selectedOption) => {
+         setState(state => ({
+              ...state,
+              property_type_id: selectedOption.value,
+          }));
+      }
+
+
+     const loadData = () => {
+            setIsLoading(true);
+            axios.get('/api/v1/properties/property-types',{
+                params: {
+                    api_token: authUser.api_token
+                }
+            })
+            .then(response => {
+                setIsLoading(false);
+                setPropertyTypes(response.data.message.propertyTypes);
+                
+            })
+            .catch((error) => {
+                showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+            });
+        };
+
     const onSubmitHandle = (e) =>{
         e.preventDefault();
         if (simpleValidator.current.allValid()) {
@@ -72,6 +107,7 @@ function New(props) {
             formData.append('phone_number', state.phone_number);
             formData.append('layout_attachment', state.layout_attachment);
             formData.append('extra_attachment', state.extra_attachment);
+            formData.append('property_type_id', state.property_type_id);
             formData.append('notes', state.notes);
           
             axios.post(
@@ -164,6 +200,26 @@ function New(props) {
                                             </li>
                                         </ul>
                                     </div>
+
+                                    {/* property */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property Type</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        defaultValue={selectedPropertyTypeOption}
+                                        onChange={handleSelectPropertyTypeChange}
+                                        options={ (propertyTypes.length > 0) ? [...propertyTypeNullArr, ...propertyTypes] : []}
+                                      />  
+                                    </div>
+                                    </div>
+
                                     <div className="form-group">
                                         <label>Name</label>
                                         <div className="input-group input-group-sm">

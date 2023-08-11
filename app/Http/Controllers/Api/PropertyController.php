@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use App\Models\PropertyType;
 use App\Models\Property;
 use App\Models\User;
 use App\Models\Role;
@@ -45,7 +46,13 @@ class PropertyController extends Controller
         $properties->data = @collect($properties->items())->filter(function($property){
               $media =  @$property->getMediaPathWithExtension()['file'] ? [@$property->getMediaPathWithExtension()] : @$property->getMediaPathWithExtension();
               $property->layout_attachment = @collect($media)->where('name','layout_attachment')->first(); 
-              $property->extra_attachment =  @collect($media)->where('name','extra_attachment')->first(); 
+              $property->extra_attachment =  @collect($media)->where('name','extra_attachment')->first();
+
+              $property->property_type_name = $property->property_type->name; 
+             if(@$property->property_type ){
+                @$property->property_type->label = $property->property_type->name;
+                @$property->property_type->value = $property->property_type->id;
+             } 
 
         });
 
@@ -99,7 +106,7 @@ class PropertyController extends Controller
         } 
 
         $data = $request->except('api_token');
-  
+
         $validate = Validator::make($request->all(),[
               'name' => 'required|string'
         ]);
@@ -147,6 +154,24 @@ class PropertyController extends Controller
     public function show($id)
     {
         //
+    }
+    
+    public function propertyTypes()
+    {
+          
+          $propertyTypes = PropertyType::orderBy('name')->get();
+          $propertyTypes = @$propertyTypes->filter(function($property){
+              $property->label = $property->name;
+              $property->value = $property->id;
+              return $property;
+          });
+
+          return response()->json([
+            'message' => compact('propertyTypes'),
+            'status' => 'success'
+        ]);
+
+
     }
 
     /**

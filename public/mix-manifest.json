@@ -3,8 +3,10 @@
     "/css/app.css": "/css/app.css",
     "/css/Leads.css": "/css/Leads.css",
     "/js/views/Areas.js": "/js/views/Areas.js",
+    "/js/views/AssetModel.js": "/js/views/AssetModel.js",
     "/js/views/AssetTypes.js": "/js/views/AssetTypes.js",
     "/js/views/AssetWorks.js": "/js/views/AssetWorks.js",
+    "/js/views/Assets.js": "/js/views/Assets.js",
     "/js/views/Contractors.js": "/js/views/Contractors.js",
     "/js/views/Dashboard.js": "/js/views/Dashboard.js",
     "/js/views/DocumentTypes.js": "/js/views/DocumentTypes.js",
@@ -14,8 +16,12 @@
     "/js/views/OrderTypes.js": "/js/views/OrderTypes.js",
     "/js/views/Priorities.js": "/js/views/Priorities.js",
     "/js/views/Properties.js": "/js/views/Properties.js",
+    "/js/views/PropertyTypes.js": "/js/views/PropertyTypes.js",
     "/js/views/Roles.js": "/js/views/Roles.js",
     "/js/views/Setup.js": "/js/views/Setup.js",
+    "/js/views/SubAreas.js": "/js/views/SubAreas.js",
+    "/js/views/Tenants.js": "/js/views/Tenants.js",
     "/js/views/Users.js": "/js/views/Users.js",
-    "/js/views/Vendors.js": "/js/views/Vendors.js"
+    "/js/views/Vendors.js": "/js/views/Vendors.js",
+    "/js/views/WorkTypes.js": "/js/views/WorkTypes.js"
 }

@@ -1,5 +1,5 @@
 @section('title')
-Order Statuses
+Document Types
 @endsection
 
 @section('styles')

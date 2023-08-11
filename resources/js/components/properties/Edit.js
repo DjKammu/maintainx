@@ -11,10 +11,16 @@ import Select from 'react-select';
 
 function Edit(props) {
     
+    const [propertyTypes, setPropertyTypes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const selectedPropertyTypeOption  =  props.location.state.property_type ? props.location.state.property_type : null; 
+   
+    let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
+
    
     const [state, setState] = useState({
         id: props.location.state.id ? props.location.state.id : '',
+         property_type_id: props.location.state.property_type ? props.location.state.property_type.id : null,
         name: props.location.state.name ? props.location.state.name : '',
         address: props.location.state.address ? props.location.state.address : '',
         city: props.location.state.city ? props.location.state.city : '',
@@ -40,8 +46,15 @@ function Edit(props) {
     useEffect(() => {
         document.title = 'Edit Property';
         props.setActiveComponentProp('Edit');
-
+         loadData();
     }, []);
+
+    const handleSelectPropertyTypeChange = (selectedOption) => {
+         setState(state => ({
+              ...state,
+              property_type_id: selectedOption.value,
+          }));
+    }
 
     const onChangeHandle = (e) =>{
         const { name, value } = e.target;
@@ -50,17 +63,35 @@ function Edit(props) {
             [name] : value
         });
     }
+      
+    const handleFileChange = (e) => {
+             e.persist();
+             const { name  } = e.target;
+             setState(state => ({
+                  ...state,
+                  [name]:  e.target.files[0]
+              }));
+      } 
 
-    
-     
-const handleFileChange = (e) => {
-         e.persist();
-         const { name  } = e.target;
-         setState(state => ({
-              ...state,
-              [name]:  e.target.files[0]
-          }));
-  }
+       const loadData = () => {
+            setIsLoading(true);
+            axios.get('/api/v1/properties/property-types',{
+                params: {
+                    api_token: authUser.api_token
+                }
+            })
+            .then(response => {
+                setIsLoading(false);
+                setPropertyTypes(response.data.message.propertyTypes);
+                
+            })
+            .catch((error) => {
+                showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+            });
+        };
 
     const onSubmitHandle = (e) =>{
         e.preventDefault();
@@ -80,6 +111,7 @@ const handleFileChange = (e) => {
             formData.append('phone_number', state.phone_number);
             formData.append('layout_attachment', state.layout_attachment);
             formData.append('extra_attachment', state.extra_attachment);
+            formData.append('property_type_id', state.property_type_id);
             formData.append('notes', state.notes);
           
 
@@ -176,6 +208,26 @@ const handleFileChange = (e) => {
                                                 </li>
                                             </ul>
                                         </div>
+
+                                         {/* property */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property Type</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        defaultValue={selectedPropertyTypeOption}
+                                        onChange={handleSelectPropertyTypeChange}
+                                        options={ (propertyTypes.length > 0) ? [...propertyTypeNullArr, ...propertyTypes] : []}
+                                      />  
+                                    </div>
+                                    </div>
+
                                         <div className="form-group">
                                             <label>Name</label>
                                             <div className="input-group input-group-sm">

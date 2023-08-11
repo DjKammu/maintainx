@@ -17,8 +17,6 @@ const myStore = createStore(
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-
-
 function App() {
 	//set reducer
 	const myDispatch = useDispatch();
