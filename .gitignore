@@ -5,6 +5,7 @@
 /public/area_layout_attachments/*
 /public/js/views/*
 /public/asset_attachments/*
+/public/*
 /storage/*.key
 /vendor
 .env
