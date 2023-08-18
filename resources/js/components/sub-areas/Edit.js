@@ -42,7 +42,7 @@ function Edit(props) {
     }));
 
     useEffect(() => {
-        document.title = 'Edit Sub Area';
+        document.title = 'Edit Sub Area/Suite';
         props.setActiveComponentProp('Edit');
         loadData();
     }, []);
@@ -69,7 +69,7 @@ function Edit(props) {
          setState(state => ({
               ...state,
               property_id: selectedOption.value,
-              area_id   : (state.property_id == selectedOption.value)  ? state.suite_id : null
+              area_id   : (state.property_id == selectedOption.value)  ? state.area_id : null
       }));
 
         setAreas([]);
@@ -229,7 +229,7 @@ function Edit(props) {
                                         <div className="form-group">
                                             <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
                                                 <li className="nav-item">
-                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT SUB AREA</span>
+                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT SUB AREA/SUITE</span>
                                                 </li>
                                             </ul>
                                         </div>

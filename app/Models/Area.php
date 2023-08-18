@@ -21,7 +21,7 @@ class Area extends Model
     
     public function setPropertyIdAttribute($value)
 	{
-		 return ($value == 'null') ? NULL :  $value; 
+          $this->attributes['property_id'] =  ($value == 'null') ? NULL :  $value;
 	}
     
     

@@ -39,7 +39,7 @@ function New(props) {
     }));
 
     useEffect(() => {
-        document.title = 'New Area';
+        document.title = 'New Sub Area/Suite';
         props.setActiveComponentProp('New');
         loadData();
     }, []);
@@ -71,7 +71,6 @@ function New(props) {
         setAreas([]);
         setSelectedAreaOption([]);
         setIsLoading(true);
-
          axios.get('/api/v1/sub-areas/areas',{
             params: {
                 api_token: authUser.api_token,
@@ -218,7 +217,7 @@ function New(props) {
                                     <div className="form-group">
                                         <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
                                             <li className="nav-item">
-                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW SUB AREA</span>
+                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW SUB AREA/SUITE</span>
                                             </li>
                                         </ul>
                                     </div>

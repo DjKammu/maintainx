@@ -11,6 +11,7 @@ import rootReducer from '../redux/reducers/index'
 import { Provider, useDispatch, useSelector } from 'react-redux'
 import rootAction from '../redux/actions/index'
 
+
 //create reducer
 const myStore = createStore(
 	rootReducer,
@@ -53,7 +54,7 @@ function App() {
 						   <Switch>
 							<Route exact path='/tenants'  > <List /> </Route>
 							<Route path='/tenants/create' > <New /> </Route>
-							<Route path='/tenants-types/:id' component={Edit} /> 
+							<Route path='/tenants/:id' component={Edit} /> 
 						</Switch>
 
 				</div>

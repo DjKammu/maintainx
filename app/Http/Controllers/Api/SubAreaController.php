@@ -71,13 +71,18 @@ class SubAreaController extends Controller
      */
     public function areas(Request $request)
     { 
-          $area = Area::where('property_id',$request->property)
-                       ->orderBy('name')->first();
-          if($area){
-            $area->label = @$area->name;
-            $area->value = @$area->id;
-          }
-         $area = [$area];  
+          $areas = Area::where('property_id',$request->property)
+                        ->whereNotNull('property_id')
+                       ->orderBy('name')->get();
+         if($areas){
+            $areas = @$areas->filter(function($area){
+              $area->label = $area->name;
+              $area->value = $area->id;
+              return $area;
+          });
+         }
+
+         $area = ($areas) ?  $areas : [];  
          return response()->json([
             'message' => compact('area'),
             'status' => 'success'
@@ -192,7 +197,7 @@ class SubAreaController extends Controller
             }
 
             return response()->json([
-                'message' => 'Area successfully saved',
+                'message' => 'Sub Area successfully saved',
                 'status' => 'success'
             ]);
         } else {

@@ -1,5 +1,5 @@
 @section('title')
-Asset Model
+Asset
 @endsection
 
 @section('styles')

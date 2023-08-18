@@ -28,6 +28,6 @@ class Property extends Model
 
     public function setPropertyTypeIdAttribute($value)
     {
-         return ($value == 'null') ? NULL :  $value; 
+        $this->attributes['property_type_id'] =  ($value == 'null') ? NULL :  $value;
     }
 }

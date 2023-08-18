@@ -92,7 +92,7 @@ function App() {
 					</div>
                     
                     <div className="form-group text-center">
-					 <a className="btn btn-gradient-primary btn-md mr-2" href="/asset-model">Asset Model</a>
+					 <a className="btn btn-gradient-primary btn-md mr-2" href="/asset-model">Assets</a>
 					</div>
 
 					<div className="form-group text-center">

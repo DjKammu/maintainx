@@ -118,7 +118,7 @@ function List(props) {
         .catch((error) => {
             showSznNotification({
                 type : 'error',
-                message : error.response.data.message
+                message : "Error!"
             });
         });
     };

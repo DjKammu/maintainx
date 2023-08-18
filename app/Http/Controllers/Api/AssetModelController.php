@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use App\Models\DocumentType;
 use App\Models\AssetModel;
+use App\Models\AssetType;
 use App\Models\User;
 use App\Models\Role;
 use Gate;
@@ -38,8 +40,61 @@ class AssetModelController extends Controller
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
+
+        if ($request['property_type'] != '') {
+
+            $property_type = $request['property_type'];
+            $data->whereHas('property_type', function($q) use ($property_type){
+                $q->where('id', $property_type);
+            });
+        }
+
+        if ($request['property'] != '') {
+            $property = $request['property'];
+            $data->whereHas('property', function($q) use ($property){
+                $q->where('id', $property);
+            });
+        }
+
          
         $data = $data->paginate($perPage);
+
+        $data->data = @collect($data->items())->filter(function($asset){
+                 $asset->asset_type_name = $asset->asset_type->name; 
+                 if(@$asset->asset_type ){
+                    @$asset->asset_type->label = $asset->asset_type->name;
+                    @$asset->asset_type->value = $asset->asset_type->id;
+                 }
+
+                 $asset->property_name = $asset->property->name; 
+                 if(@$asset->property ){
+                    @$asset->property->label = $asset->property->name;
+                    @$asset->property->value = $asset->property->id;
+                 }
+
+                 $asset->property_type_name = $asset->property_type->name; 
+                 if(@$asset->property_type ){
+                    @$asset->property_type->label = $asset->property_type->name;
+                    @$asset->property_type->value = $asset->property_type->id;
+                 }
+
+                 $asset->area_name = $asset->area->name; 
+                 if(@$asset->area ){
+                    @$asset->area->label = $asset->area->name;
+                    @$asset->area->value = $asset->area->id;
+                 }
+
+                 $asset->sub_area_name = $asset->sub_area->name; 
+                 if(@$asset->sub_area ){
+                    @$asset->sub_area->label = $asset->sub_area->name;
+                    @$asset->sub_area->value = $asset->sub_area->id;
+                 }
+
+                 $media =  @$asset->getMediaPathWithExtension()['file'] ? [@$asset->getMediaPathWithExtension()] : @$asset->getMediaPathWithExtension();
+                 $asset->media = @collect($media)->all(); 
+
+        });
+
 
         return response()->json([
             'message' => $data,
@@ -73,8 +128,11 @@ class AssetModelController extends Controller
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-            'account_number' => 'required|unique:asset_models',
-        ]);
+               'account_number' => 'required|unique:asset_models',
+        ],[
+            'account_number.required'=> 'Model Number is Required!',
+            'account_number.unique'=> 'Model Number must be unique!',
+           ]);
 
         if ($validate->fails()) {
             return response()->json([
@@ -82,9 +140,15 @@ class AssetModelController extends Controller
                 'status' => 'validation-error'
             ], 401);
         }
+       
         $data['slug'] = \Str::slug($request->name);
         $create =  AssetModel::create($data); 
 
+         if($request->hasFile('files')){
+                $create->toPath(AssetModel::ASSET_ATTACHMENTS)
+                        ->docType(DocumentType::ASSET)->storeFile('files',true);
+        }
+        
        if ($create) {
          
             return response()->json([
@@ -151,7 +215,13 @@ class AssetModelController extends Controller
 
        if ($update) {
             $update->update($data);
-    
+
+            if($request->hasFile('files')){
+                    //$update=>deleteFile();
+                    $update->toPath(AssetModel::ASSET_ATTACHMENTS)
+                            ->docType(DocumentType::ASSET)->storeFile('files',true);
+            }
+
             return response()->json([
                 'message' => 'Asset Model successfully saved',
                 'status' => 'success'
@@ -183,6 +253,8 @@ class AssetModelController extends Controller
             ]);
         }
          
+        $destroy->deleteFile();
+
         $delete  = $destroy->delete();
 
         if ($delete) {
@@ -196,5 +268,58 @@ class AssetModelController extends Controller
                 'status' => 'error'
             ]);
         }
+    }
+
+
+     
+    public function deleteAttachment(Request $request){
+
+         $destroy = AssetModel::find($request['id']);
+
+        if (empty($destroy)) {
+            return response()->json([
+                'message' => 'Asset Model Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+         $file = @end(explode('/', request()->file));
+
+         $destroy->deleteFile($file);
+
+        if ($destroy) {
+
+            $media =  @$destroy->getMediaPathWithExtension()['file'] ? [@$destroy->getMediaPathWithExtension()] : @$destroy->getMediaPathWithExtension();
+            $media= @collect($media)->all(); 
+            return response()->json([
+                'message' => 'Asset Model successfully deleted',
+                'media' => $media,
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
+
+    public function assetTypes()
+    {
+          
+          $assetTypes = AssetType::orderBy('name')->get();
+          $assetTypes = @$assetTypes->filter(function($assetType){
+              $assetType->label = $assetType->name;
+              $assetType->value = $assetType->id;
+              return $assetType;
+          });
+
+          return response()->json([
+            'message' => compact('assetTypes'),
+            'status' => 'success'        
+        ]);
+
+
     }
 }

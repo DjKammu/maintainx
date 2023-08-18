@@ -14,6 +14,7 @@
     "/js/views/Login.js": "/js/views/Login.js",
     "/js/views/OrderStatuses.js": "/js/views/OrderStatuses.js",
     "/js/views/OrderTypes.js": "/js/views/OrderTypes.js",
+    "/js/views/Payments.js": "/js/views/Payments.js",
     "/js/views/Priorities.js": "/js/views/Priorities.js",
     "/js/views/Properties.js": "/js/views/Properties.js",
     "/js/views/PropertyTypes.js": "/js/views/PropertyTypes.js",

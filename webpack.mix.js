@@ -35,5 +35,6 @@ mix.js('resources/js/app.js', 'public/js')
    .react('resources/js/views/AssetModel.js', 'public/js/views')
    .react('resources/js/views/Tenants.js', 'public/js/views')
    .react('resources/js/views/WorkTypes.js', 'public/js/views')
+   .react('resources/js/views/Payments.js', 'public/js/views')
    .sass('resources/sass/app.scss', 'public/css')
    .sass('resources/sass/Leads.scss', 'public/css');

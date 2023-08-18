@@ -1,3 +1,29 @@
+.delete-file{
+  position: relative;
+  margin-right: 10px;
+}
+span.cross{
+    position: absolute;
+    z-index: 10;
+    right: -25px;
+     display: none; 
+    top: -22px;
+    cursor: pointer;
+    height: auto !important;
+}
+span.cross .text-white{
+	border: 1px solid #1a9579;
+    background: #1a9579;
+    border-radius: 5px;
+}
+.delete-file:hover span.cross,
+.delete-file:hover span.edit{
+  display: block;
+}
+span.cross i.mdi.mdi-delete-circle{
+	font-size: 18px;
+}
+
 .card .card-body {
     padding: 1.25rem;
 }

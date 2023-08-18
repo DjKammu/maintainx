@@ -97,12 +97,15 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::post('/property-types/destroy', 'Api\PropertyTypeController@destroy'); 
 
      Route::get('/asset-model', 'Api\AssetModelController@index');
+     Route::get('/asset-model/asset-types', 'Api\AssetModelController@assetTypes');
+     Route::post('/asset-model/delete-attachment', 'Api\AssetModelController@deleteAttachment');
      Route::post('/asset-model', 'Api\AssetModelController@store');
      Route::post('/asset-model/update', 'Api\AssetModelController@update');
      Route::post('/asset-model/destroy', 'Api\AssetModelController@destroy');
 
      Route::get('/tenants', 'Api\TenantController@index');
      Route::post('/tenants', 'Api\TenantController@store');
+     Route::get('/tenants/sub-area', 'Api\TenantController@subArea');
      Route::post('/tenants/update', 'Api\TenantController@update');
      Route::post('/tenants/destroy', 'Api\TenantController@destroy');
 
@@ -110,5 +113,13 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
      Route::post('/work-types', 'Api\WorkTypeController@store');
      Route::post('/work-types/update', 'Api\WorkTypeController@update');
      Route::post('/work-types/destroy', 'Api\WorkTypeController@destroy'); 
+
+
+     Route::get('/payments', 'Api\PaymentController@index');
+     Route::get('/payments/attributes', 'Api\PaymentController@attributes');
+     Route::get('/payments/property', 'Api\PaymentController@property');
+     Route::post('/payments', 'Api\PaymentController@store');
+     Route::post('/payments/update', 'Api\PaymentController@update');
+     Route::post('/payments/destroy', 'Api\PaymentController@destroy');
 
 });

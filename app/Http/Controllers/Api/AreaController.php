@@ -166,6 +166,7 @@ class AreaController extends Controller
         }
          
          $area =  Area::find($request['id']);
+       
 
        if ($area) {
             $area->update($data);

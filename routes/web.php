@@ -27,9 +27,6 @@ Route::group(['middleware' => ['guest', 'web']], function () {
 
 // Set Up Routes // 
 
-Route::get('/setup', [App\Http\Controllers\HomeController::class, 'setup'])
-     ->name('setup');
-
 Route::group(['middleware' => ['can:add_users']], function () {
     
     Route::get('/roles', 'RoleController@index')->name('roles.index');
@@ -42,6 +39,8 @@ Route::group(['middleware' => ['can:add_users']], function () {
 });
 
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/setup', 'SetupController@index')->name('setup.index');
+
     Route::get('/properties', 'SetupController@properties')->name('properties.index');
     Route::get('/properties/create', 'SetupController@properties')->name('properties.create');
     Route::get('/properties/{id}', 'SetupController@properties')->name('properties.show');
@@ -105,6 +104,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/work-types', 'SetupController@workTypes')->name('work-types.index');
     Route::get('/work-types/create', 'SetupController@workTypes')->name('work-types.create');
     Route::get('/work-types/{id}', 'SetupController@workTypes')->name('work-types.show');
+
 });
 
 
@@ -114,6 +114,11 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/logout', 'HomeController@logout')->name('Logout');
     Route::get('/home', 'HomeController@index')->name('Dashboard');
+
+    Route::get('/payments', 'HomeController@payments')->name('payments.index');
+    Route::get('/payments/create', 'HomeController@payments')->name('payments.create');
+    Route::get('/payments/{id}', 'HomeController@payments')->name('payments.show');
+
 });
 
 

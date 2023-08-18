@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use App\Models\SubArea;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Role;
@@ -38,8 +39,51 @@ class TenantController extends Controller
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
+
+        if ($request['property_type'] != '') {
+
+            $property_type = $request['property_type'];
+            $data->whereHas('property_type', function($q) use ($property_type){
+                $q->where('id', $property_type);
+            });
+        }
+
+        if ($request['property'] != '') {
+            $property = $request['property'];
+            $data->whereHas('property', function($q) use ($property){
+                $q->where('id', $property);
+            });
+        }
          
         $data = $data->paginate($perPage);
+
+         $data->data = @collect($data->items())->filter(function($tenant){
+                 $tenant->property_name = $tenant->property->name; 
+                 if(@$tenant->property ){
+                    @$tenant->property->label = $tenant->property->name;
+                    @$tenant->property->value = $tenant->property->id;
+                 }
+
+                 $tenant->property_type_name = $tenant->property_type->name; 
+                 if(@$tenant->property_type ){
+                    @$tenant->property_type->label = $tenant->property_type->name;
+                    @$tenant->property_type->value = $tenant->property_type->id;
+                 }
+
+                 $tenant->area_name = $tenant->area->name; 
+                 if(@$tenant->area ){
+                    @$tenant->area->label = $tenant->area->name;
+                    @$tenant->area->value = $tenant->area->id;
+                 }
+
+                 $tenant->sub_area_name = $tenant->sub_area->name; 
+                 if(@$tenant->sub_area ){
+                    @$tenant->sub_area->label = $tenant->sub_area->name;
+                    @$tenant->sub_area->value = $tenant->sub_area->id;
+                 }
+
+        });
+
 
         return response()->json([
             'message' => $data,
@@ -70,7 +114,7 @@ class TenantController extends Controller
         } 
 
         $data = $request->except('api_token');
-  
+
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
             'account_number' => 'required|unique:tenants',
@@ -197,4 +241,23 @@ class TenantController extends Controller
             ]);
         }
     }
+
+    public function subArea(Request $request)
+    { 
+          $subAreas = SubArea::where('area_id',$request->area_id)
+                        ->whereNotNull('area_id')
+                       ->orderBy('name')->get();
+          if($subAreas){
+             $subAreas = @$subAreas->filter(function($subArea){
+                  $subArea->label = $subArea->name;
+                  $subArea->value = $subArea->id;
+                  return $subArea;
+              });
+          }
+         $subArea = ($subAreas) ?  $subAreas : []; 
+         return response()->json([
+            'message' => compact('subArea'),
+            'status' => 'successs'       
+        ]);
+    }  
 }

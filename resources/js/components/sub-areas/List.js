@@ -36,7 +36,7 @@ function List(props) {
     //const authUser = props.authUserProp;
     
     useEffect(() => {
-        document.title = 'All Sub Areas';
+        document.title = 'All Sub Areas/Suites';
         props.setActiveComponentProp('List');
 
     }, []);

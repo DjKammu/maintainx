@@ -4,14 +4,76 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Traits\MediaManager;
 
 class AssetModel extends Model
 {
-    use HasFactory;
+    use HasFactory, MediaManager; 
+
+    CONST ASSET_ATTACHMENTS = "asset_attachments";
 
     protected $fillable = [
         'name', 
         'slug', 
-        'account_number'
+        'account_number',
+        'asset_type_id',
+        'property_type_id', 
+        'property_id', 
+        'area_id',
+        'sub_area_id',
+        'serial_number'
     ];
+
+
+
+    public function asset_type()
+    {
+        return $this->hasOne('App\Models\AssetType', 'id', 'asset_type_id');
+    } 
+
+    public function property_type()
+    {
+        return $this->hasOne('App\Models\PropertyType', 'id', 'property_type_id');
+    }
+
+    public function property()
+    {
+        return $this->hasOne('App\Models\Property', 'id', 'property_id');
+    }
+
+    public function area()
+    {
+        return $this->hasOne('App\Models\Area', 'id', 'area_id');
+    }
+
+    public function sub_area()
+    {
+        return $this->hasOne('App\Models\SubArea', 'id', 'sub_area_id');
+    }
+
+    public function setAssetTypeIdAttribute($value)
+    {
+        $this->attributes['asset_type_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setPropertyTypeIdAttribute($value)
+    {
+        $this->attributes['property_type_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setPropertyIdAttribute($value)
+    {
+         $this->attributes['property_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setAreaIdAttribute($value)
+    {
+        $this->attributes['area_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setSubAreaIdAttribute($value)
+    {
+        $this->attributes['sub_area_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
 }

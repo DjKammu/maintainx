@@ -29,11 +29,11 @@ class SubArea extends Model
 
     public function setPropertyIdAttribute($value)
     {
-         return ($value == 'null') ? NULL :  $value; 
+         $this->attributes['property_id'] =  ($value == 'null') ? NULL :  $value;
     }
 
     public function setAreaIdAttribute($value)
     {
-         return ($value == 'null') ? NULL :  $value; 
+        $this->attributes['area_id'] =  ($value == 'null') ? NULL :  $value;
     }
 }

@@ -20,6 +20,13 @@
                 <i class="mdi mdi-home menu-icon"></i>
               </a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('payments.index') }}">
+                <span class="menu-title">Payment</span>
+                <i class="mdi mdi-cash-100 menu-icon"></i>
+              </a>
+            </li>
       
             <li class="nav-item">
               <a class="nav-link" href="/setup">

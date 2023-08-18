@@ -12,13 +12,14 @@ trait MediaManager {
     protected $docType = null;
 
     public function storeFile($input, $multiple = false, $nameInput = null,$nickNameInput = null){
-    	 $fileArr = request()->{$input};
-       $nameArr = request()->{$nameInput};
-       $nickNameArr = request()->{$nickNameInput};
+    	 $request = request()->all();
+       $fileArr = $request["{$input}"];
+       $nameArr = @$request["{$nameInput}"]; 
+       $nickNameArr = @$request["{$nickNameInput}"];
 
     	 if(!$multiple){
     	 	$mimeType =  $fileArr->getClientMimeType();
-    	 	$name = ($nameArr) ?  $nameArr : @pathinfo($fileArr)['filename'].'_'.time();
+    	 	$name = ($nameArr) ?  $nameArr : @pathinfo($fileArr->getClientOriginalName(),PATHINFO_FILENAME).'_'.time();
         $nick_name = ($nickNameInput) ?  $nickNameInput : $name;   
     	 	$fileName = $this->uniqueFilename(\Str::slug($name).'.'. $fileArr->getClientOriginalExtension());
     	      $fileArr->storeAs($this->path, $fileName, 'media');
@@ -28,10 +29,9 @@ trait MediaManager {
             $this->nick_name = $nick_name; 
     	      $this->saveMedia();
     	 }else{
-
         foreach ($fileArr as $key => $file) {
           $mimeType =  $file->getClientMimeType();
-          $name = (@$nameArr[$key]) ?  $nameArr[$key] : @pathinfo($file)['filename'].'_'.time();
+          $name = (@$nameArr[$key]) ?  $nameArr[$key] : @pathinfo($file->getClientOriginalName(),PATHINFO_FILENAME).'_'.time();
           $nick_name = (@$nickNameArr[$key]) ?  $nickNameArr[$key] : $name ;
           $fileName = $this->uniqueFilename(\Str::slug($name).'.'. $file->getClientOriginalExtension());
               $file->storeAs($this->path, $fileName, 'media');
@@ -51,7 +51,7 @@ trait MediaManager {
       $exists = DB::table('media')
               ->where(['file_name' => $fileName])
               ->exists(); 
-      return ($exists) ? time().$fileName : $fileName; 
+      return ($exists) ? time().'_'.$fileName : $fileName; 
 
     }
 
@@ -113,7 +113,7 @@ trait MediaManager {
   	 $files = @$files->map(function($file) use ($extesion){
           return $file->path = $this->getFullPath($file,$extesion);
      }); 
-
+    
 	   return ($files->count() == 1) ? $files->first() : ($files->count() == 0 ? null : $files) ;  
     } 
 

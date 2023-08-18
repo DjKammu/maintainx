@@ -7,6 +7,7 @@ use Auth;
 use Illuminate\Http\Request;
 use Redirect;
 use Faker\Provider\Lorem;
+use Gate;
 
 class HomeController extends Controller
 {
@@ -31,9 +32,13 @@ class HomeController extends Controller
         return redirect(route('Login'));
     }
 
-     public function setup(){
+     public function payments(){
+        
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
 
-        return view('setup.index');
+        return view('payments');
     }
 
 }

@@ -14,6 +14,11 @@ class SetupController extends Controller
     {
         $this->middleware('auth');
     }
+    
+     public function index(){
+
+        return view('setup.index');
+    }
 
     /**
      * Display a listing of the resource.

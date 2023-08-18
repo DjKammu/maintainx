@@ -8,11 +8,32 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
+import QuickAdd from '../sub-areas/QuickAdd';
 
 function New(props) {
+
+    const [properties, setProperties] = useState([]);
+    const [propertyTypes, setPropertyTypes] = useState([]);
+    const [areas, setAreas] = useState([]);
+    const [subAreas, setSubAreas] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const selectedPropertyTypeOption = null;
+    const [selectedAreaOption, setSelectedAreaOption]  = useState([]);
+    const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
+    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState([]);
+    let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
+    let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
+    let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
+    let subAreaNullArr = [{'label' : 'Select Sub Area' , 'value' : null}];
+
     const [state, setState] = useState({
         name: "",
         account_number: "",
+        property_type_id: "",
+        property_id: "",
+        area_id: "",
+        sub_area_id: "",
         notes: '',
         loading: false,
         authUser: props.authUserProp
@@ -30,6 +51,7 @@ function New(props) {
     useEffect(() => {
         document.title = 'New Tenant';
         props.setActiveComponentProp('New');
+         loadData();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -39,7 +61,156 @@ function New(props) {
             [name] : value
         });
     }
-    
+
+    const handleSelectPropertyTypeChange = (selectedOption) => {
+         setState(state => ({
+              ...state,
+              property_type_id: selectedOption.value,
+              property_id   : null
+          }));
+
+        setProperties([]);
+        setSelectedPropertyOption([]);
+        setAreas([]);
+        setSelectedAreaOption([]);
+        setSubAreas([]);
+        setSelectedSubAreaOption([]);
+
+        setIsLoading(true);
+
+         axios.get('/api/v1/payments/property',{
+            params: {
+                api_token: authUser.api_token,
+                property_type : selectedOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setProperties(response.data.message.property)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+      }
+
+
+      const handleSelectPropertyChange = (selectedOption) => {
+         setState(state => ({
+              ...state,
+              property_id: selectedOption.value,
+              area_id   : null
+          }));
+        setSelectedPropertyOption(selectedOption);
+        setAreas([]);
+        setSelectedAreaOption([]);
+        setIsLoading(true);
+
+         axios.get('/api/v1/sub-areas/areas',{
+            params: {
+                api_token: authUser.api_token,
+                property : selectedOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setAreas(response.data.message.area)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
+
+     } 
+
+      const handleSelectAreaChange = (selectedOption) => {
+         setState(state => ({
+              ...state,
+              area_id: selectedOption.value,
+              sub_area_id   : null
+          }));
+        setSelectedAreaOption(selectedOption);
+          
+        setSubAreas([]);
+        setSelectedSubAreaOption([]);
+        setIsLoading(true);
+
+         axios.get('/api/v1/tenants/sub-area',{
+            params: {
+                api_token: authUser.api_token,
+                area_id : selectedOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setSubAreas(response.data.message.subArea)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+     }
+       
+        const handleSelectSubAreaChange = (selectedOption) => {
+         setState(state => ({
+              ...state,
+              sub_area_id: selectedOption.value,
+          }));
+         setSelectedSubAreaOption(selectedOption);
+     }
+
+     const loadSubarea = () => {
+        setSubAreas([]);
+        setSelectedSubAreaOption([]);
+        setIsLoading(true);
+
+        axios.get('/api/v1/tenants/sub-area',{
+            params: {
+                api_token: authUser.api_token,
+                area_id : selectedAreaOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setSubAreas(response.data.message.subArea)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
+     }
+
+
+     const loadData = () => {
+            setIsLoading(true);
+            axios.get('/api/v1/properties/property-types',{
+                params: {
+                    api_token: authUser.api_token
+                }
+            })
+            .then(response => {
+                setIsLoading(false);
+                setPropertyTypes(response.data.message.propertyTypes);
+                
+            })
+            .catch((error) => {
+                showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+            });
+        };
+
 
     const onSubmitHandle = (e) =>{
         e.preventDefault();
@@ -52,6 +223,10 @@ function New(props) {
             var formData = new FormData();
             formData.append('name', state.name);
             formData.append('account_number', state.account_number);
+            formData.append('property_type_id', state.property_type_id);
+            formData.append('property_id', state.property_id);
+            formData.append('area_id', state.area_id);
+            formData.append('sub_area_id', state.sub_area_id);
           
             axios.post(
               '/api/v1/tenants',formData,{
@@ -176,8 +351,86 @@ function New(props) {
                                        
                                           </div> 
 
-                   
-                      
+
+                                           {/* property */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property Type</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        defaultValue={selectedPropertyTypeOption}
+                                        onChange={handleSelectPropertyTypeChange}
+                                        options={ (propertyTypes.length > 0) ? [...propertyTypeNullArr, ...propertyTypes] : []}
+                                      />  
+                                    </div>
+                                    </div>
+
+
+                                     {/* property */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedPropertyOption}
+                                        onChange={handleSelectPropertyChange}
+                                        options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
+                                      />  
+                                    </div>
+                                    </div> 
+
+
+                                {/* area */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Area</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedAreaOption}
+                                        onChange={handleSelectAreaChange}
+                                        options={ (areas.length > 0) ? [...areaNullArr, ...areas] : []}
+                                      />  
+                                    </div>
+                                    </div>
+                                   {/* sub_area */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Sub Area</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedSubAreaOption}
+                                        onChange={handleSelectSubAreaChange}
+
+                                        options={ (subAreas.length > 0) ? [...subAreaNullArr, ...subAreas] : []}
+                                      />  
+                                      <QuickAdd fn={loadSubarea} />
+                                    </div>
+                                      
+                                    </div>
 
                        <div className="form-group text-center">
                             <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Save</button>
