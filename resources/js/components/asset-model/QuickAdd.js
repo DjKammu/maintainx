@@ -8,10 +8,9 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
-import QuickAdd from '../sub-areas/QuickAdd';
-import { confirmAlert } from 'react-confirm-alert';
+import { Button, Modal } from 'react-bootstrap';
 
-function Edit(props) {
+function New(props) {
     
     const [properties, setProperties] = useState([]);
     const [propertyTypes, setPropertyTypes] = useState([]);
@@ -20,32 +19,34 @@ function Edit(props) {
     const [subAreas, setSubAreas] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const selectedPropertyTypeOption  =  props.location.state.property_type ? props.location.state.property_type : null; 
-    const selectedAssetTypeOption  =  props.location.state.asset_type ? props.location.state.asset_type : null; 
-    const [selectedPropertyOption, setSelectedPropertyOption]  =  useState(props.location.state.property ? props.location.state.property : null); 
-    const [selectedAreaOption, setSelectedAreaOption]  = useState(props.location.state.area ? 
-        props.location.state.area : null ); 
-    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState(props.location.state.sub_area ? 
-        props.location.state.sub_area : null );
-
+    const selectedPropertyTypeOption = null;
+    const selectedAssetTypeOption = null;
+    const [selectedAreaOption, setSelectedAreaOption]  = useState([]);
+    const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
+    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState([]);
     let assetTypeNullArr = [{'label' : 'Select Asset Type' , 'value' : null}];
     let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
     let subAreaNullArr = [{'label' : 'Select Sub Area' , 'value' : null}];
+
+    
+    const [quickModal, setQuickModal] = useState(false);
    
+    const handleClose = () => setQuickModal(false);
+    const handleShow = () => setQuickModal(true);
+
+
     const [state, setState] = useState({
-        id: props.location.state.id ? props.location.state.id : '',
-        name: props.location.state.name ? props.location.state.name : '',
-        brand: props.location.state.brand ? props.location.state.brand : '',
-        serial_number: props.location.state.serial_number ? props.location.state.serial_number : '',
-        media: props.location.state.media ? props.location.state.media : '',
-        account_number: props.location.state.account_number ? props.location.state.account_number : '',
-        asset_type_id: props.location.state.asset_type ? props.location.state.asset_type.id : null,
-        property_type_id: props.location.state.property_type ? props.location.state.property_type.id : null,
-        property_id: props.location.state.property ? props.location.state.property.id : null,
-        area_id: props.location.state.area ? props.location.state.area.id : null,
-        sub_area_id: props.location.state.sub_area ? props.location.state.sub_area.id : null,
+        name: "",
+        account_number: "",
+        asset_type_id: "",
+        property_type_id: "",
+        property_id: "",
+        area_id: "",
+        sub_area_id: "",
+        serial_number: '',
+        files: '',
         loading: false,
         authUser: props.authUserProp
     });
@@ -59,14 +60,11 @@ function Edit(props) {
             className: 'small text-danger mdi mdi-alert pt-1 pl-1'
     }));
 
-    useEffect(() => {
-        document.title = 'Edit Asset';
-        props.setActiveComponentProp('Edit');
+       useEffect(() => {
+        document.title = 'New Asset';
+        props.setActiveComponentProp('New');
         loadData();
         loadAssetTypes();
-
-        console.log(props.location.state.sub_area);
-
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -77,25 +75,24 @@ function Edit(props) {
         });
     }
 
-     const handleFileChange = (e) => {
+    const handleFileChange = (e) => {
          e.persist();
          const { name  } = e.target;
          setState(state => ({
               ...state,
-              [name]:  Array.from(e.target.files)
-          })); 
+              [name]:   Array.from(e.target.files)
+          }));  
      }
 
-    const handleSelectPropertyTypeChange = (selectedOption) => {
+     const handleSelectPropertyTypeChange = (selectedOption) => {
          setState(state => ({
               ...state,
               property_type_id: selectedOption.value,
-              property_id   : (state.property_type_id == selectedOption.value)  ? state.property_id : null
+              property_id   : null
           }));
 
         setProperties([]);
-        setSelectedPropertyOption((state.property_type_id == selectedOption.value)  ? (props.location.state.property ? 
-        props.location.state.property : null) : []);
+        setSelectedPropertyOption([]);
         setAreas([]);
         setSelectedAreaOption([]);
         setSubAreas([]);
@@ -133,12 +130,11 @@ function Edit(props) {
          setState(state => ({
               ...state,
               property_id: selectedOption.value,
-              area_id   : (state.property_id == selectedOption.value)  ? state.suite_id : null
+              area_id   : null
           }));
         setSelectedPropertyOption(selectedOption);
         setAreas([]);
-         setSelectedAreaOption((state.property_id == selectedOption.value)  ? (props.location.state.area ? 
-        props.location.state.area : null) : []);
+        setSelectedAreaOption([]);
         setIsLoading(true);
 
          axios.get('/api/v1/sub-areas/areas',{
@@ -163,13 +159,12 @@ function Edit(props) {
          setState(state => ({
               ...state,
               area_id: selectedOption.value,
-              sub_area_id   : (state.area_id == selectedOption.value)  ? state.sub_area_id : null
+              sub_area_id   : null
           }));
         setSelectedAreaOption(selectedOption);
           
         setSubAreas([]);
-        setSelectedSubAreaOption((state.area_id == selectedOption.value)  ? (props.location.state.sub_area ? 
-        props.location.state.sub_area : null) : []);
+        setSelectedSubAreaOption([]);
         setIsLoading(true);
 
          axios.get('/api/v1/tenants/sub-area',{
@@ -198,32 +193,8 @@ function Edit(props) {
          setSelectedSubAreaOption(selectedOption);
      }
 
-     const loadSubarea = () => {
-        setSubAreas([]);
-        setSelectedSubAreaOption([]);
-        setIsLoading(true);
-
-        axios.get('/api/v1/tenants/sub-area',{
-            params: {
-                api_token: authUser.api_token,
-                area_id : selectedAreaOption.value
-             }
-            })
-          .then(response => {
-            setIsLoading(false);
-            setSubAreas(response.data.message.subArea)
-          })
-          .catch(error => {
-                 showSznNotification({
-                    type : 'error',
-                    message : error.response.data.message
-                });
-          });
-
-     }
-
-
-     const loadData = () => {
+  
+ const loadData = () => {
             setIsLoading(true);
             axios.get('/api/v1/properties/property-types',{
                 params: {
@@ -264,9 +235,9 @@ function Edit(props) {
             });
         };
 
-    const onSubmitHandle = (e) =>{
-        e.preventDefault();
-        
+    const onQuickSubmitHandle = (e) =>{
+       e.preventDefault();
+
         if (simpleValidator.current.allValid()) {
             setState({
                 ...state,
@@ -276,25 +247,25 @@ function Edit(props) {
             var formData = new FormData();
             formData.append('name', state.name);
             formData.append('account_number', state.account_number);
-            formData.append('brand', state.brand);
             formData.append('asset_type_id', state.asset_type_id);
             formData.append('property_type_id', state.property_type_id);
             formData.append('property_id', state.property_id);
             formData.append('area_id', state.area_id);
             formData.append('sub_area_id', state.sub_area_id);
             formData.append('serial_number', state.serial_number);
-            if(state.files && state.files.length > 0){
+            if(state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
                 });  
             }
-
-            axios.post('/api/v1/asset-model/update', formData,{
-                params: {
-                    api_token: authUser.api_token,
-                    id: state.id
-                }
-            }).then(response => {
+            
+            axios.post(
+              '/api/v1/asset-model',formData,{
+              params: {
+                   api_token: authUser.api_token
+              }
+            })
+            .then(response => {
                 setState({
                     ...state,
                     loading: false
@@ -319,12 +290,11 @@ function Edit(props) {
                         type : 'success',
                         message : response.data.message
                     });
-                    history.push('/asset-model')
+                    setQuickModal(false)
+                    // history.push('/asset-model')
                 }
             })
             .catch((error) => {
-                console.log(error);
-                
                 setState({
                     ...state,
                     loading: false
@@ -353,79 +323,44 @@ function Edit(props) {
 
     }
 
-
-  const deleteFunc = (e) => {
-      e.preventDefault();
-    if(!confirm('Are you sure?')){
-      return;
-    }
-
-    setIsLoading(true);
-
-    axios.post('/api/v1/asset-model/delete-attachment', {
-        api_token: authUser.api_token,
-        id: state.id,
-        file:e.target.id
-    })
-    .then(response => {
-        setIsLoading(false);
-        if (response.data.status == 'error') {
-                showSznNotification({
-                    type : 'error',
-                    message : response.data.message
-                });
-        } else if (response.data.status == 'success') {
-            showSznNotification({
-                type : 'success',
-                message : response.data.message
-            });
-             setState({
-                    ...state,
-                    media : response.data.media
-                });
-        }
-    })
-    .catch((error) => {
-        setIsLoading(false);
-        if (error.response.data.status == 'error') {
-            showSznNotification({
-                type : 'error',
-                message : error.response.data.message
-            });
-        } 
-    });
-  }
-
     return (
         <React.Fragment>
-            
-                <div className="card animated fadeIn">
-                    <div className="card-body">
-                        <div className="row new-lead-wrapper d-flex justify-content-center">
-                            <div className="col-md-8 ">
-                                <LoadingOverlay
-                                    active={state.loading}
-                                    spinner={<BeatLoader />}
-                                    styles={{
-                                        overlay: (base) => ({
-                                            ...base,
-                                            opacity: '0.5',
-                                            filter: 'alpha(opacity=50)',
-                                            background: 'white'
-                                        })
-                                    }}
-                                >
-                                    <form className="edit-lead-form border" onSubmit={onSubmitHandle}>
-                                        <input type="hidden" name="api_token" value={state.authUser.api_token} />
-                                        <input type="hidden" name="id" value={state.id} />
-                                        <div className="form-group">
-                                            <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
-                                                <li className="nav-item">
-                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT ASSET</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div className="form-group">
+
+                  <button type="button"
+                      onClick={handleShow}
+                      className="btn btn-gradient-primary btn-md mr-2">
+                      Quick Add
+                    </button>
+             
+           
+             {/* delete account confirmation modal */}
+              <Modal size="md" show={quickModal} >
+                <div    className="card animated fadeIn">
+                <div  onClick={e=>e.stopPropagation()} className="card-body">
+                    <div className="row justify-content-center">
+                        <div className="col-md-12 ">
+                            <LoadingOverlay
+                                active={state.loading}
+                                spinner={<BeatLoader />}
+                                styles={{
+                                    overlay: (base) => ({
+                                        ...base,
+                                        opacity: '0.5',
+                                        filter: 'alpha(opacity=50)',
+                                        background: 'white'
+                                    })
+                                }}
+                            >
+                                <form className="new-lead-form border">
+                                    <input type="hidden" name="api_token" value={state.authUser.api_token} />
+                                   <div className="form-group">
+                                        <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
+                                            <li className="nav-item">
+                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW ASSET</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div className="form-group">
                                         <label>Asset Name</label>
                                         <div className="input-group input-group-sm">
                                             <div className="input-group-prepend">
@@ -437,18 +372,6 @@ function Edit(props) {
                                             value={state.name} onChange={onChangeHandle}/>
                                         </div>
                                         {simpleValidator.current.message('name', state.name, 'required')}
-                                    </div>
-                                     <div className="form-group">
-                                        <label>Brand</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="brand" name="brand" placeholder="Brand Name" 
-                                            value={state.brand} onChange={onChangeHandle}/>
-                                        </div>
                                     </div>
 
                                      
@@ -548,7 +471,6 @@ function Edit(props) {
 
                                         options={ (subAreas.length > 0) ? [...subAreaNullArr, ...subAreas] : []}
                                       />  
-                                      <QuickAdd fn={loadSubarea} />
                                     </div>
                                       
                                     </div>
@@ -603,46 +525,19 @@ function Edit(props) {
                                               />
                                             </div>
                                             </div>
-
-                                        <div className="form-group text-center">
-                                            <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Update</button>
-                                            <Link to='/asset-model' className="btn btn-inverse-secondary btn-md">Cancel</Link>
-                                        </div>
-                                    </form>
-
-                                      <div className="col-span-12 sm:col-span-12">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="file">
-                                        <span>Attached Files</span>
-                                      </label>
-                                    </div>
-
-                                    {state.media && state.media.length > 0 && 
-                                                       
-                                           state.media.map((element, index) => (
-                                             <a key={index} className="col-span-3 sm:col-span-3 delete-file" href={element.file} target="_new">
-                                               <img className="ext-img" src={`/images/${element.ext}.png`} />
-                                                <span className="cross">
-                                                 <form onSubmit={deleteFunc} id={element.file}>
-                                                        <button
-                                                          className="text-white"
-                                                          type="submit"
-                                                        >
-                                                        <i className="mdi mdi-delete-circle"></i>
-                                                        </button>
-                                                  </form>
-                                               </span>
-                                             </a>
-                                          ))
-                                        }
-
-
-                                </LoadingOverlay>
-
-                              
-                            </div>
+                         <div className="form-group text-center">
+                            <button type="submit" onClick={onQuickSubmitHandle} className="btn btn-gradient-primary btn-md mr-2">Save</button>
+                            <button type="button" onClick={handleClose} className="btn btn-inverse-secondary btn-md">Cancel</button>
+                        </div>
+                                </form>
+                            </LoadingOverlay>
                         </div>
                     </div>
                 </div>
+            </div>
+              </Modal>
+
+            
         </React.Fragment>
     );
 }
@@ -663,4 +558,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Edit)
+export default connect(mapStateToProps, mapDispatchToProps)(New)

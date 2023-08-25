@@ -13,6 +13,8 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 function List(props) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+     const [propertyTypes, setPropertyTypes] = useState([]);
+    const [properties, setProperties] = useState([]);
 
     const [state, setState] = useState({
        pageRangeDisplayed: 5,
@@ -26,7 +28,9 @@ function List(props) {
        query: '',
        sortBy: 'created_at',
        sortType: 'desc',
-       resetCurrentPage: false
+       resetCurrentPage: false,
+       propertyType:'',
+       property:'',
     });
 
     //get reducer
@@ -38,12 +42,16 @@ function List(props) {
     useEffect(() => {
         document.title = 'All Payments';
         props.setActiveComponentProp('List');
-
+          loadPropertyTypes();
     }, []);
 
     useEffect(() => {
         loadData();
-    }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType]);
+         if (state.propertyType && (state.property == '')) {
+           loadProperty();
+        }
+    }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
+    state.property]);
 
     const skeletonLoader = () => {
         return <div className="content-loader-wrapper">
@@ -90,6 +98,78 @@ function List(props) {
     };
 
 
+      const emptyProperties = () => {
+            setProperties([]);
+            setState({
+                ...state,
+                property: ''
+            });
+       }
+       const loadPropertyTypes = () => {
+            emptyProperties();
+            setIsLoading(true);
+            axios.get('/api/v1/properties/property-types',{
+                params: {
+                    api_token: authUser.api_token
+                }
+            })
+            .then(response => {
+                setIsLoading(false);
+                setPropertyTypes(response.data.message.propertyTypes);
+                
+            })
+            .catch((error) => {
+                showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+            });
+    };
+    
+     const onChangePropertyTypeHandle  = (e) => {
+            setState({
+                ...state,
+                property: '',
+                propertyType: e.target.value
+            });     
+    }
+
+     const loadProperty  = (e) => {
+        emptyProperties();
+        // setAreas([]);
+        // setSelectedAreaOption([]);
+        // setSubAreas([]);
+        // setSelectedSubAreaOption([]);
+
+        setIsLoading(true);
+
+         axios.get('/api/v1/payments/property',{
+            params: {
+                api_token: authUser.api_token,
+                property_type :state.propertyType
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setProperties(response.data.message.property)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+    }; 
+
+    const onChangePropertyHandle  = (e) => {
+        setState({
+            ...state,
+            property: e.target.value
+        });
+    };
+
+
+
     const loadData = () => {
         setIsLoading(true);
         axios.get('/api/v1/payments?page='+state.currentPage, {
@@ -98,7 +178,9 @@ function List(props) {
                 per_page: state.perPage,
                 query: state.query,
                 sort_by: state.sortBy,
-                sort_type: state.sortType
+                sort_type: state.sortType,
+                property_type: state.propertyType,
+                property: state.property
             }
         })
         .then(response => {
@@ -230,7 +312,7 @@ function List(props) {
                             </div> : 
                            <table className="table-fixed w-full">
                            <thead><tr className="bg-gray-100">
-                           <th className="px-4 py-2">Name</th>
+                           <th className="px-4 py-2">Asset Name</th>
                            <th className="px-4 py-2">Property</th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
@@ -246,6 +328,12 @@ function List(props) {
                         isLoading={isLoading} 
                         perPage={state.perPage} 
                         onChangePerPageHandle={onChangePerPageHandle}
+                        propertyType={state.propertyType} 
+                        propertyTypes={propertyTypes} 
+                        onChangePropertyTypeHandle={onChangePropertyTypeHandle}
+                        property={state.property} 
+                        properties={properties} 
+                        onChangePropertyHandle={onChangePropertyHandle}
                         sortBy={state.sortBy}
                         sortType={state.sortType}
                         onChangeSortByHandle={onChangeSortByHandle}

@@ -105,6 +105,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/work-types/create', 'SetupController@workTypes')->name('work-types.create');
     Route::get('/work-types/{id}', 'SetupController@workTypes')->name('work-types.show');
 
+    Route::get('/payments', 'HomeController@payments')->name('payments.index');
+    Route::get('/payments/create', 'HomeController@payments')->name('payments.create');
+    Route::get('/payments/{id}', 'HomeController@payments')->name('payments.show');
+
 });
 
 
@@ -114,10 +118,6 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/logout', 'HomeController@logout')->name('Logout');
     Route::get('/home', 'HomeController@index')->name('Dashboard');
-
-    Route::get('/payments', 'HomeController@payments')->name('payments.index');
-    Route::get('/payments/create', 'HomeController@payments')->name('payments.create');
-    Route::get('/payments/{id}', 'HomeController@payments')->name('payments.show');
 
 });
 

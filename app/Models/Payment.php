@@ -4,17 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Traits\MediaManager;
 
 class Payment extends Model
 {
-    use HasFactory;
+     use HasFactory, MediaManager;
 
     CONST PAYMENT_ATTACHMENTS = "payment_attachments";
 
     protected $fillable = [
         'asset_type_id','asset_model_id','asset_serial_number',
         'vendor_id','contractor_id','property_type_id',
-        'property_id','area_id','suit_number',
+        'property_id','area_id','sub_area_id',
         'tenant_id',
         'work_type_id',
         'notes'
@@ -55,6 +56,21 @@ class Payment extends Model
         return $this->hasOne('App\Models\PropertyType', 'id', 'property_type_id');
     }
 
+    public function sub_area()
+    {
+        return $this->hasOne('App\Models\SubArea', 'id', 'sub_area_id');
+    } 
+
+    public function tenant()
+    {
+        return $this->hasOne('App\Models\Tenant', 'id', 'tenant_id');
+    }
+
+    public function work_type()
+    {
+        return $this->hasOne('App\Models\WorkType', 'id', 'work_type_id');
+    }
+
     public function setPropertyIdAttribute($value)
     {
         $this->attributes['property_id'] =  ($value == 'null') ? NULL :  $value;
@@ -88,6 +104,21 @@ class Payment extends Model
     public function setPropertyTypeIdAttribute($value)
     {
         $this->attributes['property_type_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setSubAreaIdAttribute($value)
+    {
+        $this->attributes['sub_area_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setTenantIdAttribute($value)
+    {
+        $this->attributes['tenant_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setWorkTypeIdAttribute($value)
+    {
+        $this->attributes['work_type_id'] =  ($value == 'null') ? NULL :  $value;
     }
 
 }

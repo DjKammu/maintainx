@@ -18,7 +18,7 @@ class Item extends Component {
             <React.Fragment>
 
                <tr>
-                <td className="border px-4 py-3">{ this.props.obj.name }</td>
+                <td className="border px-4 py-3">{ this.props.obj.asset_model_name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.property_name }</td>
                             <td className="border px-4 py-3 w-auto">
                            <div className="szn-widget__action">

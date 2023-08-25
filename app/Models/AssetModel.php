@@ -21,7 +21,8 @@ class AssetModel extends Model
         'property_id', 
         'area_id',
         'sub_area_id',
-        'serial_number'
+        'serial_number',
+        'brand'
     ];
 
 

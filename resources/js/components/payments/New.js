@@ -8,6 +8,8 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
+import QuickAddTenant from '../tenants/QuickAdd';
+import QuickAddAsset from '../asset-model/QuickAdd';
 
 function New(props) {
     
@@ -20,18 +22,20 @@ function New(props) {
     const [tenants, setTenants] = useState([]);
     const [workTypes, setWorkTypes] = useState([]);
     const [areas, setAreas] = useState([]);
+    const [subAreas, setSubAreas] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const selectedAssetTypeOption = null;
-    const selectedPropertyTypeOption = null;
     const selectedAssetModelOption = null;
     const selectedVendorOption = null;
     const selectedContractorOption = null;
-    const selectedTenantOption = null;
     const selectedWorkTypeOption = null;
+    const [selectedTenantOption, setSelectedTenantOption]  = useState([]);
     const [selectedAreaOption, setSelectedAreaOption]  = useState([]);
+    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState([]);
     const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
+    const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState([]);
     let assetTypesNullArr = [{'label' : 'Select Asset Type' , 'value' : null}];
-    let assetModelsNullArr = [{'label' : 'Select Asset Model' , 'value' : null}];
+    let assetModelsNullArr = [{'label' : 'Select Asset' , 'value' : null}];
     let propertyTypesNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
     let vendorsNullArr = [{'label' : 'Select Vendor' , 'value' : null}];
     let contractorsNullArr = [{'label' : 'Select Contractor' , 'value' : null}];
@@ -39,13 +43,21 @@ function New(props) {
     let workTypesNullArr = [{'label' : 'Select Work Type' , 'value' : null}];
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
+    let subAreaNullArr = [{'label' : 'Select Sub Area' , 'value' : null}];
 
     const [state, setState] = useState({
-        name: "",
+        asset_type_id: "",
+        asset_model_id: "",
+        property_type_id: "",
         property_id: "",
         area_id: "",
+        sub_area_id: "",
+        vendor_id: "",
+        contractor_id: "",
+        tenant_id: "",
+        work_type_id: "",
         notes: "",
-        photo: "",
+        photos: "",
         loading: false,
         authUser: props.authUserProp
     });
@@ -78,15 +90,36 @@ function New(props) {
          const { name  } = e.target;
          setState(state => ({
               ...state,
-              [name]:  e.target.files[0]
+              [name]:  Array.from(e.target.files)
           }));  
      }
     
       const handleSelectAssetTypeChange = (option) => {
          setState(state => ({
               ...state,
-              asset_type_id: option.value,
+              asset_type_id: option.value
           }));
+
+        setAssetModels([]);
+        setIsLoading(true);
+
+        axios.get('/api/v1/payments/assets',{
+            params: {
+                api_token: authUser.api_token,
+                asset_type : option.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setAssetModels(response.data.message.assets)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
       }
 
       const handleSelectAssetModelChange = (option) => {
@@ -94,6 +127,52 @@ function New(props) {
               ...state,
               asset_model_id: option.value,
           }));
+
+        setPropertyTypes([]);
+        setSelectedPropertyTypeOption([]);
+        setProperties([]);
+        setSelectedPropertyOption([]);
+        setAreas([]);
+        setSelectedAreaOption([]);
+        setSubAreas([]);
+        setTenants([]);
+        setSelectedSubAreaOption([]);
+        setSelectedTenantOption([]);
+
+        setIsLoading(true);
+
+        axios.get('/api/v1/payments/asset-selection',{
+            params: {
+                api_token: authUser.api_token,
+                asset : option.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setSelectedPropertyTypeOption(response.data.message.asset.property_type)
+            setSelectedPropertyOption(response.data.message.asset.property)
+            setSelectedAreaOption(response.data.message.asset.area)
+            setSelectedSubAreaOption(response.data.message.asset.sub_area)
+            setTenants(response.data.message.tenants)  
+
+             setState(state => ({
+              ...state,
+              asset_model_id: option.value,
+              property_type_id: response.data.message.asset.property_type_id,
+              property_id: response.data.message.asset.property_id,
+              area_id: response.data.message.asset.area_id,
+              sub_area_id: response.data.message.asset.sub_area_id
+          }));
+
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
+
       }  
 
       const handleSelectVendorChange = (option) => {
@@ -125,78 +204,43 @@ function New(props) {
       }
 
 
-    const handleSelectPropertyTypeChange = (selectedOption ) => {
-         setState(state => ({
-              ...state,
-              property_type_id: selectedOption.value,
-              property_id   : null
-          }));
+    // const handleSelectPropertyTypeChange = (selectedOption ) => {
+    //      setState(state => ({
+    //           ...state,
+    //           property_type_id: selectedOption.value,
+    //           property_id   : null
+    //       }));
 
-        setProperties([]);
-        setSelectedPropertyOption([]);
-        // setAreas([]);
-        // setSelectedAreaOption([]);
-   
-        console.log(properties)
-        console.log(selectedPropertyOption)
-        
-        setIsLoading(true);
+    //     setProperties([]);
+    //     setSelectedPropertyOption([]);
+    //     setIsLoading(true);
 
-         axios.get('/api/v1/payments/property',{
-            params: {
-                api_token: authUser.api_token,
-                property_type : selectedOption.value
-             }
-            })
-          .then(response => {
-            setIsLoading(false);
-            setProperties(response.data.message.property)
-          })
-          .catch(error => {
-                 showSznNotification({
-                    type : 'error',
-                    message : error.response.data.message
-                });
-          });
-      }
-     
+    //      axios.get('/api/v1/payments/property',{
+    //         params: {
+    //             api_token: authUser.api_token,
+    //             property_type : selectedOption.value
+    //          }
+    //         })
+    //       .then(response => {
+    //         setIsLoading(false);
+    //         setProperties(response.data.message.property)
+    //       })
+    //       .catch(error => {
+    //              showSznNotification({
+    //                 type : 'error',
+    //                 message : error.response.data.message
+    //             });
+    //       });
+    //   }
+    
 
-    const handleSelectPropertyChange = (selectedOption) => {
-        //  setState(state => ({
-        //       ...state,
-        //       property_id: selectedOption.value,
-        //       area_id   : null
-        //   }));
-
-        // setAreas([]);
-        // setSelectedAreaOption([]);
-        // setIsLoading(true);
-
-        //  axios.get('/api/v1/sub-areas/areas',{
-        //     params: {
-        //         api_token: authUser.api_token,
-        //         property : selectedOption.value
-        //      }
-        //     })
-        //   .then(response => {
-        //     setIsLoading(false);
-        //     setAreas(response.data.message.area)
-        //   })
-        //   .catch(error => {
-        //          showSznNotification({
-        //             type : 'error',
-        //             message : error.response.data.message
-        //         });
-        //   });
-     } 
-
-     const handleSelectAreaChange = (selectedOption) => {
-         setState(state => ({
-              ...state,
-              area_id: selectedOption.value,
-          }));
-         setSelectedAreaOption(selectedOption);
-     }
+    //  const handleSelectAreaChange = (selectedOption) => {
+    //      setState(state => ({
+    //           ...state,
+    //           area_id: selectedOption.value,
+    //       }));
+    //      setSelectedAreaOption(selectedOption);
+    //  }
 
     const loadData = () => {
             setIsLoading(true);
@@ -208,11 +252,11 @@ function New(props) {
             .then(response => {
                 setIsLoading(false);
                 setAssetTypes(response.data.message.assetTypes)  
-                setPropertyTypes(response.data.message.propertyTypes)  
-                setAssetModels(response.data.message.assetModels)  
+                // setPropertyTypes(response.data.message.propertyTypes)  
+                // setAssetModels(response.data.message.assetModels)  
                 setVendors(response.data.message.vendors)  
                 setContractors(response.data.message.contractors)  
-                setTenants(response.data.message.tenants)  
+                // setTenants(response.data.message.tenants)  
                 setWorkTypes(response.data.message.workTypes)  
             })
             .catch((error) => {
@@ -232,11 +276,22 @@ function New(props) {
             });
 
             var formData = new FormData();
-            formData.append('name', state.name);
+            formData.append('asset_type_id', state.asset_type_id);
+            formData.append('asset_model_id', state.asset_model_id);
+            formData.append('property_type_id', state.property_type_id);
             formData.append('property_id', state.property_id);
             formData.append('area_id', state.area_id);
+            formData.append('sub_area_id', state.sub_area_id);
+            formData.append('vendor_id', state.vendor_id);
+            formData.append('contractor_id', state.contractor_id);
+            formData.append('tenant_id', state.tenant_id);
+            formData.append('work_type_id', state.work_type_id);
             formData.append('notes', state.notes);
-            formData.append('photo', state.photo);
+            if(state.files && state.files.length > 0){
+               state.files.map((file) => {
+                     formData.append('files[]', file);
+                });  
+            }
           
             axios.post(
               '/api/v1/payments',formData,{
@@ -324,7 +379,7 @@ function New(props) {
                                     <div className="form-group">
                                         <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
                                             <li className="nav-item">
-                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW SUB AREA</span>
+                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW PAYMENT</span>
                                             </li>
                                         </ul>
                                     </div>
@@ -351,7 +406,7 @@ function New(props) {
                                      {/* asset Type */}
                                     <div className="form-group">
                                       <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Asset Model</span>
+                                        <span>Asset</span>
                                       </label>
                                        <div className="input-group input-group-sm">
                                         <div className="input-group-prepend">
@@ -362,27 +417,89 @@ function New(props) {
                                         <Select
                                         defaultValue={selectedAssetModelOption}
                                         onChange={handleSelectAssetModelChange}
-                                        options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetTypes] : []}
+                                        options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
+                                      />  
+                                      <QuickAddAsset/>
+                                    </div>
+                                    </div>
+
+                                {/* property_type */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property Type</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedPropertyTypeOption}
+                                        options={ (propertyTypes.length > 0) ? propertyTypes : []}
+                                      />  
+                                    </div>
+                                    </div> 
+
+
+                                {/* property */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedPropertyOption}
+                                        options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
                                       />  
                                     </div>
                                     </div>
 
 
+                                     {/* area */}
                                     <div className="form-group">
-                                        <label>Asset Serial Number</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="asset_serial_number" name="asset_serial_number" placeholder="Asset Serial Number" 
-                                            value={state.asset_serial_number} onChange={onChangeHandle}/>
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Area</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-variant"></i>
+                                            </span>
                                         </div>
-                                        {simpleValidator.current.message('asset_serial_number', state.asset_serial_number, 'required')}
+                                        <Select
+                                        value={selectedAreaOption}
+                                        options={ (areas.length > 0) ? areas : []}
+                                      />  
                                     </div>
+                                    </div>
+                                       
 
-                                    {/* vendor_id */}
+                                    {/* sub_area */}
+
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="sub_area">
+                                        <span>Sub Area</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-variant"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedSubAreaOption}
+                                        options={ (areas.length > 0) ? sub_areas : []}
+                                      />  
+                                    </div>
+                                    </div>
+                                      
+                                      {/* vendor_id */}
                                     <div className="form-group">
                                       <label className="block text-sm font-medium text-gray-700" htmlFor="property">
                                         <span>Vendor</span>
@@ -420,80 +537,8 @@ function New(props) {
                                         options={ (contractors.length > 0) ? [...contractorsNullArr, ...contractors] : []}
                                       />  
                                     </div>
-                                    </div>  
-
-                                {/* property_type */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Property Type</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-outline"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        defaultValue={selectedPropertyTypeOption}
-                                        onChange={handleSelectPropertyTypeChange}
-                                        options={ (propertyTypes.length > 0) ? [...propertyTypesNullArr, ...propertyTypes] : []}
-                                      />  
-                                    </div>
-                                    </div> 
-
-
-                                {/* property */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Property</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-outline"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        defaultValue={selectedPropertyOption}
-                                        //onChange={handleSelectPropertyChange}
-                                        options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
-                                      />  
-                                    </div>
                                     </div>
 
-                                     {/* area */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Area</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-variant"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedAreaOption}
-                                        onChange={handleSelectAreaChange}
-                                        options={ (areas.length > 0) ? [...areaNullArr, ...areas] : []}
-                                      />  
-                                    </div>
-                                    </div>
-                                       
-
-                                        <div className="form-group">
-                                        <label>Suit Number</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="suit_number" name="suit_number" placeholder="Suit Number" 
-                                            value={state.suit_number} onChange={onChangeHandle}/>
-                                        </div>
-                                    </div>
-                                     
 
                                      {/* tenant_id */}
                                     <div className="form-group">
@@ -507,10 +552,11 @@ function New(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedTenantOption}
+                                        value={selectedTenantOption}
                                         onChange={handleSelectTenantChange}
                                         options={ (tenants.length > 0) ? [...tenantsNullArr, ...tenants] : []}
-                                      />  
+                                      /> 
+                                      <QuickAddTenant/>
                                     </div>
                                     </div>
 
@@ -551,19 +597,19 @@ function New(props) {
                                        
                                           </div>
 
-                                          <div className="form-group">
-                                                  <label>
-                                                    <span>Photo</span>
-                                                  </label>
-                                                <div className="input-group input-group-sm">
-                                                    
-                                                     <input type="file" name="photo" 
-                                                      onChange={handleFileChange} 
-                                                  />
-                                                </div>
-                                               
-                                          </div> 
-                   
+                                        <div className="form-group">
+                                                <label>
+                                                  <span>Invoice Attachmennts</span>
+                                                </label>
+                                              <div className="input-group input-group-sm">
+
+                                               <input type="file" multiple name="files" 
+                                                  onChange={handleFileChange}
+                                                />
+                                              </div>
+                                             
+                                        </div> 
+                 
                       
 
                        <div className="form-group text-center">

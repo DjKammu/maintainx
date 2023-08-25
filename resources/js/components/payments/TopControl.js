@@ -36,6 +36,42 @@ function TopControl(props) {
                                 </div>
                             </div>
                         </div>
+
+
+
+                        <div className="p-2">
+                            <div className="input-group input-group-sm">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">Property Type</span>
+                                </div>
+                                {props.propertyTypes.length > 0 &&
+                                <select className="form-control form-control-sm btn btn-success"
+                                defaultValue={props.propertyType}
+                                onChange={props.onChangePropertyTypeHandle}>
+                                <option value=""> Select </option>
+                                 {props.propertyTypes.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
+                                </select>
+                               }
+                            </div>
+                        </div>
+
+                        <div className="p-2">
+                            <div className="input-group input-group-sm">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">Property</span>
+                                </div>
+                               
+                                <select className="form-control form-control-sm btn btn-success"
+                                defaultValue={props.property}
+                                onChange={props.onChangePropertyHandle}>
+                                <option value=""> Select </option>
+                                
+                                     {props.properties.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
+                                
+                                </select>
+                            </div>
+                        </div>
+                        
                     </div>
                     <form className="p-2 col-md-4" onSubmit={props.onSubmitQueryHandle}>
                         <div className="input-group">

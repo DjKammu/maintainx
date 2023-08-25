@@ -117,6 +117,9 @@ Route::group(['middleware' => ['auth:api','can:add_users'], 'prefix' => 'v1'], f
 
      Route::get('/payments', 'Api\PaymentController@index');
      Route::get('/payments/attributes', 'Api\PaymentController@attributes');
+     Route::get('/payments/asset-selection', 'Api\PaymentController@assetSelection');
+     Route::post('/payments/delete-attachment', 'Api\PaymentController@deleteAttachment');
+     Route::get('/payments/assets', 'Api\PaymentController@assets');
      Route::get('/payments/property', 'Api\PaymentController@property');
      Route::post('/payments', 'Api\PaymentController@store');
      Route::post('/payments/update', 'Api\PaymentController@update');

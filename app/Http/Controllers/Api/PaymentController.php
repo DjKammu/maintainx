@@ -41,30 +41,101 @@ class PaymentController extends Controller
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $data = SubArea::orderBy($sortBy, $sortType);
+        $data = Payment::orderBy($sortBy, $sortType);
 
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
+
+        if ($request['property_type'] != '') {
+
+            $property_type = $request['property_type'];
+            $data->whereHas('property_type', function($q) use ($property_type){
+                $q->where('id', $property_type);
+            });
+        }
+
+        if ($request['property'] != '') {
+            $property = $request['property'];
+            $data->whereHas('property', function($q) use ($property){
+                $q->where('id', $property);
+            });
+        }
          
         $data = $data->paginate($perPage);
 
-        $data->data = @collect($data->items())->filter(function($subArea){
-                 $subArea->property_name = $subArea->property->name; 
-                 if(@$subArea->property ){
-                    @$subArea->property->label = $subArea->property->name;
-                    @$subArea->property->value = $subArea->property->id;
+        $data->data = @collect($data->items())->filter(function($payment){
+                 $payment->property_name = $payment->property->name; 
+                 if(@$payment->property ){
+                    @$payment->property->label = $payment->property->name;
+                    @$payment->property->value = $payment->property->id;
                  }
 
-                 $subArea->area_name = $subArea->area->name; 
-                 if(@$subArea->area ){
-                    @$subArea->area->label = $subArea->area->name;
-                    @$subArea->area->value = $subArea->area->id;
+                 $payment->property_type_name = $payment->property_type->name; 
+                 if(@$payment->property_type ){
+                    @$payment->property_type->label = $payment->property_type->name;
+                    @$payment->property_type->value = $payment->property_type->id;
                  }
 
-              $media =  @$subArea->getMediaPathWithExtension()['file'] ? [@$subArea->getMediaPathWithExtension()] : @$subArea->getMediaPathWithExtension();
-              $subArea->photo = @collect($media)->where('name')->first(); 
+                 $payment->area_name = $payment->area->name; 
+                 if(@$payment->area ){
+                    @$payment->area->label = $payment->area->name;
+                    @$payment->area->value = $payment->area->id;
+                 }
+
+                 $payment->area_name = $payment->area->name; 
+                 if(@$payment->area ){
+                    @$payment->area->label = $payment->area->name;
+                    @$payment->area->value = $payment->area->id;
+                 }
+
+                 $payment->sub_area_name = $payment->sub_area->name; 
+                 if(@$payment->sub_area ){
+                    @$payment->sub_area->label = $payment->sub_area->name;
+                    @$payment->sub_area->value = $payment->sub_area->id;
+                 }
+
+                 $payment->asset_type_name = $payment->asset_type->name; 
+                 if(@$payment->asset_type ){
+                    @$payment->asset_type->label = $payment->asset_type->name;
+                    @$payment->asset_type->value = $payment->asset_type->id;
+                 } 
+
+                 $payment->asset_model_name = $payment->asset_model->name; 
+                 if(@$payment->asset_model ){
+                    @$payment->asset_model->label = $payment->asset_model->name;
+                    @$payment->asset_model->value = $payment->asset_model->id;
+                 } 
+
+                 $payment->vendor_name = $payment->vendor->name; 
+                 if(@$payment->vendor ){
+                    @$payment->vendor->label = $payment->vendor->name;
+                    @$payment->vendor->value = $payment->vendor->id;
+                 }
+
+                 $payment->contractor_name = $payment->contractor->name; 
+                 if(@$payment->contractor ){
+                    @$payment->contractor->label = $payment->contractor->name;
+                    @$payment->contractor->value = $payment->contractor->id;
+                 }
+
+                  $payment->tenant_name = $payment->tenant->name; 
+                 if(@$payment->tenant ){
+                    @$payment->tenant->label = $payment->tenant->name;
+                    @$payment->tenant->value = $payment->tenant->id;
+                 }
+
+                 $payment->work_type_name = $payment->work_type->name; 
+                 if(@$payment->work_type ){
+                    @$payment->work_type->label = $payment->work_type->name;
+                    @$payment->work_type->value = $payment->work_type->id;
+                 }
+
+              $media =  @$payment->getMediaPathWithExtension()['file'] ? [@$payment->getMediaPathWithExtension()] : @$payment->getMediaPathWithExtension();
+               $payment->media = @collect($media)->all(); 
         });
+
+
 
         return response()->json([
             'message' => $data,
@@ -93,7 +164,109 @@ class PaymentController extends Controller
         ]);
     }  
 
+
+    public function assetSelection(Request $request)
+    { 
+          $asset = AssetModel::where('id',$request->asset)
+                       ->first();
+
+          $asset->property_name = @$asset->property->name; 
+           if(@$asset->property ){
+              @$asset->property->label = $asset->property->name;
+              @$asset->property->value = $asset->property->id;
+           }
+
+           $asset->area_name = @$asset->area->name; 
+           if(@$asset->area ){
+              @$asset->area->label = $asset->area->name;
+              @$asset->area->value = $asset->area->id;
+           } 
+
+           $asset->property_type_name = @$asset->property_type->name; 
+           if(@$asset->property_type ){
+              @$asset->property_type->label = $asset->property_type->name;
+              @$asset->property_type->value = $asset->property_type->id;
+           }
+
+           $asset->sub_area_name = @$asset->sub_area->name; 
+           if(@$asset->sub_area ){
+              @$asset->sub_area->label = $asset->sub_area->name;
+              @$asset->sub_area->value = $asset->sub_area->id;
+           }   
+            
+           if($asset->property_type_id &&  $asset->property_id && $asset->area_id && $asset->sub_area_id){
+            
+             $tenants = Tenant::where([
+                         'property_type_id' => $asset->property_type_id,
+                         'property_id' => $asset->property_id,
+                         'area_id' => $asset->area_id,
+                         'sub_area_id' => $asset->sub_area_id
+             ])->orderBy('name')->get();
+
+            if($tenants){
+
+                $tenants = @$tenants->filter(function($tenant){
+                    $tenant->label = $tenant->name;
+                    $tenant->value = $tenant->id;
+                    return $tenant;
+                });
+            }
+
+           }
+          
+         $tenants = ($tenants) ? $tenants : [];  
+
+         return response()->json([
+            'message' => compact('asset','tenants'),
+            'status' => 'success'
+        ]);
+    }  
+
+    public function assets(Request $request)
+    { 
+          $assets = AssetModel::where('asset_type_id',$request->asset_type)
+                       ->orderBy('name')->get();
+
+          if($assets){
+
+            $assets = @$assets->filter(function($asset){
+                $asset->label = $asset->name;
+                $asset->value = $asset->id;
+                return $asset;
+            });
+          }
+      
+         $assets = ($assets) ? $assets : [];  
+         
+         return response()->json([
+            'message' => compact('assets'),
+            'status' => 'success'
+        ]);
+    }  
+
     public function property(Request $request)
+    { 
+          $properties = Property::where('property_type_id',$request->property_type)
+                       ->whereNotNull('property_type_id')
+                       ->orderBy('name')->get();
+            
+         if($properties){
+
+            $properties = @$properties->filter(function($property){
+              $property->label = $property->name;
+              $property->value = $property->id;
+              return $property;
+          });
+          }
+         $property = ($properties) ? $properties : [];  
+         
+         return response()->json([
+            'message' => compact('property'),
+            'status' => 'success'
+        ]);
+    }
+
+    public function assetType(Request $request)
     { 
           $properties = Property::where('property_type_id',$request->property_type)
                        ->whereNotNull('property_type_id')
@@ -171,8 +344,6 @@ class PaymentController extends Controller
             'status' => 'success'
         ]);
 
-
-
     }
 
     /**
@@ -189,9 +360,11 @@ class PaymentController extends Controller
 
         $data = $request->except('api_token');
   
-        $validate = Validator::make($request->all(),[
-              'name' => 'required|string'
-        ]);
+         $validate = Validator::make($request->all(),[
+              'asset_model_id' => 'required|string'
+        ],[
+            'asset_model_id.required'=> 'Asset is Required!'
+           ]);
 
         if ($validate->fails()) {
             return response()->json([
@@ -200,18 +373,16 @@ class PaymentController extends Controller
             ], 401);
         }
 
-       $subArea =  SubArea::create($data); 
+       $create =  Payment::create($data); 
 
-       if ($subArea) {
+       if($request->hasFile('files')){
+              $create->toPath(Payment::PAYMENT_ATTACHMENTS)
+                        ->docType(DocumentType::PAYMENT)->storeFile('files',true);
+        }
 
-           if($request->hasFile('photo') && $request->file('photo')->isValid()){
-                $subArea->toPath(SubArea::AREA_LAYOUT_ATTACHMENTS)
-                ->docType(DocumentType::AREA)
-                ->storeFile('photo');
-            }
-         
+       if ($create) {
             return response()->json([
-                'message' => 'Sub Area successfully saved',
+                'message' => 'Payment successfully saved',
                 'status' => 'success'
             ]);
         } else {
@@ -255,11 +426,13 @@ class PaymentController extends Controller
      */
     public function update(Request $request)
     {    
-        $data = $request->except(['api_token','photo','id']   );
+        $data = $request->except('api_token');
   
         $validate = Validator::make($request->all(),[
-              'name' => 'required|string'
-        ]);
+              'asset_model_id' => 'required|string'
+        ],[
+            'asset_model_id.required'=> 'Asset is Required!'
+           ]);
 
         if ($validate->fails()) {
             return response()->json([
@@ -268,18 +441,16 @@ class PaymentController extends Controller
             ], 401);
         }
 
-       $subArea =  SubArea::find($request['id']);
+       $update =  Payment::find($request['id']);
+        $update->update($data);
 
-       if ($subArea) {
-            $subArea->update($data);
+       if($request->hasFile('files')){
+              $update->toPath(Payment::PAYMENT_ATTACHMENTS)
+                        ->docType(DocumentType::PAYMENT)->storeFile('files',true);
+        }
 
-            if($request->hasFile('photo') && $request->file('photo')->isValid()){
-               $subArea->deleteFile();-
-                $subArea->toPath(SubArea::AREA_LAYOUT_ATTACHMENTS)
-                ->docType(DocumentType::AREA)
-                ->storeFile('photo');
-            }
-
+       if ($update) {
+          
             return response()->json([
                 'message' => 'Area successfully saved',
                 'status' => 'success'
@@ -302,11 +473,11 @@ class PaymentController extends Controller
    
     public function destroy(Request $request)
     {
-        $area = SubArea::where('id',$request['id'])->first();
+        $area = Payment::where('id',$request['id'])->first();
                   
         if (empty($area)) {
             return response()->json([
-                'message' => 'Sub Area Not Found',
+                'message' => 'Payment Not Found',
                 'status' => 'error'
             ]);
         }
@@ -316,7 +487,7 @@ class PaymentController extends Controller
 
         if ($delete) {
             return response()->json([
-                'message' => 'Sub Area successfully deleted',
+                'message' => 'Payment successfully deleted',
                 'status' => 'success'
             ]);
         } else {
@@ -326,4 +497,37 @@ class PaymentController extends Controller
             ]);
         }
     }
+
+     public function deleteAttachment(Request $request){
+
+         $destroy = Payment::find($request['id']);
+
+        if (empty($destroy)) {
+            return response()->json([
+                'message' => 'Payment Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+         $file = @end(explode('/', request()->file));
+
+         $destroy->deleteFile($file);
+
+        if ($destroy) {
+
+            $media =  @$destroy->getMediaPathWithExtension()['file'] ? [@$destroy->getMediaPathWithExtension()] : @$destroy->getMediaPathWithExtension();
+            $media= @collect($media)->all(); 
+            return response()->json([
+                'message' => 'File successfully deleted',
+                'media' => $media,
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
 }

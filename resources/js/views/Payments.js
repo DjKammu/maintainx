@@ -53,7 +53,7 @@ function App() {
 						   <Switch>
 							<Route exact path='/payments'  > <List /> </Route>
 							<Route path='/payments/create' > <New /> </Route>
-							<Route path='/payments-types/:id' component={Edit} /> 
+							<Route path='/payments/:id' component={Edit} /> 
 						</Switch>
 
 				</div>
