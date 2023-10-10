@@ -510,9 +510,7 @@ function New(props) {
                                         onChange={onChangeHandle}
                                         className="form-control form-control-sm"/>
                                         </div>
-                                       
                                           </div> 
-
 
                                            <div className="form-group">
                                               <label>

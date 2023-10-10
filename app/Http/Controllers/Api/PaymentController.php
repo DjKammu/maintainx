@@ -14,6 +14,7 @@ use App\Models\Property;
 use App\Models\Payment;
 use App\Models\Tenant;
 use App\Models\Vendor;
+use App\Models\SubArea;
 use App\Models\Area;
 use Gate;
 use Validator;
@@ -41,11 +42,21 @@ class PaymentController extends Controller
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $data = Payment::orderBy($sortBy, $sortType);
+        $data = Payment::query();
+
+        if ($sortBy && $sortType) {
+            $data->orderBy($sortBy, $sortType);
+        }
 
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
+        
+        if ($request['id'] != '') {
+            $data->where('id',$request['id']);
+        }
+       
+       
 
         if ($request['property_type'] != '') {
 
@@ -61,7 +72,23 @@ class PaymentController extends Controller
                 $q->where('id', $property);
             });
         }
+
+          if ($request['area'] != '') {
+            $area = $request['area'];
+            $data->whereHas('area', function($q) use ($area){
+                $q->where('id', $area);
+            });
+        }
          
+         
+        if ($request['sub_area'] != '') {
+            $sub_area = $request['sub_area'];
+            $data->whereHas('sub_area', function($q) use ($sub_area){
+                $q->where('id', $sub_area);
+            });
+        } 
+
+
         $data = $data->paginate($perPage);
 
         $data->data = @collect($data->items())->filter(function($payment){
@@ -251,17 +278,59 @@ class PaymentController extends Controller
                        ->orderBy('name')->get();
             
          if($properties){
-
             $properties = @$properties->filter(function($property){
-              $property->label = $property->name;
-              $property->value = $property->id;
-              return $property;
-          });
+                $property->label = $property->name;
+                $property->value = $property->id;
+                return $property;
+            });
           }
          $property = ($properties) ? $properties : [];  
          
          return response()->json([
             'message' => compact('property'),
+            'status' => 'success'
+        ]);
+    }
+
+    public function area(Request $request)
+    { 
+          $areas = Area::where('property_id',$request->property)
+                       ->whereNotNull('property_id')
+                       ->orderBy('name')->get();
+            
+         if($areas){
+            $areas = @$areas->filter(function($ar){
+                $ar->label = $ar->name;
+                $ar->value = $ar->id;
+                return $ar;
+            });
+          }
+         $area = ($areas) ? $areas : [];  
+         
+         return response()->json([
+            'message' => compact('area'),
+            'status' => 'success'
+        ]);
+    }
+ 
+
+ public function subArea(Request $request)
+    { 
+          $subareas = SubArea::where('area_id',$request->area)
+                       ->whereNotNull('area_id')
+                       ->orderBy('name')->get();
+            
+         if($subareas){
+            $subareas = @$subareas->filter(function($sa){
+                $sa->label = $sa->name;
+                $sa->value = $sa->id;
+                return $sa;
+            });
+          }
+         $sub_area = ($subareas) ? $subareas : [];  
+         
+         return response()->json([
+            'message' => compact('sub_area'),
             'status' => 'success'
         ]);
     }
@@ -452,7 +521,7 @@ class PaymentController extends Controller
        if ($update) {
           
             return response()->json([
-                'message' => 'Area successfully saved',
+                'message' => 'Payment successfully saved',
                 'status' => 'success'
             ]);
         } else {

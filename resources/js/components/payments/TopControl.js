@@ -27,7 +27,7 @@ function TopControl(props) {
                                 </div>
                                 <select className="form-control form-control-sm btn btn-success" disabled={props.isLoading ? true : false} defaultValue={props.sortBy} onChange={props.onChangeSortByHandle}>
                                     <option value="created_at">Created</option>
-                                    <option value="name">Name</option>
+                                    <option value="payment">Payment</option>
                                 </select>
                                 <div className="input-group-append">
                                     <button disabled={props.isLoading ? true : false} className="bg-light btn btn-sm text-success" type="button" onClick={props.onClickSortTypeHandle}>
@@ -36,9 +36,11 @@ function TopControl(props) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    </div>
 
-
-
+           <div className="d-flex flex-column flex-md-row justify-content-md-between">
+                   <div className="d-flex flex-row">
                         <div className="p-2">
                             <div className="input-group input-group-sm">
                                 <div className="input-group-prepend">
@@ -67,6 +69,40 @@ function TopControl(props) {
                                 <option value=""> Select </option>
                                 
                                      {props.properties.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
+                                
+                                </select>
+                            </div>
+                        </div>
+
+                         <div className="p-2">
+                            <div className="input-group input-group-sm">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">Area</span>
+                                </div>
+                               
+                                <select className="form-control form-control-sm btn btn-success"
+                                defaultValue={props.area}
+                                onChange={props.onChangeAreaHandle}>
+                                <option value=""> Select </option>
+                                
+                                     {props.areas.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
+                                
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="p-2">
+                            <div className="input-group input-group-sm">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">Sub Area</span>
+                                </div>
+                               
+                                <select className="form-control form-control-sm btn btn-success"
+                                defaultValue={props.subArea}
+                                onChange={props.onChangeSubAreaHandle}>
+                                <option value=""> Select </option>
+                                
+                                     {props.subAreas.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
                                 
                                 </select>
                             </div>

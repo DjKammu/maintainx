@@ -57,6 +57,7 @@ function New(props) {
         tenant_id: "",
         work_type_id: "",
         notes: "",
+        payment:'',
         photos: "",
         loading: false,
         authUser: props.authUserProp
@@ -287,6 +288,7 @@ function New(props) {
             formData.append('tenant_id', state.tenant_id);
             formData.append('work_type_id', state.work_type_id);
             formData.append('notes', state.notes);
+            formData.append('payment', state.payment);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
@@ -577,8 +579,21 @@ function New(props) {
                                         options={ (workTypes.length > 0) ? [...workTypesNullArr, ...workTypes] : []}
                                       />  
                                     </div>
-                                    </div>
+                                    </div> 
 
+                                           <div className="form-group">
+                                        <label>Payment</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" className="form-control form-control-sm" id="payment" name="payment" placeholder="Payment" 
+                                            value={state.payment} onChange={onChangeHandle}/>
+                                        </div>
+                                    </div>
+                                    
                                       <div className="form-group">
                                           <label>
                                             <span>Notes</span>

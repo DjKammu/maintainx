@@ -18,7 +18,7 @@ class Payment extends Model
         'property_id','area_id','sub_area_id',
         'tenant_id',
         'work_type_id',
-        'notes'
+        'notes','payment'
     ];
 
     public function property()

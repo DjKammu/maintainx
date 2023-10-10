@@ -11,25 +11,39 @@ import Select from 'react-select';
 import { Button, Modal } from 'react-bootstrap';
 
 function New(props) {
-    
+
     const [properties, setProperties] = useState([]);
     const [areas, setAreas] = useState([]);
     const [isQuickLoading, setIsQuickLoading] = useState(true);
-    const selectedPropertyOption = null;
-    const [selectedAreaOption, setSelectedAreaOption]  = useState([]);
+    const [selectedPropertyOption, setSelectedPropertyOption]  = useState(props.dropdowns.property ? 
+        props.dropdowns.property : null ); 
+    const [selectedAreaOption, setSelectedAreaOption]  = useState(props.dropdowns.area ? 
+        props.dropdowns.area : null);
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
     
     const [quickModal, setQuickModal] = useState(false);
    
     const handleClose = () => setQuickModal(false);
-    const handleShow = () => setQuickModal(true);
+    const handleShow = () => {
+          setQuickModal(true);
+          loadData();
+          setState({
+            ...state,
+            property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
+            area_id: props.dropdowns.area ? props.dropdowns.area.id : null,
+        });
+        setSelectedPropertyOption(props.dropdowns.property ? 
+        props.dropdowns.property : null );
+        setSelectedAreaOption(props.dropdowns.area ? 
+        props.dropdowns.area : null );
+    }
 
 
     const [state, setState] = useState({
         name: "",
-        property_id: "",
-        area_id: "",
+        property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
+        area_id: props.dropdowns.area ? props.dropdowns.area.id : null,
         notes: "",
         photo: "",
         loading: false,
@@ -46,10 +60,8 @@ function New(props) {
     }));
 
     useEffect(() => {
-        document.title = 'New Sub Area/Suite';
-        props.setActiveComponentProp('New');
-        loadData();
-    }, []);
+    //loadData();
+    });
 
     const onChangeHandle = (e) =>{
         const { name, value } = e.target;
@@ -171,6 +183,7 @@ function New(props) {
                         message : response.data.message
                     });
                     setQuickModal(false)
+                    props.fn();
                 }
             })
             .catch((error) => {
@@ -265,7 +278,7 @@ function New(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedPropertyOption}
+                                        value={selectedPropertyOption}
                                         onChange={handleSelectPropertyChange}
                                         options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
                                       />  

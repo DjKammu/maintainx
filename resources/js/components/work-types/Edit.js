@@ -33,7 +33,6 @@ function Edit(props) {
     useEffect(() => {
         document.title = 'Edit Work Type';
         props.setActiveComponentProp('Edit');
-
     }, []);
 
     const onChangeHandle = (e) =>{

@@ -15,6 +15,8 @@ function List(props) {
     const [isLoading, setIsLoading] = useState(true);
      const [propertyTypes, setPropertyTypes] = useState([]);
     const [properties, setProperties] = useState([]);
+    const [areas, setAreas] = useState([]);
+    const [subAreas, setsubAreas] = useState([]);
 
     const [state, setState] = useState({
        pageRangeDisplayed: 5,
@@ -31,6 +33,8 @@ function List(props) {
        resetCurrentPage: false,
        propertyType:'',
        property:'',
+       area:'',
+       subArea:'',
     });
 
     //get reducer
@@ -46,12 +50,18 @@ function List(props) {
     }, []);
 
     useEffect(() => {
-        loadData();
+         loadData();
          if (state.propertyType && (state.property == '')) {
            loadProperty();
         }
+        if (state.propertyType && state.property && (state.area == '')) {
+           loadArea();
+        }
+        if (state.propertyType && state.property && state.area && (state.subArea == '')) {
+           loadSubArea();
+        }
     }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
-    state.property]);
+    state.property,state.area, state.subArea]);
 
     const skeletonLoader = () => {
         return <div className="content-loader-wrapper">
@@ -105,6 +115,22 @@ function List(props) {
                 property: ''
             });
        }
+
+       const emptyAreas = () => {
+            setAreas([]);
+            setState({
+                ...state,
+                area: ''
+            });
+       }
+
+       const emptySubAreas = () => {
+            setsubAreas([]);
+            setState({
+                ...state,
+                subArea: ''
+            });
+       }
        const loadPropertyTypes = () => {
             emptyProperties();
             setIsLoading(true);
@@ -125,22 +151,12 @@ function List(props) {
                 });
             });
     };
-    
-     const onChangePropertyTypeHandle  = (e) => {
-            setState({
-                ...state,
-                property: '',
-                propertyType: e.target.value
-            });     
-    }
+
 
      const loadProperty  = (e) => {
         emptyProperties();
-        // setAreas([]);
-        // setSelectedAreaOption([]);
-        // setSubAreas([]);
-        // setSelectedSubAreaOption([]);
-
+        emptyAreas();
+        emptySubAreas();
         setIsLoading(true);
 
          axios.get('/api/v1/payments/property',{
@@ -159,6 +175,53 @@ function List(props) {
                     message : error.response.data.message
                 });
           });
+
+    };   
+
+    const loadArea  = (e) => {
+        emptyAreas();
+        emptySubAreas();
+        setIsLoading(true);
+         axios.get('/api/v1/payments/area',{
+            params: {
+                api_token: authUser.api_token,
+                property :state.property
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setAreas(response.data.message.area)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+    
+    };   
+
+     const loadSubArea  = (e) => {
+        emptySubAreas();
+        setIsLoading(true);
+
+         axios.get('/api/v1/payments/sub-area',{
+            params: {
+                api_token: authUser.api_token,
+                area : state.area
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setsubAreas(response.data.message.sub_area)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
     }; 
 
     const onChangePropertyHandle  = (e) => {
@@ -168,7 +231,18 @@ function List(props) {
         });
     };
 
-
+    const onChangeAreaHandle  = (e) => {
+        setState({
+            ...state,
+            area: e.target.value
+        });
+    };
+     const onChangeSubAreaHandle  = (e) => {
+        setState({
+            ...state,
+            subArea: e.target.value
+        });
+    };
 
     const loadData = () => {
         setIsLoading(true);
@@ -180,7 +254,9 @@ function List(props) {
                 sort_by: state.sortBy,
                 sort_type: state.sortType,
                 property_type: state.propertyType,
-                property: state.property
+                property: state.property,
+                area: state.area,
+                sub_area: state.subArea,
             }
         })
         .then(response => {
@@ -204,6 +280,14 @@ function List(props) {
             });
         });
     };
+     
+    const onChangePropertyTypeHandle  = (e) => {
+            setState({
+                ...state,
+                property: '',
+                propertyType: e.target.value
+            });     
+    }
 
     const handlePageChange = (pageNumber) => {
         setState({
@@ -314,6 +398,11 @@ function List(props) {
                            <thead><tr className="bg-gray-100">
                            <th className="px-4 py-2">Asset Name</th>
                            <th className="px-4 py-2">Property</th>
+                           <th className="px-4 py-2">Area </th>
+                           <th className="px-4 py-2">Sub Area </th>
+                           <th className="px-4 py-2">Vendor  </th>
+                           <th className="px-4 py-2">Contractor </th>
+                           <th className="px-4 py-2">Payment </th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
                            { data.map((dt, i) => { return <Item onClickDeleteHandler={onClickDeleteHandler} obj={dt} key={i} />; }) }
@@ -334,6 +423,12 @@ function List(props) {
                         property={state.property} 
                         properties={properties} 
                         onChangePropertyHandle={onChangePropertyHandle}
+                        area={state.area} 
+                        areas={areas} 
+                        onChangeAreaHandle={onChangeAreaHandle}
+                        subArea={state.subArea} 
+                        subAreas={subAreas} 
+                        onChangeSubAreaHandle={onChangeSubAreaHandle}
                         sortBy={state.sortBy}
                         sortType={state.sortType}
                         onChangeSortByHandle={onChangeSortByHandle}

@@ -208,9 +208,7 @@ function New(props) {
                     message : error.response.data.message
                 });
           });
-
      }
-
 
      const loadData = () => {
             setIsLoading(true);
@@ -391,13 +389,9 @@ function New(props) {
                                                 </span>
                                             </div>
                                             <input type="text" className="form-control form-control-sm" id="brand" name="brand" placeholder="Asset Name" 
-                                            value={state.name} onChange={onChangeHandle}/>
+                                            value={state.brand} onChange={onChangeHandle}/>
                                         </div>
                                     </div>
-
-                                     
-
-
                                            {/* property */}
                                     <div className="form-group">
                                       <label className="block text-sm font-medium text-gray-700" htmlFor="property">
@@ -491,10 +485,17 @@ function New(props) {
                                         onChange={handleSelectSubAreaChange}
 
                                         options={ (subAreas.length > 0) ? [...subAreaNullArr, ...subAreas] : []}
-                                      />  
-                                      <QuickAdd fn={loadSubarea} />
+                                      /> 
+
+                                      <QuickAdd fn={loadSubarea} 
+                                       dropdowns={
+                                            { area : selectedAreaOption , 
+                                             property : selectedPropertyOption ,
+                                             property_type : selectedPropertyTypeOption 
+                                           }
+                                        }
+                                       />
                                     </div>
-                                      
                                     </div>
                                     
                                     {/* account_number */}

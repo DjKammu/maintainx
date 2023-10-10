@@ -20,6 +20,11 @@ class Item extends Component {
                <tr>
                 <td className="border px-4 py-3">{ this.props.obj.asset_model_name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.property_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.area_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.sub_area_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.vendor_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.contractor_name }</td>
+                        <td className="border px-4 py-3">${ this.props.obj.payment }</td>
                             <td className="border px-4 py-3 w-auto">
                            <div className="szn-widget__action">
                             <Link to={{

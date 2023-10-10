@@ -6,13 +6,13 @@ import BeatLoader from 'react-spinners/BeatLoader'
 import { showSznNotification} from '../../Helpers'
 import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams} from 'react-router-dom';
 import Select from 'react-select';
 import QuickAddTenant from '../tenants/QuickAdd';
 import QuickAddAsset from '../asset-model/QuickAdd';
 
 function Edit(props) {
-
+  
     const [properties, setProperties] = useState([]);
     const [assetTypes, setAssetTypes] = useState([]);
     const [propertyTypes, setPropertyTypes] = useState([]);
@@ -24,23 +24,19 @@ function Edit(props) {
     const [areas, setAreas] = useState([]);
     const [subAreas, setSubAreas] = useState([]);
 
-
     const [isLoading, setIsLoading] = useState(true);
-    const selectedAssetModelOption  =  props.location.state.asset_model ? props.location.state.asset_model : null; 
-    const selectedVendorOption  =  props.location.state.vendor ? props.location.state.vendor : null; 
-    const selectedContractorOption  =  props.location.state.contractor ? props.location.state.contractor : null; 
-    const selectedWorkTypeOption  =  props.location.state.work_type ? props.location.state.work_type : null; 
-    const selectedAssetTypeOption  =  props.location.state.asset_type ? props.location.state.asset_type : null; 
-    const [selectedPropertyOption, setSelectedPropertyOption]  =  useState(props.location.state.property ? props.location.state.property : null); 
-    const [selectedAreaOption, setSelectedAreaOption]  = useState(props.location.state.area ? 
-        props.location.state.area : null ); 
-    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState(props.location.state.sub_area ? 
-        props.location.state.sub_area : null );
 
-    const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState(props.location.state.property_type ? 
-        props.location.state.property_type : null );
-    const [selectedTenantOption, setSelectedTenantOption]  = useState(props.location.state.tenant ? 
-        props.location.state.tenant : null );
+    const [selectedAssetTypeOption, setSelectedAssetTypeOption]  = useState([]);
+    const [selectedAssetModelOption, setSelectedAssetModelOption]  = useState([]);
+    const [selectedVendorOption, setSelectedVendorOption]  = useState([]);
+    const [selectedContractorOption, setSelectedContractorOption]  = useState([]);
+    const [selectedWorkTypeOption, setSelectedWorkTypeOption]  = useState([]);
+    const [selectedTenantOption, setSelectedTenantOption]  = useState([]);
+    const [selectedAreaOption, setSelectedAreaOption]  = useState([]);
+    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState([]);
+    const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
+    const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState([]);
+
 
     let assetTypesNullArr = [{'label' : 'Select Asset Type' , 'value' : null}];
     let assetModelsNullArr = [{'label' : 'Select Asset' , 'value' : null}];
@@ -52,24 +48,24 @@ function Edit(props) {
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
     let subAreaNullArr = [{'label' : 'Select Sub Area' , 'value' : null}];
+    let { id } = useParams();
 
 
     const [state, setState] = useState({
-        id: props.location.state.id ? props.location.state.id : '',
-        name: props.location.state.name ? props.location.state.name : '',
-        notes: props.location.state.notes ? props.location.state.notes : '',
-        property_id: props.location.state.property ? props.location.state.property.id : null,
-        asset_type_id: props.location.state.asset_type ? props.location.state.asset_type.id : null,
-        asset_model_id: props.location.state.asset_model ? props.location.state.asset_model.id : null,
-        property_type_id: props.location.state.property_type ? props.location.state.property_type.id : null,
-        area_id: props.location.state.area ? props.location.state.area.id : null,
-        sub_area_id: props.location.state.sub_area ? props.location.state.sub_area.id : null,
-        area_id: props.location.state.area ? props.location.state.area.id : null,
-        vendor_id: props.location.state.vendor ? props.location.state.vendor.id : null,
-        contractor_id: props.location.state.contractor ? props.location.state.contractor.id : null,
-        tenant_id: props.location.state.tenant ? props.location.state.tenant.id : null,
-        work_type_id: props.location.state.work_type ? props.location.state.work_type.id : null,
-        media: props.location.state.media ? props.location.state.media : '',
+        id: id,
+        asset_type_id: "",
+        asset_model_id: "",
+        property_type_id: "",
+        property_id: "",
+        area_id: "",
+        sub_area_id: "",
+        vendor_id: "",
+        contractor_id: "",
+        tenant_id: "",
+        work_type_id: "",
+        notes: "",
+        payment:'',
+        media: "",
         loading: false,
         authUser: props.authUserProp
     });
@@ -84,8 +80,9 @@ function Edit(props) {
     }));
 
     useEffect(() => {
-        document.title = 'Edit Sub Area';
+        document.title = 'Edit Payment';
         props.setActiveComponentProp('Edit');
+        loadPageData();
         loadData();
     }, []);
 
@@ -222,23 +219,85 @@ function Edit(props) {
           }));
       }
 
+     const loadPageData = () => {
+          setIsLoading(true);
+          if(props.location.state){
+     
+            setState(state => ({
+            ...state,
+                name: props.location.state.name,
+                notes: props.location.state.notes,
+                payment: props.location.state.payment,
+                property_id: props.location.state.property ? props.location.state.property.id : null, 
+                asset_type_id:props.location.state.asset_type ? props.location.state.asset_type.id : null,   
+                asset_model_id: props.location.state.asset_model ? props.location.state.asset_model.id : null, 
+                property_type_id: props.location.state.property_type ? props.location.state.property_type.id : null, 
+                area_id: props.location.state.area ? props.location.state.area.id : null, 
+                sub_area_id: props.location.state.sub_area ? props.location.state.sub_area.id : null,
+                vendor_id: props.location.state.vendor ? props.location.state.vendor.id : null, 
+                contractor_id: props.location.state.contractor ? props.location.state.contractor.id : null, 
+                tenant_id: props.location.state.tenant ? props.location.state.tenant.id : null, 
+                work_type_id: props.location.state.work_type ? props.location.state.work_type.id : null,
+                media: props.location.state.media
+            }));
 
-     const loadData = () => {
-            setIsLoading(true);
-            axios.get('/api/v1/payments/attributes',{
+            setSelectedAssetTypeOption((props.location.state.asset_type ? props.location.state.asset_type : null)); 
+            setSelectedAssetModelOption((props.location.state.asset_model ? props.location.state.asset_model : null)); 
+            setSelectedVendorOption((props.location.state.vendor ? props.location.state.vendor : null)); 
+            setSelectedContractorOption((props.location.state.contractor ? props.location.state.contractor : null)); 
+            setSelectedWorkTypeOption((props.location.state.work_type ? props.location.state.work_type : null)); 
+            setSelectedPropertyOption((props.location.state.property ? props.location.state.property : null)); 
+            setSelectedAreaOption((props.location.state.area ?  props.location.state.area : null )); 
+            setSelectedSubAreaOption((props.location.state.sub_area ? props.location.state.sub_area : null ));
+            setSelectedPropertyTypeOption((props.location.state.property_type ? props.location.state.property_type : null ));
+            setSelectedTenantOption((props.location.state.tenant ? props.location.state.tenant : null ));
+
+            return;
+
+          }
+
+        
+          axios.get('/api/v1/payments?id='+id,{
                 params: {
                     api_token: authUser.api_token
                 }
             })
             .then(response => {
-                setIsLoading(false);
-                setAssetTypes(response.data.message.assetTypes)  
-                // setPropertyTypes(response.data.message.propertyTypes)  
-                // setAssetModels(response.data.message.assetModels)  
-                setVendors(response.data.message.vendors)  
-                setContractors(response.data.message.contractors)  
-                // setTenants(response.data.message.tenants)  
-                setWorkTypes(response.data.message.workTypes)  
+               setIsLoading(false);
+               var _data = response.data.message ? response.data.message.data[0] : null
+               
+                if(_data){
+
+                  setState(state => ({
+                  ...state,
+                      name: _data.name,
+                      notes: _data.notes,
+                      payment: _data.payment,
+                      property_id: _data.property ? _data.property.id : null, 
+                      asset_type_id:_data.asset_type ? _data.asset_type.id : null,   
+                      asset_model_id: _data.asset_model ? _data.asset_model.id : null, 
+                      property_type_id: _data.property_type ? _data.property_type.id : null, 
+                      area_id: _data.area ? _data.area.id : null, 
+                      sub_area_id: _data.sub_area ? _data.sub_area.id : null,
+                      vendor_id: _data.vendor ? _data.vendor.id : null, 
+                      contractor_id: _data.contractor ? _data.contractor.id : null, 
+                      tenant_id: _data.tenant ? _data.tenant.id : null, 
+                      work_type_id: _data.work_type ? _data.work_type.id : null,
+                      media: _data.media,
+                  }));
+
+                  setSelectedAssetTypeOption((_data.asset_type ? _data.asset_type : null)); 
+                  setSelectedAssetModelOption((_data.asset_model ? _data.asset_model : null)); 
+                  setSelectedVendorOption((_data.vendor ? _data.vendor : null)); 
+                  setSelectedContractorOption((_data.contractor ? _data.contractor : null)); 
+                  setSelectedWorkTypeOption((_data.work_type ? _data.work_type : null)); 
+                  setSelectedPropertyOption((_data.property ? _data.property : null)); 
+                  setSelectedAreaOption((_data.area ?  _data.area : null )); 
+                  setSelectedSubAreaOption((_data.sub_area ? _data.sub_area : null ));
+                  setSelectedPropertyTypeOption((_data.property_type ? _data.property_type : null ));
+                  setSelectedTenantOption((_data.tenant ? _data.tenant : null ));
+                }
+
             })
             .catch((error) => {
                 showSznNotification({
@@ -246,8 +305,37 @@ function Edit(props) {
                     message : 'Error! '
                 });
             });
-        };
 
+
+      }; 
+
+
+      const loadData = () => {
+          setIsLoading(true);
+          axios.get('/api/v1/payments/attributes',{
+              params: {
+                  api_token: authUser.api_token
+              }
+          })
+          .then(response => {
+              setIsLoading(false);
+              setAssetTypes(response.data.message.assetTypes)  
+              // setPropertyTypes(response.data.message.propertyTypes)  
+              // setAssetModels(response.data.message.assetModels)  
+              setVendors(response.data.message.vendors)  
+              setContractors(response.data.message.contractors)  
+              // setTenants(response.data.message.tenants)  
+              setWorkTypes(response.data.message.workTypes)  
+          })
+          .catch((error) => {
+              showSznNotification({
+                  type : 'error',
+                  message : 'Error! '
+              });
+          });
+      };  
+
+   
     const onSubmitHandle = (e) =>{
         e.preventDefault();
         
@@ -269,6 +357,7 @@ function Edit(props) {
             formData.append('tenant_id', state.tenant_id);
             formData.append('work_type_id', state.work_type_id);
             formData.append('notes', state.notes);
+            formData.append('payment', state.payment);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
@@ -407,7 +496,7 @@ function Edit(props) {
                                         <div className="form-group">
                                             <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
                                                 <li className="nav-item">
-                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT SUB AREA</span>
+                                                    <span className="nav-link btn btn-gradient-primary btn-block active">EDIT PAYMENT</span>
                                                 </li>
                                             </ul>
                                         </div>
@@ -423,7 +512,7 @@ function Edit(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedAssetTypeOption}
+                                        value={selectedAssetTypeOption}
                                         onChange={handleSelectAssetTypeChange}
                                         options={ (assetTypes.length > 0) ? [...assetTypesNullArr, ...assetTypes] : []}
                                       />  
@@ -442,7 +531,7 @@ function Edit(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedAssetModelOption}
+                                        value={selectedAssetModelOption}
                                         onChange={handleSelectAssetModelChange}
                                         options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
                                       />  
@@ -538,7 +627,7 @@ function Edit(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedVendorOption}
+                                        value={selectedVendorOption}
                                         onChange={handleSelectVendorChange}
                                         options={ (vendors.length > 0) ? [...vendorsNullArr, ...vendors] : []}
                                       />  
@@ -559,7 +648,7 @@ function Edit(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedContractorOption}
+                                        value={selectedContractorOption}
                                         onChange={handleSelectContractorChange}
                                         options={ (contractors.length > 0) ? [...contractorsNullArr, ...contractors] : []}
                                       />  
@@ -599,12 +688,26 @@ function Edit(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedWorkTypeOption}
+                                        value={selectedWorkTypeOption}
                                         onChange={handleSelectWorkTypeChange}
                                         options={ (workTypes.length > 0) ? [...workTypesNullArr, ...workTypes] : []}
                                       />  
                                     </div>
                                     </div>
+                                         
+                                           <div className="form-group">
+                                        <label>Payment</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" className="form-control form-control-sm" id="payment" name="payment" placeholder="Payment" 
+                                            value={state.payment} onChange={onChangeHandle}/>
+                                        </div>
+                                    </div>
+
 
                                       <div className="form-group">
                                           <label>

@@ -64,9 +64,6 @@ function Edit(props) {
         props.setActiveComponentProp('Edit');
         loadData();
         loadAssetTypes();
-
-        console.log(props.location.state.sub_area);
-
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -548,7 +545,14 @@ function Edit(props) {
 
                                         options={ (subAreas.length > 0) ? [...subAreaNullArr, ...subAreas] : []}
                                       />  
-                                      <QuickAdd fn={loadSubarea} />
+                                       <QuickAdd fn={loadSubarea} 
+                                       dropdowns={
+                                            { area : selectedAreaOption , 
+                                             property : selectedPropertyOption ,
+                                             property_type : selectedPropertyTypeOption 
+                                           }
+                                        }
+                                       />
                                     </div>
                                       
                                     </div>
