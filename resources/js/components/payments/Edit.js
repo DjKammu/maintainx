@@ -12,7 +12,7 @@ import QuickAddTenant from '../tenants/QuickAdd';
 import QuickAddAsset from '../asset-model/QuickAdd';
 
 function Edit(props) {
-  
+    
     const [properties, setProperties] = useState([]);
     const [assetTypes, setAssetTypes] = useState([]);
     const [propertyTypes, setPropertyTypes] = useState([]);
@@ -65,6 +65,7 @@ function Edit(props) {
         work_type_id: "",
         notes: "",
         payment:'',
+        payment_date:'',
         media: "",
         loading: false,
         authUser: props.authUserProp
@@ -92,6 +93,14 @@ function Edit(props) {
             ...state,
             [name] : value
         });
+    }  
+
+    const onDateHandle = (e) =>{
+        const { name, value } = e.target;
+        setState({
+            ...state,
+            payment_date : value
+        });
     }
 
  const handleFileChange = (e) => {
@@ -104,13 +113,34 @@ function Edit(props) {
      }
 
     const handleSelectAssetTypeChange = (option) => {
-         setState(state => ({
+        setState(state => ({
               ...state,
               asset_type_id: option.value
-          }));
+        }));
 
+        setSelectedAssetTypeOption(option);
         setAssetModels([]);
         setIsLoading(true);
+
+        setPropertyTypes([]);
+        setSelectedAssetModelOption((props.location.state.asset_type_id == option.value)  ? (props.location.state.asset_model ? 
+        props.location.state.asset_model : null) : []);
+
+        setSelectedPropertyTypeOption((props.location.state.asset_type_id == option.value)  ? (props.location.state.property_type ? 
+        props.location.state.property_type : null) : []);
+        setProperties([]);
+        setSelectedPropertyOption((props.location.state.asset_type_id == option.value)  ? (props.location.state.property ? 
+        props.location.state.property : null) : []);
+        setAreas([]);
+        setSelectedAreaOption((props.location.state.asset_type_id == option.value)  ? (props.location.state.area ? 
+        props.location.state.area : null) : []);
+        setSubAreas([]);
+        setTenants([]);
+        setSelectedSubAreaOption((props.location.state.asset_type_id == option.value)  ? (props.location.state.sub_area ? 
+        props.location.state.sub_area : null) : []);
+        setSelectedTenantOption((props.location.state.asset_type_id == option.value)  ? (props.location.state.tenant ? 
+        props.location.state.tenant : null) : []);
+
 
         axios.get('/api/v1/payments/assets',{
             params: {
@@ -136,21 +166,21 @@ function Edit(props) {
               ...state,
               asset_model_id: option.value,
           }));
-
+        setSelectedAssetModelOption(option);
         setPropertyTypes([]);
-        setSelectedPropertyTypeOption((state.asset_model_id == option.value)  ? (props.location.state.property_type ? 
+        setSelectedPropertyTypeOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.property_type ? 
         props.location.state.property_type : null) : []);
         setProperties([]);
-        setSelectedPropertyOption((state.asset_model_id == option.value)  ? (props.location.state.property ? 
+        setSelectedPropertyOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.property ? 
         props.location.state.property : null) : []);
         setAreas([]);
-        setSelectedAreaOption((state.asset_model_id == option.value)  ? (props.location.state.area ? 
+        setSelectedAreaOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.area ? 
         props.location.state.area : null) : []);
         setSubAreas([]);
         setTenants([]);
-        setSelectedSubAreaOption((state.asset_model_id == option.value)  ? (props.location.state.sub_area ? 
+        setSelectedSubAreaOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.sub_area ? 
         props.location.state.sub_area : null) : []);
-        setSelectedTenantOption((state.asset_model_id == option.value)  ? (props.location.state.tenant ? 
+        setSelectedTenantOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.tenant ? 
         props.location.state.tenant : null) : []);
 
         setIsLoading(true);
@@ -162,7 +192,7 @@ function Edit(props) {
              }
             })
           .then(response => {
-             setIsLoading(false);
+            setIsLoading(false);
             setSelectedPropertyTypeOption(response.data.message.asset.property_type)
             setSelectedPropertyOption(response.data.message.asset.property)
             setSelectedAreaOption(response.data.message.asset.area)
@@ -221,6 +251,7 @@ function Edit(props) {
 
      const loadPageData = () => {
           setIsLoading(true);
+          
           if(props.location.state){
      
             setState(state => ({
@@ -228,6 +259,7 @@ function Edit(props) {
                 name: props.location.state.name,
                 notes: props.location.state.notes,
                 payment: props.location.state.payment,
+                payment_date: props.location.state.payment_date,
                 property_id: props.location.state.property ? props.location.state.property.id : null, 
                 asset_type_id:props.location.state.asset_type ? props.location.state.asset_type.id : null,   
                 asset_model_id: props.location.state.asset_model ? props.location.state.asset_model.id : null, 
@@ -251,6 +283,10 @@ function Edit(props) {
             setSelectedSubAreaOption((props.location.state.sub_area ? props.location.state.sub_area : null ));
             setSelectedPropertyTypeOption((props.location.state.property_type ? props.location.state.property_type : null ));
             setSelectedTenantOption((props.location.state.tenant ? props.location.state.tenant : null ));
+            setProperties((props.location.state.property != 'null' ? [props.location.state.property] : null ));
+            setPropertyTypes((props.location.state.property_type  != 'null' ? [props.location.state.property_type] : null ));
+            setAreas((props.location.state.area != 'null' ? [props.location.state.area] : null ));
+            setSubAreas((props.location.state.sub_area  != 'null' ? [props.location.state.sub_area] : null ));
 
             return;
 
@@ -273,6 +309,7 @@ function Edit(props) {
                       name: _data.name,
                       notes: _data.notes,
                       payment: _data.payment,
+                      payment_date: _data.payment_date,
                       property_id: _data.property ? _data.property.id : null, 
                       asset_type_id:_data.asset_type ? _data.asset_type.id : null,   
                       asset_model_id: _data.asset_model ? _data.asset_model.id : null, 
@@ -286,16 +323,21 @@ function Edit(props) {
                       media: _data.media,
                   }));
 
-                  setSelectedAssetTypeOption((_data.asset_type ? _data.asset_type : null)); 
-                  setSelectedAssetModelOption((_data.asset_model ? _data.asset_model : null)); 
-                  setSelectedVendorOption((_data.vendor ? _data.vendor : null)); 
-                  setSelectedContractorOption((_data.contractor ? _data.contractor : null)); 
-                  setSelectedWorkTypeOption((_data.work_type ? _data.work_type : null)); 
-                  setSelectedPropertyOption((_data.property ? _data.property : null)); 
-                  setSelectedAreaOption((_data.area ?  _data.area : null )); 
-                  setSelectedSubAreaOption((_data.sub_area ? _data.sub_area : null ));
-                  setSelectedPropertyTypeOption((_data.property_type ? _data.property_type : null ));
-                  setSelectedTenantOption((_data.tenant ? _data.tenant : null ));
+                    setSelectedAssetTypeOption((_data.asset_type ? _data.asset_type : null)); 
+                    setSelectedAssetModelOption((_data.asset_model ? _data.asset_model : null)); 
+                    setSelectedVendorOption((_data.vendor ? _data.vendor : null)); 
+                    setSelectedContractorOption((_data.contractor ? _data.contractor : null)); 
+                    setSelectedWorkTypeOption((_data.work_type ? _data.work_type : null)); 
+                    setSelectedPropertyOption((_data.property ? _data.property : null)); 
+                    setSelectedAreaOption((_data.area ?  _data.area : null )); 
+                    setSelectedSubAreaOption((_data.sub_area ? _data.sub_area : null ));
+                    setSelectedPropertyTypeOption((_data.property_type ? _data.property_type : null ));
+                    setSelectedTenantOption((_data.tenant ? _data.tenant : null ));
+                    setProperties((_data.property != 'null' ? [_data.property] : null ));
+                    setPropertyTypes((_data.property_type != 'null' ? [_data.property_type] : null ));
+                    setAreas((_data.area != 'null'? [_data.area] : null ));
+                    setSubAreas((_data.sub_area != 'null' ? [_data.sub_area] : null ));
+                    props.location.state = _data;
                 }
 
             })
@@ -312,7 +354,7 @@ function Edit(props) {
 
       const loadData = () => {
           setIsLoading(true);
-          axios.get('/api/v1/payments/attributes',{
+          axios.get('/api/v1/payments/attributes?id='+id,{
               params: {
                   api_token: authUser.api_token
               }
@@ -321,10 +363,10 @@ function Edit(props) {
               setIsLoading(false);
               setAssetTypes(response.data.message.assetTypes)  
               // setPropertyTypes(response.data.message.propertyTypes)  
-              // setAssetModels(response.data.message.assetModels)  
+              setAssetModels(response.data.message.assetModels)  
               setVendors(response.data.message.vendors)  
               setContractors(response.data.message.contractors)  
-              // setTenants(response.data.message.tenants)  
+               setTenants(response.data.message.tenants)  
               setWorkTypes(response.data.message.workTypes)  
           })
           .catch((error) => {
@@ -358,6 +400,7 @@ function Edit(props) {
             formData.append('work_type_id', state.work_type_id);
             formData.append('notes', state.notes);
             formData.append('payment', state.payment);
+            formData.append('payment_date', state.payment_date);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
@@ -571,7 +614,7 @@ function Edit(props) {
                                         </div>
                                         <Select
                                         value={selectedPropertyOption}
-                                        options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
+                                        options={ (properties.length > 0) ? properties : []}
                                       />  
                                     </div>
                                     </div>
@@ -610,7 +653,7 @@ function Edit(props) {
                                         </div>
                                         <Select
                                         value={selectedSubAreaOption}
-                                        options={ (areas.length > 0) ? sub_areas : []}
+                                        options={ (subAreas.length > 0) ? subAreas : []}
                                       />  
                                     </div>
                                     </div>
@@ -706,6 +749,24 @@ function Edit(props) {
                                             <input type="text" className="form-control form-control-sm" id="payment" name="payment" placeholder="Payment" 
                                             value={state.payment} onChange={onChangeHandle}/>
                                         </div>
+                                    </div> 
+
+                                     <div className="form-group">
+                                        <label>Payment Date</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-calendar"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="payment_date"
+                                            value={state.payment_date}
+                                            onChange={onDateHandle} 
+                                            className="form-control form-control-sm"
+                                            type="date" />
+
+                                        </div>
                                     </div>
 
 
@@ -742,7 +803,7 @@ function Edit(props) {
                  
                                         <div className="form-group text-center">
                                             <button type="submit" className="btn btn-gradient-primary btn-md mr-2">Update</button>
-                                            <Link to='/sub-areas' className="btn btn-inverse-secondary btn-md">Cancel</Link>
+                                            <Link to='/payments' className="btn btn-inverse-secondary btn-md">Cancel</Link>
                                         </div>
                                     </form>
 
@@ -756,7 +817,7 @@ function Edit(props) {
                                                        
                                            state.media.map((element, index) => (
                                              <a key={index} className="col-span-3 sm:col-span-3 delete-file" href={element.file} target="_new">
-                                               <img className="ext-img" src={`/images/${element.ext}.png`} />
+                                               <img className="ext-img" src={`/public/images/${element.ext}.png`} />
                                                 <span className="cross">
                                                  <form onSubmit={deleteFunc} id={element.file}>
                                                         <button

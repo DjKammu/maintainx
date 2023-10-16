@@ -19,7 +19,25 @@ class Item extends Component {
 
                <tr>
                        <td className="border px-4 py-3">{ this.props.obj.name }</td>
-                        <td className="border px-4 py-3">{ this.props.obj.account_number }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.brand }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.asset_type_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.property_type_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.property_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.area_name }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.sub_area_name }</td>
+                        <td className="border px-4 py-3">${ this.props.obj.account_number }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.serial_number }</td>
+                        <td className="border px-2 py-1">
+                        {this.props.obj.media && this.props.obj.media.length > 0 && 
+                                                       
+                           this.props.obj.media.map((element, index) => (
+                             <a key={index} className="col-span-3 sm:col-span-3 delete-file" href={element.file} target="_new">
+                               <img className="ext-img-sm" src={`/public/images/${element.ext}.png`} />
+                             </a>
+                          ))
+                        }
+                    
+                            </td>
                             <td className="border px-4 py-3 w-auto">
                          <div className="szn-widget__action">
                             <Link to={{

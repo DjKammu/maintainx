@@ -69,7 +69,7 @@ function Dashboard(props) {
                 state.recentLeads.map((lead, i) => {
                     return <tr key={i}>
                                 <td>
-                                    <img src="/assets/images/faces/face1.jpg" className="mr-2" alt="image"/> {lead.name} </td>
+                                    <img src="/public/assets/images/faces/face1.jpg" className="mr-2" alt="image"/> {lead.name} </td>
                                 <td> {lead.email} </td>
                                 <td> {lead.phone} </td>
                                 <td>
@@ -96,7 +96,7 @@ function Dashboard(props) {
                 <div className="col-md-4 stretch-card grid-margin">
                     <div className="card bg-danger card-img-holder text-white">
                     <div className="card-body">
-                        <img src="/assets/images/dashboard/circle.svg" className="card-img-absolute" alt="circle-image"/>
+                        <img src="/public/assets/images/dashboard/circle.svg" className="card-img-absolute" alt="circle-image"/>
                         <h4 className="font-weight-normal mb-3">Total Leads <i className="mdi mdi-chart-line mdi-24px float-right"></i>
                         </h4>
                         <h2 className="mb-5">{state.totalLeads}</h2>
@@ -106,7 +106,7 @@ function Dashboard(props) {
                 <div className="col-md-4 stretch-card grid-margin">
                     <div className="card bg-gradient-info card-img-holder text-white">
                     <div className="card-body">
-                        <img src="/assets/images/dashboard/circle.svg" className="card-img-absolute" alt="circle-image" />
+                        <img src="/public/assets/images/dashboard/circle.svg" className="card-img-absolute" alt="circle-image" />
                         <h4 className="font-weight-normal mb-3">New Leads This Week <i className="mdi mdi-calendar-text mdi-24px float-right"></i>
                         </h4>
                         <h2 className="mb-5">{state.weeklyLeads}</h2>
@@ -116,7 +116,7 @@ function Dashboard(props) {
                 <div className="col-md-4 stretch-card grid-margin">
                     <div className="card bg-green-gradient card-img-holder text-white">
                     <div className="card-body">
-                        <img src="/assets/images/dashboard/circle.svg" className="card-img-absolute" alt="circle-image" />
+                        <img src="/public/assets/images/dashboard/circle.svg" className="card-img-absolute" alt="circle-image" />
                         <h4 className="font-weight-normal mb-3">New Leads This Month <i className="mdi mdi-calendar-multiple-check mdi-24px float-right"></i>
                         </h4>
                         <h2 className="mb-5">{state.monthlyLeads}</h2>

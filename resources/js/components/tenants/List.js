@@ -321,6 +321,11 @@ function List(props) {
                                     <th className="px-4 py-2">Name
                                     </th>
                                     <th className="px-4 py-2">Account Number</th>
+                                    <th className="px-4 py-2">Property Type</th>
+                                    <th className="px-4 py-2">Property</th>
+                           <th className="px-4 py-2">Area </th>
+                           <th className="px-4 py-2">Sub Area </th>
+
                                     <th className="px-4 py-2">Action</th>
                                 </tr>
                             </thead> <tbody>{

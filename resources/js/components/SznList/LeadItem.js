@@ -24,7 +24,7 @@ class LeadItem extends Component {
                             <div className="szn-widget__top">
                                 { true ? 
                                 <div className="szn-widget__media szn-hidden-">
-                                    <img src="/assets/images/faces/face1.jpg" alt="image" />
+                                    <img src="/public/assets/images/faces/face1.jpg" alt="image" />
                                 </div> :
                                 <div
                                     className="szn-widget__pic szn-widget__pic--danger szn-font-danger szn-font-boldest szn-font-light ">

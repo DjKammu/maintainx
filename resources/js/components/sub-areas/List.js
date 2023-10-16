@@ -232,6 +232,8 @@ function List(props) {
                            <thead><tr className="bg-gray-100">
                            <th className="px-4 py-2">Name</th>
                            <th className="px-4 py-2">Property</th>
+                           <th className="px-4 py-2">Area </th>
+                           <th className="px-4 py-2">Attachment </th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
                            { data.map((dt, i) => { return <Item onClickDeleteHandler={onClickDeleteHandler} obj={dt} key={i} />; }) }

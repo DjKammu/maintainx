@@ -81,7 +81,7 @@ function New(props) {
                 loading: true
             });
 
-            axios.post('/api/v1/users', $(e.target).serialize()+'&role='+state.role)
+            axios.post('/api/v1/users', $(e.target).serialize()+'&role='+state.role+'&properties='+state.properties)
             .then(response => {
                 setState({
                     ...state,

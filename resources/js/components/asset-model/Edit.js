@@ -624,7 +624,7 @@ function Edit(props) {
                                                        
                                            state.media.map((element, index) => (
                                              <a key={index} className="col-span-3 sm:col-span-3 delete-file" href={element.file} target="_new">
-                                               <img className="ext-img" src={`/images/${element.ext}.png`} />
+                                               <img className="ext-img" src={`/public/images/${element.ext}.png`} />
                                                 <span className="cross">
                                                  <form onSubmit={deleteFunc} id={element.file}>
                                                         <button

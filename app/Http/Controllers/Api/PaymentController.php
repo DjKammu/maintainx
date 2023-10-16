@@ -134,15 +134,15 @@ class PaymentController extends Controller
                     @$payment->asset_model->value = $payment->asset_model->id;
                  } 
 
-                 $payment->vendor_name = $payment->vendor->name; 
+                 $payment->vendor_name = (@$payment->vendor->company_name) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : @$payment->vendor->name;
                  if(@$payment->vendor ){
-                    @$payment->vendor->label = $payment->vendor->name;
+                    @$payment->vendor->label = (@$payment->vendor->company_name) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : @$payment->vendor->name;
                     @$payment->vendor->value = $payment->vendor->id;
                  }
 
-                 $payment->contractor_name = $payment->contractor->name; 
+                 $payment->contractor_name = (@$payment->contractor->company_name) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : @$payment->contractor->name;
                  if(@$payment->contractor ){
-                    @$payment->contractor->label = $payment->contractor->name;
+                    @$payment->contractor->label = (@$payment->contractor->company_name) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : @$payment->contractor->name;
                     @$payment->contractor->value = $payment->contractor->id;
                  }
 
@@ -376,31 +376,61 @@ class PaymentController extends Controller
               $assetType->value = $assetType->id;
               return $assetType;
           });
-         $assetModels = AssetModel::orderBy('name')->get();
-         $assetModels = @$assetModels->filter(function($assetModel){
+         
+          $payment = Payment::query();
+        
+        if ($request['id'] != '') {
+            $payment->where('id',$request['id']);
+        }
+        $payment = $payment->first();
+
+        $assetModels = AssetModel::query();
+
+
+        if ($payment['asset_type_id'] != '') {
+            $assetModels->where('asset_type_id',$payment['asset_type_id']);
+        }
+       
+        $assetModels = $assetModels->orderBy('name')->get();
+       
+       $assetModels = @$assetModels->filter(function($assetModel){
               $assetModel->label = $assetModel->name;
               $assetModel->value = $assetModel->id;
               return $assetModel;
           });
          $vendors = Vendor::orderBy('name')->get();
          $vendors = @$vendors->filter(function($vendor){
-              $vendor->label = $vendor->name;
+              $vendor->label = ($vendor->company_name) ? ( $vendor->company_name .'-'. $vendor->name ) : $vendor->name;
               $vendor->value = $vendor->id;
               return $vendor;
           }); 
          $contractors = Contractor::orderBy('name')->get();
          $contractors = @$contractors->filter(function($contractor){
-              $contractor->label = $contractor->name;
+              $contractor->label = ($contractor->company_name) ? ( $contractor->company_name .'-'. $contractor->name ) : $contractor->name;
               $contractor->value = $contractor->id;
               return $contractor;
           });
 
-         $tenants = Tenant::orderBy('name')->get();
-         $tenants = @$tenants->filter(function($tenant){
-              $tenant->label = $tenant->name;
-              $tenant->value = $tenant->id;
-              return $tenant;
-          }); 
+         $tenants = [];
+
+
+        if($payment->tenant_id){
+            
+             $tenants = Tenant::where([
+                         'id' => $payment->tenant_id
+             ])->orderBy('name')->get();
+
+            if($tenants){
+
+                $tenants = @$tenants->filter(function($tenant){
+                    $tenant->label = $tenant->name;
+                    $tenant->value = $tenant->id;
+                    return $tenant;
+                });
+            }
+
+         }
+
          $workTypes = WorkType::orderBy('name')->get();
          $workTypes = @$workTypes->filter(function($workType){
               $workType->label = $workType->name;
@@ -502,7 +532,7 @@ class PaymentController extends Controller
         ],[
             'asset_model_id.required'=> 'Asset is Required!'
            ]);
-
+        
         if ($validate->fails()) {
             return response()->json([
                 'message' => $validate->errors(),

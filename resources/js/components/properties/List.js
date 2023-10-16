@@ -239,6 +239,8 @@ function List(props) {
                                     <th className="px-4 py-2 w-1/4">State</th>
                                     <th className="px-4 py-2">Zip</th>
                                     <th className="px-4 py-2">Phone Number</th>
+                                    <th className="px-4 py-2">Property Layout Attachment</th>
+                                    <th className="px-4 py-2">Extra Attachment</th>
                                     <th className="px-4 py-2">Action</th>
                                 </tr>
                             </thead> <tbody>{

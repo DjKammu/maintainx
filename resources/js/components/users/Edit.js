@@ -114,9 +114,7 @@ function Edit(props) {
                     history.push('/users')
                 }
             })
-            .catch((error) => {
-                console.log(error);
-                
+            .catch((error) => { 
                 setState({
                     ...state,
                     loading: false

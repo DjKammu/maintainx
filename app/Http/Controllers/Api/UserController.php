@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
-// use App\Models\Property;
+use App\Models\Property;
 use App\Models\User;
 use App\Models\Role;
 use Gate;
@@ -47,6 +47,11 @@ class UserController extends Controller
                   $role->value = $role->id;
                   return $role;
               });
+             @$user->properties->filter(function($role){
+                  $role->label = $role->name;
+                  $role->value = $role->id;
+                  return $role;
+              });
         });
 
         return response()->json([
@@ -62,14 +67,14 @@ class UserController extends Controller
      */
     public function create()
     {
-          // $properties = Property::orderBy('name')->get();
+          $properties = Property::orderBy('name')->get();
 
-          // $properties = @$properties->filter(function($property){
-          //     $property->label = $property->name;
-          //     $property->value = $property->id;
-          //     return $property;
-          // });
-          $properties = [];
+          $properties = @$properties->filter(function($property){
+              $property->label = $property->name;
+              $property->value = $property->id;
+              return $property;
+          });
+          // $properties = [];
           $roles = Role::orderBy('name')->get();
 
           $roles = @$roles->filter(function($role){
@@ -105,7 +110,7 @@ class UserController extends Controller
                     'email',
                     Rule::unique(User::class),
                 ],
-              'password' => ['required', 'string', 'password', 'confirmed']
+              'password' => ['required', 'string', 'confirmed']
         ]);
        
 
@@ -116,6 +121,7 @@ class UserController extends Controller
             ], 401);
         }
         
+
         $user =  User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -124,7 +130,9 @@ class UserController extends Controller
 
        if ($user) {
             $user->roles()->sync($data['role']); 
-            // $user->properties()->sync($data['properties']); 
+            if($data['properties']){
+            $user->properties()->sync(explode(',', $data['properties'])); 
+            }
 
             return response()->json([
                 'message' => 'User successfully saved',
@@ -194,7 +202,7 @@ class UserController extends Controller
        if ($user) {
             $user->update($data);
             $user->roles()->sync($data['role']); 
-            // $user->properties()->sync($data['properties']); 
+            $user->properties()->sync($data['properties']); 
 
             return response()->json([
                 'message' => 'User successfully saved',

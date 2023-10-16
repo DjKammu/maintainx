@@ -58,6 +58,7 @@ function New(props) {
         work_type_id: "",
         notes: "",
         payment:'',
+        payment_date:'',
         photos: "",
         loading: false,
         authUser: props.authUserProp
@@ -195,6 +196,7 @@ function New(props) {
               ...state,
               tenant_id: option.value,
           }));
+          setSelectedTenantOption(option)
       }
       
       const handleSelectWorkTypeChange = (option) => {
@@ -203,6 +205,14 @@ function New(props) {
               work_type_id: option.value,
           }));
       }
+
+    const onDateHandle = (e) =>{
+        const { name, value } = e.target;
+        setState({
+            ...state,
+            payment_date : value
+        });
+    }
 
 
     // const handleSelectPropertyTypeChange = (selectedOption ) => {
@@ -289,6 +299,7 @@ function New(props) {
             formData.append('work_type_id', state.work_type_id);
             formData.append('notes', state.notes);
             formData.append('payment', state.payment);
+            formData.append('payment_date', state.payment_date);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
@@ -593,7 +604,25 @@ function New(props) {
                                             value={state.payment} onChange={onChangeHandle}/>
                                         </div>
                                     </div>
-                                    
+
+                                    <div className="form-group">
+                                        <label>Payment Date</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-calendar"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="payment_date"
+                                            value={state.payment_date}
+                                            onChange={onDateHandle} 
+                                            className="form-control form-control-sm"
+                                            type="date" />
+
+                                        </div>
+                                    </div>
+
                                       <div className="form-group">
                                           <label>
                                             <span>Notes</span>

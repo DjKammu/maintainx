@@ -403,12 +403,12 @@ function List(props) {
                            <th className="px-4 py-2">Vendor  </th>
                            <th className="px-4 py-2">Contractor </th>
                            <th className="px-4 py-2">Payment </th>
+                           <th className="px-4 py-2">Attachments </th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
                            { data.map((dt, i) => { return <Item onClickDeleteHandler={onClickDeleteHandler} obj={dt} key={i} />; }) }
                            </tbody></table>);
     }
-
     return (
         <React.Fragment>
             <div className="card animated fadeIn">

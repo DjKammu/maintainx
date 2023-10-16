@@ -18,7 +18,7 @@ class Payment extends Model
         'property_id','area_id','sub_area_id',
         'tenant_id',
         'work_type_id',
-        'notes','payment'
+        'notes','payment','payment_date'
     ];
 
     public function property()
@@ -119,6 +119,17 @@ class Payment extends Model
     public function setWorkTypeIdAttribute($value)
     {
         $this->attributes['work_type_id'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+    public function setPaymentAttribute($value)
+    {
+        $this->attributes['payment'] =  ($value == 'null') ? NULL :  $value;
+    }
+
+
+    public function setPaymentDateAttribute($value)
+    {
+        $this->attributes['payment_date'] =  ($value == 'null') ? NULL :  $value;
     }
 
 }
