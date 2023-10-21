@@ -26,7 +26,7 @@ function Edit(props) {
         password: props.location.state.password ? props.location.state.password : '',
         confirm_password: props.location.state.confirm_password ? props.location.state.confirm_password : '',
         role: props.location.state.roles[0] ? props.location.state.roles[0].id : null,
-        properties: props.location.state.properties ? props.location.state.properties : [],
+        properties: props.location.state.properties ? props.location.state.properties.map(property =>  property.id) : [],
         loading: false,
         authUser: props.authUserProp
     });
