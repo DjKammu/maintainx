@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Traits\MediaManager;
 
 class Area extends Model
 {
-    use HasFactory;
+     use HasFactory, MediaManager; 
 
      protected $fillable = [
         'name', 

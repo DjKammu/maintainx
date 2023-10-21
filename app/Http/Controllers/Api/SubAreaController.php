@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\DocumentType;
 use App\Models\SubArea;
 use App\Models\Area;
+use App\Models\User;
 use Gate;
 use Validator;
 
@@ -29,11 +30,19 @@ class SubAreaController extends Controller
      */
     public function index(Request $request)
     {
+        if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $data = SubArea::orderBy($sortBy, $sortType);
+        $whereUserProperties = User::userProperties();
+        $data = SubArea::when($whereUserProperties, function ($q) use 
+               ($whereUserProperties) {
+                $q->whereIn('property_id', $whereUserProperties);
+              })->orderBy($sortBy, $sortType);
 
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
@@ -99,12 +108,11 @@ class SubAreaController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::denies('add')) {
-               return abort('401');
-        } 
-
         $data = $request->except('api_token');
-  
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+         
         $validate = Validator::make($request->all(),[
               'name' => 'required|string'
         ]);
@@ -172,7 +180,11 @@ class SubAreaController extends Controller
     public function update(Request $request)
     {    
         $data = $request->except(['api_token','photo','id']   );
-  
+
+         if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+         
         $validate = Validator::make($request->all(),[
               'name' => 'required|string'
         ]);
@@ -219,7 +231,11 @@ class SubAreaController extends Controller
     public function destroy(Request $request)
     {
         $area = SubArea::where('id',$request['id'])->first();
-                  
+
+         if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+           
         if (empty($area)) {
             return response()->json([
                 'message' => 'Sub Area Not Found',

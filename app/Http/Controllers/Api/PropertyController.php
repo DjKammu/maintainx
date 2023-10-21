@@ -30,18 +30,26 @@ class PropertyController extends Controller
      */
     public function index(Request $request)
     {
+        if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $whereUserProperties = User::userProperties();
+        
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $properties = Property::orderBy($sortBy, $sortType);
+        $properties = Property::when($whereUserProperties, function ($q) use 
+               ($whereUserProperties) {
+                $q->whereIn('id', $whereUserProperties);
+              })->orderBy($sortBy, $sortType);
 
         if ($request['query'] != '') {
             $properties->where('name', 'like', '%' . $request['query'] . '%');
         }
          
         $properties = $properties->paginate($perPage);
-
 
         $properties->data = @collect($properties->items())->filter(function($property){
               $media =  @$property->getMediaPathWithExtension()['file'] ? [@$property->getMediaPathWithExtension()] : @$property->getMediaPathWithExtension();
@@ -101,8 +109,12 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::denies('add')) {
-               return abort('401');
+        // if(Gate::denies('add')) {
+        //        return abort('401');
+        // } 
+
+        if(Gate::denies('administrator')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
 
         $data = $request->except('api_token');
@@ -194,6 +206,11 @@ class PropertyController extends Controller
      */
     public function update(Request $request)
     {    
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($request['id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
         $data = $request->except(['api_token','extra_attachment','layout_attachment','id']   );
   
         $validate = Validator::make($request->all(),[
@@ -244,6 +261,9 @@ class PropertyController extends Controller
    
     public function destroy(Request $request)
     {
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($request['id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
         $property = Property::where('id',$request['id'])->first();
                   
         if (empty($property)) {

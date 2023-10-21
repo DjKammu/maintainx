@@ -31,11 +31,19 @@ class AssetModelController extends Controller
      */
     public function index(Request $request)
     {
+         if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $data = AssetModel::orderBy($sortBy, $sortType);
+        $whereUserProperties = User::userProperties();
+
+        $data = AssetModel::when($whereUserProperties, function ($q) use 
+               ($whereUserProperties) {
+                $q->whereIn('property_id', $whereUserProperties);
+              })->orderBy($sortBy, $sortType);
 
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
@@ -120,15 +128,14 @@ class AssetModelController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::denies('add')) {
-               return abort('401');
-        } 
-
         $data = $request->except('api_token');
-  
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-               'account_number' => 'required|unique:asset_models',
+               // 'account_number' => 'required|unique:asset_models',
         ],[
             'account_number.required'=> 'Model Number is Required!',
             'account_number.unique'=> 'Model Number must be unique!',
@@ -197,10 +204,14 @@ class AssetModelController extends Controller
     public function update(Request $request)
     {    
         $data = $request->except(['api_token','id']   );
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-              'account_number' => 'required|unique:asset_models,account_number,'.$request['id'],
+              // 'account_number' => 'required|unique:asset_models,account_number,'.$request['id'],
         ]);
 
         if ($validate->fails()) {
@@ -245,6 +256,10 @@ class AssetModelController extends Controller
     public function destroy(Request $request)
     {
         $destroy = AssetModel::where('id',$request['id'])->first();
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($destroy['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
                   
         if (empty($destroy)) {
             return response()->json([
@@ -276,6 +291,10 @@ class AssetModelController extends Controller
 
          $destroy = AssetModel::find($request['id']);
 
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($destroy['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
         if (empty($destroy)) {
             return response()->json([
                 'message' => 'Asset Model Not Found',
@@ -292,7 +311,7 @@ class AssetModelController extends Controller
             $media =  @$destroy->getMediaPathWithExtension()['file'] ? [@$destroy->getMediaPathWithExtension()] : @$destroy->getMediaPathWithExtension();
             $media= @collect($media)->all(); 
             return response()->json([
-                'message' => 'Asset Model successfully deleted',
+                'message' => 'Asset Model Attachment successfully deleted',
                 'media' => $media,
                 'status' => 'success'
             ]);

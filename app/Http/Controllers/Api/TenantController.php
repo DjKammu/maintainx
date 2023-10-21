@@ -30,11 +30,19 @@ class TenantController extends Controller
      */
     public function index(Request $request)
     {
+         if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $data = Tenant::orderBy($sortBy, $sortType);
+        $whereUserProperties = User::userProperties();
+
+        $data = Tenant::when($whereUserProperties, function ($q) use 
+               ($whereUserProperties) {
+                $q->whereIn('property_id', $whereUserProperties);
+              })->orderBy($sortBy, $sortType);
 
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
@@ -109,15 +117,16 @@ class TenantController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::denies('add')) {
-               return abort('401');
-        } 
 
         $data = $request->except('api_token');
 
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-            'account_number' => 'required|unique:tenants',
+              'account_number' => 'nullable|unique:tenants',
         ]);
 
         if ($validate->fails()) {
@@ -177,10 +186,15 @@ class TenantController extends Controller
     public function update(Request $request)
     {    
         $data = $request->except(['api_token','id']   );
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-              'account_number' => 'required|unique:tenants,account_number,'.$request['id'],
+               'account_number' => 'nullable|unique:tenants,account_number,'.$request['id'],
         ]);
 
         if ($validate->fails()) {
@@ -219,6 +233,11 @@ class TenantController extends Controller
     public function destroy(Request $request)
     {
         $destroy = Tenant::where('id',$request['id'])->first();
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($destroy['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+
                   
         if (empty($destroy)) {
             return response()->json([
@@ -244,7 +263,12 @@ class TenantController extends Controller
 
     public function subArea(Request $request)
     { 
-          $subAreas = SubArea::where('area_id',$request->area_id)
+          $whereUserProperties = User::userProperties();
+
+          $subAreas = SubArea::when($whereUserProperties, function ($q) use 
+                       ($whereUserProperties) {
+                        $q->whereIn('property_id', $whereUserProperties);
+                      })->where('area_id',$request->area_id)
                         ->whereNotNull('area_id')
                        ->orderBy('name')->get();
           if($subAreas){

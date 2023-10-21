@@ -16,6 +16,7 @@ use App\Models\Tenant;
 use App\Models\Vendor;
 use App\Models\SubArea;
 use App\Models\Area;
+use App\Models\User;
 use Gate;
 use Validator;
 
@@ -38,11 +39,19 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
+        if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $data = Payment::query();
+        $whereUserProperties = User::userProperties();
+
+        $data = Payment::when($whereUserProperties, function ($q) use 
+               ($whereUserProperties) {
+                $q->whereIn('property_id', $whereUserProperties);
+              });
 
         if ($sortBy && $sortType) {
             $data->orderBy($sortBy, $sortType);
@@ -175,25 +184,26 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function areas(Request $request)
-    { 
-          $area = Area::where('property_id',$request->property)
-                        ->whereNotNull('property_id')
-                       ->orderBy('name')->first();
-          if($area){
-            $area->label = @$area->name;
-            $area->value = @$area->id;
-          }
-           $area = ($area) ?  [$area] : []; 
-         return response()->json([
-            'message' => compact('area'),
-            'status' => 'success'
-        ]);
-    }  
+    // public function areas(Request $request)
+    // { 
+    //       $area = Area::where('property_id',$request->property)
+    //                     ->whereNotNull('property_id')
+    //                    ->orderBy('name')->first();
+    //       if($area){
+    //         $area->label = @$area->name;
+    //         $area->value = @$area->id;
+    //       }
+    //        $area = ($area) ?  [$area] : []; 
+    //      return response()->json([
+    //         'message' => compact('area'),
+    //         'status' => 'success'
+    //     ]);
+    // }  
 
 
     public function assetSelection(Request $request)
     { 
+          
           $asset = AssetModel::where('id',$request->asset)
                        ->first();
 
@@ -241,7 +251,7 @@ class PaymentController extends Controller
 
            }
           
-         $tenants = ($tenants) ? $tenants : [];  
+         $tenants = (@$tenants) ? $tenants : [];  
 
          return response()->json([
             'message' => compact('asset','tenants'),
@@ -251,7 +261,11 @@ class PaymentController extends Controller
 
     public function assets(Request $request)
     { 
-          $assets = AssetModel::where('asset_type_id',$request->asset_type)
+          $whereUserProperties = User::userProperties();
+          $assets = AssetModel::when($whereUserProperties, function ($q) use 
+                     ($whereUserProperties) {
+                      $q->whereIn('property_id', $whereUserProperties);
+                    })->where('asset_type_id',$request->asset_type)
                        ->orderBy('name')->get();
 
           if($assets){
@@ -273,7 +287,11 @@ class PaymentController extends Controller
 
     public function property(Request $request)
     { 
-          $properties = Property::where('property_type_id',$request->property_type)
+          $whereUserProperties = User::userProperties();
+          $properties = Property::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('id', $whereUserProperties);
+                        })->where('property_type_id',$request->property_type)
                        ->whereNotNull('property_type_id')
                        ->orderBy('name')->get();
             
@@ -294,7 +312,11 @@ class PaymentController extends Controller
 
     public function area(Request $request)
     { 
-          $areas = Area::where('property_id',$request->property)
+          $whereUserProperties = User::userProperties();
+          $areas = Area::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->where('property_id',$request->property)
                        ->whereNotNull('property_id')
                        ->orderBy('name')->get();
             
@@ -316,7 +338,11 @@ class PaymentController extends Controller
 
  public function subArea(Request $request)
     { 
-          $subareas = SubArea::where('area_id',$request->area)
+          $whereUserProperties = User::userProperties();
+          $subareas = SubArea::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->where('area_id',$request->area)
                        ->whereNotNull('area_id')
                        ->orderBy('name')->get();
             
@@ -337,9 +363,13 @@ class PaymentController extends Controller
 
     public function assetType(Request $request)
     { 
-          $properties = Property::where('property_type_id',$request->property_type)
-                       ->whereNotNull('property_type_id')
-                       ->orderBy('name')->get();
+          $whereUserProperties = User::userProperties();
+          $properties = Property::when($whereUserProperties, function ($q) use 
+                                 ($whereUserProperties) {
+                                  $q->whereIn('id', $whereUserProperties);
+                                })->where('property_type_id',$request->property_type)
+                                ->whereNotNull('property_type_id')
+                                ->orderBy('name')->get();
             
          if($properties){
 
@@ -385,13 +415,16 @@ class PaymentController extends Controller
         $payment = $payment->first();
 
         $assetModels = AssetModel::query();
-
+        $whereUserProperties = User::userProperties();
 
         if ($payment['asset_type_id'] != '') {
             $assetModels->where('asset_type_id',$payment['asset_type_id']);
         }
        
-        $assetModels = $assetModels->orderBy('name')->get();
+        $assetModels = $assetModels->when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->orderBy('name')->get();
        
        $assetModels = @$assetModels->filter(function($assetModel){
               $assetModel->label = $assetModel->name;
@@ -418,7 +451,10 @@ class PaymentController extends Controller
             
              $tenants = Tenant::where([
                          'id' => $payment->tenant_id
-             ])->orderBy('name')->get();
+             ])->when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->orderBy('name')->get();
 
             if($tenants){
 
@@ -453,12 +489,12 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::denies('add')) {
-               return abort('401');
-        } 
-
         $data = $request->except('api_token');
-  
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+
          $validate = Validator::make($request->all(),[
               'asset_model_id' => 'required|string'
         ],[
@@ -526,6 +562,11 @@ class PaymentController extends Controller
     public function update(Request $request)
     {    
         $data = $request->except('api_token');
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($data['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }  
+
   
         $validate = Validator::make($request->all(),[
               'asset_model_id' => 'required|string'
@@ -573,7 +614,11 @@ class PaymentController extends Controller
     public function destroy(Request $request)
     {
         $area = Payment::where('id',$request['id'])->first();
-                  
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+            
         if (empty($area)) {
             return response()->json([
                 'message' => 'Payment Not Found',
@@ -600,6 +645,11 @@ class PaymentController extends Controller
      public function deleteAttachment(Request $request){
 
          $destroy = Payment::find($request['id']);
+
+         if(Gate::denies('administrator') && !User::propertyBelongsToUser($destroy['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+          
 
         if (empty($destroy)) {
             return response()->json([

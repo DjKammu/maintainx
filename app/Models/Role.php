@@ -21,6 +21,8 @@ class Role extends Model
 
     CONST ADD_USERS = 'add_users';
 
+    CONST ADMINISTRATOR = 'administrator';
+
 
     protected $fillable = [
         'name', 'slug', 'permissions',

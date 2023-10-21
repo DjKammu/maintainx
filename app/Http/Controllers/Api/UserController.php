@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\Property;
 use App\Models\User;
 use App\Models\Role;
@@ -126,6 +127,7 @@ class UserController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'api_token' => Str::random(80)
         ]);
 
        if ($user) {
@@ -200,6 +202,7 @@ class UserController extends Controller
         $user = User::find($request['id']);
 
        if ($user) {
+            (!$user->api_token) ? ($data['api_token'] = Str::random(80) ) : '' ;
             $user->update($data);
             $user->roles()->sync($data['role']); 
             $user->properties()->sync($data['properties']); 

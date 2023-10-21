@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Gate;
 
 class User extends Authenticatable
 {
@@ -77,5 +78,20 @@ class User extends Authenticatable
     public function properties()
     {
         return $this->belongsToMany(Property::class, 'property_users')->withTimestamps();
+    }
+
+    public static function  userProperties(){
+       $user = auth()->user();
+       if(Gate::allows('administrator')) {
+             return;
+       }
+       $properties = $user->properties()->pluck('properties.id')->toArray();
+       return  ($properties) ? $properties : [0];
+
+    }
+
+    public static function propertyBelongsToUser($id){
+        $properties = self::userProperties();
+        return in_array($id, $properties);
     }
 }

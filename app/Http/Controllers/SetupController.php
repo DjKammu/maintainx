@@ -30,6 +30,7 @@ class SetupController extends Controller
          if(Gate::denies('view')) {
                return abort('401');
          }
+         
          return view('setup.properties');
     }
 
