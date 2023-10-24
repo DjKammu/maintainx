@@ -48,11 +48,21 @@ class UserController extends Controller
                   $role->value = $role->id;
                   return $role;
               });
-             @$user->properties->filter(function($role){
-                  $role->label = $role->name;
-                  $role->value = $role->id;
-                  return $role;
-              });
+
+             if($user->is_all == Property::ALL){
+                    $all = collect( [ 0 => [
+                          'label' => 'All',
+                          'value' => Property::ALL,
+                          'id' => Property::ALL
+                      ]]);
+                     @$user->properties =  $all;
+             }else{
+                 @$user->properties->filter(function($role){
+                      $role->label = $role->name;
+                      $role->value = $role->id;
+                      return $role;
+                  });
+             } 
         });
 
         return response()->json([
@@ -75,6 +85,14 @@ class UserController extends Controller
               $property->value = $property->id;
               return $property;
           });
+
+          $all = collect( [ 0 => [
+              'label' => 'All',
+              'value' => Property::ALL,
+              'id' => Property::ALL
+          ]]);
+           
+          $properties = ($properties)  ?  $all->merge($properties) : [];   
           // $properties = [];
           $roles = Role::orderBy('name')->get();
 
@@ -133,8 +151,8 @@ class UserController extends Controller
        if ($user) {
             $user->roles()->sync($data['role']); 
             if($data['properties']){
-            $user->properties()->sync(explode(',', $data['properties'])); 
-            }
+                $user->properties()->sync( $data['properties']); 
+             }
 
             return response()->json([
                 'message' => 'User successfully saved',
@@ -201,11 +219,21 @@ class UserController extends Controller
 
         $user = User::find($request['id']);
 
+       
+
        if ($user) {
             (!$user->api_token) ? ($data['api_token'] = Str::random(80) ) : '' ;
             $user->update($data);
             $user->roles()->sync($data['role']); 
-            $user->properties()->sync($data['properties']); 
+            if(in_array(Property::ALL,$data['properties'])){
+                $user->is_all = Property::ALL;
+                $user->properties()->delete();
+            }else{
+                $user->is_all = Property::ALL;
+                 $user->properties()->sync($data['properties']);       
+            }
+
+            $user->save();
 
             return response()->json([
                 'message' => 'User successfully saved',

@@ -264,6 +264,7 @@ class PropertyController extends Controller
         if(Gate::denies('administrator') && !User::propertyBelongsToUser($request['id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
+        
         $property = Property::where('id',$request['id'])->first();
                   
         if (empty($property)) {

@@ -9,7 +9,9 @@ use App\Http\Traits\MediaManager;
 class Property extends Model
 {
      use HasFactory, MediaManager; 
+     
      CONST LAYOUT_ATTACHMENTS = "layout_attachments";
+     CONST ALL = "all";
 
       protected $fillable = [
         'name', 'address', 'city',

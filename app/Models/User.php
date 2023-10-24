@@ -82,9 +82,11 @@ class User extends Authenticatable
 
     public static function  userProperties(){
        $user = auth()->user();
-       if(Gate::allows('administrator')) {
+       
+       if(Gate::allows('administrator') || $user->is_all == Property::ALL) {
              return;
        }
+
        $properties = $user->properties()->pluck('properties.id')->toArray();
        return  ($properties) ? $properties : [0];
 
