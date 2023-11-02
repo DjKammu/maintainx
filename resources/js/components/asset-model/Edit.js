@@ -448,9 +448,6 @@ function Edit(props) {
                                         </div>
                                     </div>
 
-                                     
-
-
                                            {/* property */}
                                     <div className="form-group">
                                       <label className="block text-sm font-medium text-gray-700" htmlFor="property">

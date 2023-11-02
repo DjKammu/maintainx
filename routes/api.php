@@ -1,12 +1,11 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::get('/dashboard-data', 'Api\HomeController@getData');
 
-      Route::get('/properties', 'Api\PropertyController@index');
+     Route::get('/properties', 'Api\PropertyController@index');
      Route::post('/properties', 'Api\PropertyController@store');
      Route::get('/properties/property-types', 'Api\PropertyController@propertyTypes');
      Route::post('/properties/update', 'Api\PropertyController@update');
@@ -102,6 +101,7 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::get('/payments/property', 'Api\PaymentController@property');
      Route::get('/payments/area', 'Api\PaymentController@area');
      Route::get('/payments/sub-area', 'Api\PaymentController@subArea');
+     Route::get('/payments/tenant', 'Api\PaymentController@tenant');
      Route::post('/payments', 'Api\PaymentController@store');
      Route::post('/payments/update', 'Api\PaymentController@update');
      Route::post('/payments/destroy', 'Api\PaymentController@destroy');

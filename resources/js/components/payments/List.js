@@ -396,6 +396,7 @@ function List(props) {
                             </div> : 
                            <table className="table-fixed w-full">
                            <thead><tr className="bg-gray-100">
+                           <th className="px-4 py-2">Asset Type</th>
                            <th className="px-4 py-2">Asset Name</th>
                            <th className="px-4 py-2">Property</th>
                            <th className="px-4 py-2">Area </th>
@@ -403,7 +404,7 @@ function List(props) {
                            <th className="px-4 py-2">Vendor  </th>
                            <th className="px-4 py-2">Contractor </th>
                            <th className="px-4 py-2">Payment </th>
-                           <th className="px-4 py-2">Attachments </th>
+                           <th className="px-4 py-2"> <img className="ext-img-sm" src={`/public/images/paper.png`} /> </th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
                            { data.map((dt, i) => { return <Item onClickDeleteHandler={onClickDeleteHandler} obj={dt} key={i} />; }) }

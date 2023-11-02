@@ -40,6 +40,7 @@ function New(props) {
     const [state, setState] = useState({
         name: "",
         account_number: "",
+        brand: "",
         asset_type_id: "",
         property_type_id: "",
         property_id: "",
@@ -247,6 +248,7 @@ function New(props) {
             var formData = new FormData();
             formData.append('name', state.name);
             formData.append('account_number', state.account_number);
+            formData.append('brand', state.brand);
             formData.append('asset_type_id', state.asset_type_id);
             formData.append('property_type_id', state.property_type_id);
             formData.append('property_id', state.property_id);
@@ -374,7 +376,18 @@ function New(props) {
                                         {simpleValidator.current.message('name', state.name, 'required')}
                                     </div>
 
-                                     
+                                      <div className="form-group">
+                                        <label>Brand</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" className="form-control form-control-sm" id="brand" name="brand" placeholder="Asset Name" 
+                                            value={state.brand} onChange={onChangeHandle}/>
+                                        </div>
+                                    </div>
 
 
                                            {/* property */}

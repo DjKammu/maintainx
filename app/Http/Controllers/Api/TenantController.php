@@ -30,9 +30,10 @@ class TenantController extends Controller
      */
     public function index(Request $request)
     {
-         if(Gate::denies('view')) {
+        if(Gate::denies('view')) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
-        } 
+        }
+         
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
@@ -191,7 +192,6 @@ class TenantController extends Controller
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         }  
 
-  
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
                'account_number' => 'nullable|unique:tenants,account_number,'.$request['id'],

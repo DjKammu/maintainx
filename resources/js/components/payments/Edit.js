@@ -16,6 +16,7 @@ function Edit(props) {
     const [properties, setProperties] = useState([]);
     const [assetTypes, setAssetTypes] = useState([]);
     const [propertyTypes, setPropertyTypes] = useState([]);
+     const [propertyTypes2, setPropertyTypes2] = useState([]);
     const [assetModels, setAssetModels] = useState([]);
     const [vendors, setVendors] = useState([]);
     const [contractors, setContractors] = useState([]);
@@ -67,6 +68,9 @@ function Edit(props) {
         payment:'',
         payment_date:'',
         media: "",
+         brand: "",
+        non_asset: "0",
+        description: "",
         loading: false,
         authUser: props.authUserProp
     });
@@ -102,6 +106,48 @@ function Edit(props) {
             payment_date : value
         });
     }
+
+    const onNonAssetHandle = (e) =>{
+        const { name, value } = e.target;
+        setState({
+            ...state,
+            [name] : value,
+            asset_type_id: (value === '0' )  ? props.location.state.asset_type_id : "",
+            asset_model_id: (value === '0' )  ? props.location.state.asset_model_id : "",
+            // property_type_id: "",
+            // property_id: "",
+            // area_id: "",
+            // sub_area_id: "",
+            // tenant_id: ""
+        });
+       
+        setAssetModels([]);
+        setPropertyTypes([]);
+        setProperties([]);
+        setAreas([]);
+        setSubAreas([]);
+        setTenants([]);
+        setSelectedAssetModelOption((value === '0' && props.location.state.asset_model) ? 
+        props.location.state.asset_model : []);
+        setSelectedAssetTypeOption((value === '0' && props.location.state.asset_type)  ? 
+        props.location.state.asset_type : []);
+        setSelectedPropertyTypeOption(( props.location.state.property_type) ? 
+        props.location.state.property_type :  []);
+        setSelectedPropertyOption(( props.location.state.property) ?  
+        props.location.state.property : []);
+        setSelectedAreaOption(( props.location.state.area) ?  
+        props.location.state.area :  []);
+        setSelectedSubAreaOption(( props.location.state.sub_area) ?  
+        props.location.state.sub_area :  []);
+        setSelectedTenantOption((props.location.state.tenant) ? 
+        props.location.state.tenant : []);
+
+        if(value === "1"){
+          setPropertyTypes(propertyTypes2);
+        }
+
+    }
+
 
  const handleFileChange = (e) => {
          e.persist();
@@ -249,6 +295,155 @@ function Edit(props) {
           }));
       }
 
+       const handleSelectPropertyTypeChange = (selectedOption) => {
+
+         if(state.non_asset === '0'){
+            return ;
+         }
+         setState(state => ({
+              ...state,
+              property_type_id: selectedOption.value,
+              property_id: null 
+          }));
+
+        setProperties([]);
+        setAreas([]);
+        setSubAreas([]);
+
+        setSelectedPropertyOption((props.location.state.property_type_id == option.value)  ? (props.location.state.property ? 
+        props.location.state.property : null) : []);
+        setSelectedAreaOption((props.location.state.property_type_id == option.value)  ? (props.location.state.area ? 
+        props.location.state.area : null) : []);
+        setSelectedSubAreaOption((props.location.state.property_type_id == option.value)  ? (props.location.state.sub_area ? 
+        props.location.state.sub_area : null) : []);
+
+
+        setIsLoading(true);
+
+         axios.get('/api/v1/payments/property',{
+            params: {
+                api_token: authUser.api_token,
+                property_type : selectedOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setProperties(response.data.message.property)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+          setSelectedPropertyTypeOption(selectedOption)
+    }
+    
+      const handleSelectPropertyChange = (selectedOption) => {
+        if(state.non_asset === '0'){
+            return ;
+         }
+         setState(state => ({
+              ...state,
+              property_id: selectedOption.value,
+              area_id   : null
+          }));
+        setSelectedPropertyOption(selectedOption);
+        setAreas([]);
+        setSubAreas([]);
+        setSelectedAreaOption((props.location.state.property_id == option.value)  ? (props.location.state.area ? 
+        props.location.state.area : null) : []);
+        setSelectedSubAreaOption((props.location.state.area_id == option.value)  ? (props.location.state.sub_area ? 
+        props.location.state.sub_area : null) : []);
+
+        setIsLoading(true);
+
+         axios.get('/api/v1/sub-areas/areas',{
+            params: {
+                api_token: authUser.api_token,
+                property : selectedOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setAreas(response.data.message.area)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+     } 
+
+      const handleSelectAreaChange = (selectedOption) => {
+        if(state.non_asset === '0'){
+            return ;
+         }
+         setState(state => ({
+              ...state,
+              area_id: selectedOption.value,
+              sub_area_id   : null
+          }));
+        setSelectedAreaOption(selectedOption);
+        setSubAreas([]);
+        setSelectedSubAreaOption((props.location.state.area_id == option.value)  ? (props.location.state.sub_area ? 
+        props.location.state.sub_area : null) : []);
+        setIsLoading(true);
+
+         axios.get('/api/v1/tenants/sub-area',{
+            params: {
+                api_token: authUser.api_token,
+                area_id : selectedOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setSubAreas(response.data.message.subArea)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+     }
+       
+    const handleSelectSubAreaChange = (selectedOption) => {
+      if(state.non_asset === '0'){
+            return ;
+         }
+         setState(state => ({
+              ...state,
+              sub_area_id: selectedOption.value,
+          }));
+        setSelectedSubAreaOption(selectedOption);
+
+        setTenants([]);
+        setSelectedTenantOption((props.location.state.sub_area_id == option.value)  ? (props.location.state.tenant ? 
+        props.location.state.tenant : null) : []);
+
+          setIsLoading(true);
+
+          axios.get('/api/v1/payments/tenant',{
+            params: {
+                api_token: authUser.api_token,
+                sub_area_id : selectedOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setTenants(response.data.message.tenants)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
+     }
+
      const loadPageData = () => {
           setIsLoading(true);
           
@@ -259,6 +454,9 @@ function Edit(props) {
                 name: props.location.state.name,
                 notes: props.location.state.notes,
                 payment: props.location.state.payment,
+                brand: props.location.state.brand,
+                description: props.location.state.description,
+                non_asset: props.location.state.non_asset,
                 payment_date: props.location.state.payment_date,
                 property_id: props.location.state.property ? props.location.state.property.id : null, 
                 asset_type_id:props.location.state.asset_type ? props.location.state.asset_type.id : null,   
@@ -310,6 +508,9 @@ function Edit(props) {
                       notes: _data.notes,
                       payment: _data.payment,
                       payment_date: _data.payment_date,
+                      brand: _data.brand,
+                      description: _data.description,
+                      non_asset: _data.non_asset,
                       property_id: _data.property ? _data.property.id : null, 
                       asset_type_id:_data.asset_type ? _data.asset_type.id : null,   
                       asset_model_id: _data.asset_model ? _data.asset_model.id : null, 
@@ -362,7 +563,7 @@ function Edit(props) {
           .then(response => {
               setIsLoading(false);
               setAssetTypes(response.data.message.assetTypes)  
-              // setPropertyTypes(response.data.message.propertyTypes)  
+               setPropertyTypes2(response.data.message.propertyTypes)  
               setAssetModels(response.data.message.assetModels)  
               setVendors(response.data.message.vendors)  
               setContractors(response.data.message.contractors)  
@@ -401,6 +602,9 @@ function Edit(props) {
             formData.append('notes', state.notes);
             formData.append('payment', state.payment);
             formData.append('payment_date', state.payment_date);
+            formData.append('brand', state.brand);
+            formData.append('description', state.description);
+            formData.append('non_asset', state.non_asset);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
@@ -543,43 +747,109 @@ function Edit(props) {
                                                 </li>
                                             </ul>
                                         </div>
-                                        {/* asset Type */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Asset Type</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-outline"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedAssetTypeOption}
-                                        onChange={handleSelectAssetTypeChange}
-                                        options={ (assetTypes.length > 0) ? [...assetTypesNullArr, ...assetTypes] : []}
-                                      />  
-                                    </div>
-                                    </div> 
+                                      <div className="form-group">
+                                       <div className="input-group input-group-sm"> 
+                                       <input
+                                             value="0"
+                                              name="non_asset"
+                                              type="radio"
+                                              onChange={onNonAssetHandle}
+                                              checked={state.non_asset ==="0"}
+                                            />  
+                                           <label  className="mx-1 mr-4 my-1" >
+                                                Asset
+                                            </label>
 
-                                     {/* asset Type */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Asset</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-outline"></i>
-                                            </span>
+                                           <input
+                                              value="1"
+                                              name="non_asset"
+                                              type="radio"
+                                              onChange={onNonAssetHandle}
+                                              checked={state.non_asset ==="1"}
+                                            />
+                                            <label  className="mx-1 mr-4 my-1" > Non Asset</label>
+                                           </div>
+                                          </div>
+
+                                       {state.non_asset ===  "0" &&
+                                       <div>
+                                           <div className="form-group" >
+                                            <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                              <span>Asset Type</span>
+                                            </label>
+                                             <div className="input-group input-group-sm">
+                                              <div className="input-group-prepend">
+                                                  <span className="input-group-text bg-gradient-success text-white">
+                                                      <i className="mdi mdi-home-outline"></i>
+                                                  </span>
+                                              </div>
+                                              <Select
+                                              defaultValue={selectedAssetTypeOption}
+                                              onChange={handleSelectAssetTypeChange}
+                                              options={ (assetTypes.length > 0) ? [...assetTypesNullArr, ...assetTypes] : []}
+                                            />  
+                                          </div>
+                                          </div> 
+                                                                                    
+                                              <div className="form-group">
+                                                    <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                                      <span>Asset</span>
+                                                    </label>
+                                                     <div className="input-group input-group-sm">
+                                                      <div className="input-group-prepend">
+                                                          <span className="input-group-text bg-gradient-success text-white">
+                                                              <i className="mdi mdi-home-outline"></i>
+                                                          </span>
+                                                      </div>
+                                                      <Select
+                                                      defaultValue={selectedAssetModelOption}
+                                                      onChange={handleSelectAssetModelChange}
+                                                      options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
+                                                    />  
+                                                    <QuickAddAsset/>
+                                                  </div>
+                                              </div>
+
+                                              </div>
+                                          }
+
+
+                                          {state.non_asset ===  "1" &&
+
+                                          <div className="form-group">
+                                          <label>
+                                            <span>Description</span>
+                                          </label>
+                                          <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-circle-edit-outline"></i>
+                                                </span>
+                                            </div>
+                                            <textarea  name="description" placeholder="Description"
+                                              onChange={onChangeHandle}
+                                              value={state.description}
+                                              className="form-control form-control-sm"></textarea>
+                                              </div>
+                                       
+                                          </div>
+
+
+                                          }
+
+
+                                    
+                                      <div className="form-group">
+                                        <label>Brand</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" className="form-control form-control-sm" id="brand" name="brand" placeholder="Brand Name" 
+                                            value={state.brand} onChange={onChangeHandle}/>
                                         </div>
-                                        <Select
-                                        value={selectedAssetModelOption}
-                                        onChange={handleSelectAssetModelChange}
-                                        options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
-                                      />  
-                                      <QuickAddAsset/>
-                                    </div>
                                     </div>
 
                                 {/* property_type */}
@@ -595,6 +865,7 @@ function Edit(props) {
                                         </div>
                                         <Select
                                         value={selectedPropertyTypeOption}
+                                         onChange={handleSelectPropertyTypeChange}
                                         options={ (propertyTypes.length > 0) ? propertyTypes : []}
                                       />  
                                     </div>
@@ -614,6 +885,7 @@ function Edit(props) {
                                         </div>
                                         <Select
                                         value={selectedPropertyOption}
+                                         onChange={handleSelectPropertyChange}
                                         options={ (properties.length > 0) ? properties : []}
                                       />  
                                     </div>
@@ -633,6 +905,7 @@ function Edit(props) {
                                         </div>
                                         <Select
                                         value={selectedAreaOption}
+                                        onChange={handleSelectAreaChange}
                                         options={ (areas.length > 0) ? areas : []}
                                       />  
                                     </div>
@@ -653,6 +926,7 @@ function Edit(props) {
                                         </div>
                                         <Select
                                         value={selectedSubAreaOption}
+                                        onChange={handleSelectSubAreaChange}
                                         options={ (subAreas.length > 0) ? subAreas : []}
                                       />  
                                     </div>

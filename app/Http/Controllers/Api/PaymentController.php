@@ -361,6 +361,51 @@ class PaymentController extends Controller
         ]);
     }
 
+    public function tenant (Request $request)
+    { 
+          $whereUserProperties = User::userProperties(); 
+          $subarea = SubArea::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->where('id',$request->sub_area_id)
+                       ->first();
+
+         if (empty($subarea)) {
+              return response()->json([
+                  'message' => 'Tenant Not Found',
+                  'status' => 'error'
+              ]);
+          }             
+              
+         if($subarea){
+
+          $tenants = Tenant::where([
+                         'sub_area_id' => $subarea->id,
+                         'area_id' => $subarea->area_id,
+                         'property_id' => $subarea->property_id
+             ])->when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->orderBy('name')->get();;
+
+            if($tenants){
+
+                $tenants = @$tenants->filter(function($tenant){
+                    $tenant->label = $tenant->name;
+                    $tenant->value = $tenant->id;
+                    return $tenant;
+                });
+            }
+          }
+
+         $tenants = ($tenants) ? $tenants : [];  
+         
+         return response()->json([
+            'message' => compact('tenants'),
+            'status' => 'success'
+        ]);
+    }
+
     public function assetType(Request $request)
     { 
           $whereUserProperties = User::userProperties();
@@ -496,7 +541,7 @@ class PaymentController extends Controller
         }  
 
          $validate = Validator::make($request->all(),[
-              'asset_model_id' => 'required|string'
+              'asset_model_id' => 'nullable|string'
         ],[
             'asset_model_id.required'=> 'Asset is Required!'
            ]);
@@ -507,7 +552,7 @@ class PaymentController extends Controller
                 'status' => 'validation-error'
             ], 401);
         }
-
+         
        $create =  Payment::create($data); 
 
        if($request->hasFile('files')){
@@ -569,7 +614,7 @@ class PaymentController extends Controller
 
   
         $validate = Validator::make($request->all(),[
-              'asset_model_id' => 'required|string'
+              'asset_model_id' => 'nullable|string'
         ],[
             'asset_model_id.required'=> 'Asset is Required!'
            ]);
