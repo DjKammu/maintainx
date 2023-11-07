@@ -12,41 +12,17 @@ import { Button, Modal } from 'react-bootstrap';
 
 function New(props) {
 
-    const [properties, setProperties] = useState([]);
-    const [areas, setAreas] = useState([]);
     const [isQuickLoading, setIsQuickLoading] = useState(true);
-    const [selectedPropertyOption, setSelectedPropertyOption]  = useState(props.dropdowns.property ? 
-        props.dropdowns.property : null ); 
-    const [selectedAreaOption, setSelectedAreaOption]  = useState(props.dropdowns.area ? 
-        props.dropdowns.area : null);
-    let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
-    let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
-    
     const [quickModal, setQuickModal] = useState(false);
    
     const handleClose = () => setQuickModal(false);
-    const handleShow = () => {
-          setQuickModal(true);
-          setState({
-            ...state,
-                property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
-                area_id: props.dropdowns.area ? props.dropdowns.area.id : null,
-            });
+    const handleShow = () =>  setQuickModal(true);
 
-        setSelectedPropertyOption(props.dropdowns.property ? 
-        props.dropdowns.property : null );
-        setSelectedAreaOption(props.dropdowns.area ? 
-        props.dropdowns.area : null );
-        loadData();
-        loadArea();
-    }
 
     const [state, setState] = useState({
-        name: "",
-        property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
-        area_id: props.dropdowns.area ? props.dropdowns.area.id : null,
-        notes: "",
-        photo: "",
+         name: "",
+        account_number: "",
+        notes: '',
         loading: false,
         authUser: props.authUserProp
     });
@@ -72,78 +48,6 @@ function New(props) {
         });
     }
 
-    const handleFileChange = (e) => {
-         e.persist();
-         const { name  } = e.target;
-         setState(state => ({
-              ...state,
-              [name]:  e.target.files[0]
-          }));  
-     }
-    
-    const handleSelectPropertyChange = (selectedOption) => {
-         setState(state => ({
-              ...state,
-              property_id: selectedOption.value,
-              area_id   : null
-          }));
-        setSelectedPropertyOption(selectedOption);
-        setAreas([]);
-        setSelectedAreaOption([]);
-        loadArea(selectedOption.value); 
-     } 
-
-     const loadArea = (value = null) => {
-        
-        if(!props.dropdowns.property){
-            return;
-        }
-        setIsQuickLoading(true);
-        axios.get('/api/v1/sub-areas/areas',{
-            params: {
-                api_token: authUser.api_token,
-                property : (value) ? value : props.dropdowns.property.id
-             }
-            })
-          .then(response => {
-            setIsQuickLoading(false);
-            setAreas(response.data.message.area)
-          })
-          .catch(error => {
-                 showSznNotification({
-                    type : 'error',
-                    message : error.response.data.message
-                });
-          });
-     }
-
-     const handleSelectAreaChange = (selectedOption) => {
-         setState(state => ({
-              ...state,
-              area_id: selectedOption.value,
-          }));
-         setSelectedAreaOption(selectedOption);
-     }
-
-    const loadData = () => {
-            setIsQuickLoading(true);
-            axios.get('/api/v1/areas/properties',{
-                params: {
-                    api_token: authUser.api_token
-                }
-            })
-            .then(response => {
-                setIsQuickLoading(false);
-                setProperties(response.data.message.properties)  
-            })
-            .catch((error) => {
-                showSznNotification({
-                    type : 'error',
-                    message : error.response.data.message
-                });
-            });
-        };
-
     const onQuickSubmitHandle = (e) =>{
 
         e.preventDefault();
@@ -153,15 +57,12 @@ function New(props) {
                 loading: true
             });
 
-            var formData = new FormData();
+           var formData = new FormData();
             formData.append('name', state.name);
-            formData.append('property_id', state.property_id);
-            formData.append('area_id', state.area_id);
-            formData.append('notes', state.notes);
-            formData.append('photo', state.photo);
+            formData.append('account_number', state.account_number);
           
             axios.post(
-              '/api/v1/sub-areas',formData,{
+              '/api/v1/work-types',formData,{
               params: {
                    api_token: authUser.api_token
               }
@@ -191,6 +92,14 @@ function New(props) {
                         type : 'success',
                         message : response.data.message
                     });
+
+                    setState({
+                        ...state,
+                            name: "",
+                            account_number: "",
+                            notes: '',                                                          
+                    });
+
                     setQuickModal(false)
                     props.fn();
                 }
@@ -253,11 +162,11 @@ function New(props) {
                                 }}
                             >
                                 <form className="new-lead-form border">
-                                    <input type="hidden" name="api_token" value={state.authUser.api_token} />
+                                   <input type="hidden" name="api_token" value={state.authUser.api_token} />
                                     <div className="form-group">
                                         <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
                                             <li className="nav-item">
-                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW SUB AREA/SUITE</span>
+                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW WORK TYPE</span>
                                             </li>
                                         </ul>
                                     </div>
@@ -275,47 +184,10 @@ function New(props) {
                                         {simpleValidator.current.message('name', state.name, 'required')}
                                     </div>
 
-                                    {/* property */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Property</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-outline"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedPropertyOption}
-                                        onChange={handleSelectPropertyChange}
-                                        options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
-                                      />  
-                                    </div>
-                                    </div>
-
-                                     {/* area */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Area</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-variant"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedAreaOption}
-                                        onChange={handleSelectAreaChange}
-                                        options={ (areas.length > 0) ? [...areaNullArr, ...areas] : []}
-                                      />  
-                                    </div>
-                                    </div>
-
-                                      <div className="form-group">
+                                     {/* account_number */}
+                                        <div className="form-group">
                                           <label>
-                                            <span>Notes</span>
+                                            <span>Account Number</span>
                                           </label>
                                         <div className="input-group input-group-sm">
                                             <div className="input-group-prepend">
@@ -323,33 +195,18 @@ function New(props) {
                                                     <i className="mdi mdi-circle-edit-outline"></i>
                                                 </span>
                                             </div>
-                                            <textarea  name="notes" placeholder="Notes"
+                                            <input type="text" name="account_number" placeholder="Account Number"
+                                        value={state.account_number}
                                         onChange={onChangeHandle}
-                                        value={state.notes}
-                                        className="form-control form-control-sm"></textarea>
+                                        className="form-control form-control-sm"/>
                                         </div>
                                        
-                                          </div>
-
-                                          <div className="form-group">
-                                                  <label>
-                                                    <span>Photo</span>
-                                                  </label>
-                                                <div className="input-group input-group-sm">
-                                                    
-                                                     <input type="file" name="photo" 
-                                                      onChange={handleFileChange} 
-                                                  />
-                                                </div>
-                                               
                                           </div> 
-                   
-                      
 
-                       <div className="form-group text-center">
-                            <button type="submit" onClick={onQuickSubmitHandle} className="btn btn-gradient-primary btn-md mr-2">Save</button>
-                            <button type="button" onClick={handleClose} className="btn btn-inverse-secondary btn-md">Cancel</button>
-                        </div>
+                                       <div className="form-group text-center">
+                                        <button type="submit" onClick={onQuickSubmitHandle} className="btn btn-gradient-primary btn-md mr-2">Save</button>
+                                        <button type="button" onClick={handleClose} className="btn btn-inverse-secondary btn-md">Cancel</button>
+                                    </div>
                                 </form>
                             </LoadingOverlay>
                         </div>

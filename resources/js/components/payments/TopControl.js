@@ -36,6 +36,42 @@ function TopControl(props) {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="p-2">
+                            <div className="input-group input-group-sm">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">Tenant</span>
+                                </div>
+                               
+                                <select className="form-control form-control-sm btn btn-success"
+                                defaultValue={props.tenant}
+                                onChange={props.onChangeTenantHandle}>
+                                <option value=""> Select </option>
+                                
+                                     {props.tenants.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
+                                
+                                </select>
+                            </div>
+                        </div>
+
+                         <div className="p-2">
+                            <div className="input-group input-group-sm">
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text">Work Type</span>
+                                </div>
+                               
+                                <select className="form-control form-control-sm btn btn-success"
+                                defaultValue={props.workType}
+                                onChange={props.onChangeWorkTypeHandle}>
+                                <option value=""> Select </option>
+                                
+                                     {props.workTypes.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
+                                
+                                </select>
+                            </div>
+                        </div>
+
+
                     </div>
                     </div>
 

@@ -42,6 +42,7 @@ class PaymentController extends Controller
         if(Gate::denies('view')) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
+        
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
@@ -94,6 +95,20 @@ class PaymentController extends Controller
             $sub_area = $request['sub_area'];
             $data->whereHas('sub_area', function($q) use ($sub_area){
                 $q->where('id', $sub_area);
+            });
+        } 
+
+        if ($request['tenant'] != '') {
+            $tenant = $request['tenant'];
+            $data->whereHas('tenant', function($q) use ($tenant){
+                $q->where('id', $tenant);
+            });
+        } 
+
+        if ($request['work_type'] != '') {
+            $work_type = $request['work_type'];
+            $data->whereHas('work_type', function($q) use ($work_type){
+                $q->where('id', $work_type);
             });
         } 
 
@@ -490,7 +505,7 @@ class PaymentController extends Controller
           });
 
          $tenants = [];
-
+         $allTenants = [];
 
         if($payment->tenant_id){
             
@@ -512,6 +527,22 @@ class PaymentController extends Controller
 
          }
 
+
+            
+           $allTenants = Tenant::when($whereUserProperties, function ($q) use 
+                       ($whereUserProperties) {
+                        $q->whereIn('property_id', $whereUserProperties);
+                      })->orderBy('name')->get();
+
+          if($allTenants){
+
+              $allTenants = @$allTenants->filter(function($tenant){
+                  $tenant->label = $tenant->name;
+                  $tenant->value = $tenant->id;
+                  return $tenant;
+              });
+          }
+
          $workTypes = WorkType::orderBy('name')->get();
          $workTypes = @$workTypes->filter(function($workType){
               $workType->label = $workType->name;
@@ -520,7 +551,7 @@ class PaymentController extends Controller
           });
 
           return response()->json([
-            'message' => compact('propertyTypes','assetTypes','assetModels','vendors','contractors','tenants','workTypes'),
+            'message' => compact('propertyTypes','assetTypes','assetModels','vendors','contractors','tenants','workTypes','allTenants'),
             'status' => 'success'
         ]);
 

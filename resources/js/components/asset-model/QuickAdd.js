@@ -61,7 +61,7 @@ function New(props) {
             className: 'small text-danger mdi mdi-alert pt-1 pl-1'
     }));
 
-       useEffect(() => {
+    useEffect(() => {
         document.title = 'New Asset';
         props.setActiveComponentProp('New');
         loadData();

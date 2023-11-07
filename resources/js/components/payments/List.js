@@ -17,6 +17,8 @@ function List(props) {
     const [properties, setProperties] = useState([]);
     const [areas, setAreas] = useState([]);
     const [subAreas, setsubAreas] = useState([]);
+    const [tenants, setTenants] = useState([]);
+    const [workTypes, setWorkTypes] = useState([]);
 
     const [state, setState] = useState({
        pageRangeDisplayed: 5,
@@ -35,6 +37,8 @@ function List(props) {
        property:'',
        area:'',
        subArea:'',
+       tenant:'',
+       workType:'',
     });
 
     //get reducer
@@ -46,7 +50,8 @@ function List(props) {
     useEffect(() => {
         document.title = 'All Payments';
         props.setActiveComponentProp('List');
-          loadPropertyTypes();
+        loadPropertyTypes();
+        loadAttributes();
     }, []);
 
     useEffect(() => {
@@ -61,7 +66,7 @@ function List(props) {
            loadSubArea();
         }
     }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
-    state.property,state.area, state.subArea]);
+    state.property,state.area, state.subArea,state.tenant, state.workType]);
 
     const skeletonLoader = () => {
         return <div className="content-loader-wrapper">
@@ -131,6 +136,27 @@ function List(props) {
                 subArea: ''
             });
        }
+
+       const loadAttributes = () => {
+          setIsLoading(true);
+          axios.get('/api/v1/payments/attributes',{
+              params: {
+                  api_token: authUser.api_token
+              }
+          })
+          .then(response => {
+              setIsLoading(false); 
+               setTenants(response.data.message.allTenants)  
+               setWorkTypes(response.data.message.workTypes)  
+          })
+          .catch((error) => {
+              showSznNotification({
+                  type : 'error',
+                  message : 'Error! '
+              });
+          });
+      };  
+
        const loadPropertyTypes = () => {
             emptyProperties();
             setIsLoading(true);
@@ -243,6 +269,18 @@ function List(props) {
             subArea: e.target.value
         });
     };
+    const onChangeTenantHandle  = (e) => {
+        setState({
+            ...state,
+            tenant: e.target.value
+        });
+    };
+    const onChangeWorkTypeHandle  = (e) => {
+        setState({
+            ...state,
+            workType: e.target.value
+        });
+    };
 
     const loadData = () => {
         setIsLoading(true);
@@ -257,6 +295,8 @@ function List(props) {
                 property: state.property,
                 area: state.area,
                 sub_area: state.subArea,
+                tenant: state.tenant,
+                work_type: state.workType,
             }
         })
         .then(response => {
@@ -403,6 +443,8 @@ function List(props) {
                            <th className="px-4 py-2">Sub Area </th>
                            <th className="px-4 py-2">Vendor  </th>
                            <th className="px-4 py-2">Contractor </th>
+                           <th className="px-4 py-2">Tenant </th>
+                           <th className="px-4 py-2">Work Type </th>
                            <th className="px-4 py-2">Payment </th>
                            <th className="px-4 py-2"> <img className="ext-img-sm" src={`/public/images/paper.png`} /> </th>
                            <th className="px-4 py-2">Action</th>
@@ -430,6 +472,12 @@ function List(props) {
                         subArea={state.subArea} 
                         subAreas={subAreas} 
                         onChangeSubAreaHandle={onChangeSubAreaHandle}
+                        tenant={state.tenant} 
+                        tenants={tenants} 
+                        onChangeTenantHandle={onChangeTenantHandle}
+                        workType={state.workType} 
+                        workTypes={workTypes} 
+                        onChangeWorkTypeHandle={onChangeWorkTypeHandle}
                         sortBy={state.sortBy}
                         sortType={state.sortType}
                         onChangeSortByHandle={onChangeSortByHandle}
