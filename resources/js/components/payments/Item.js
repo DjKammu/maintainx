@@ -28,6 +28,7 @@ class Item extends Component {
                         <td className="border px-4 py-3">{ this.props.obj.tenant_name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.work_type_name }</td>
                         <td className="border px-4 py-3">${ this.props.obj.payment }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.payment_date }</td>
                         <td className="border px-2 py-1">
                         {this.props.obj.media && this.props.obj.media.length > 0 && 
                                                        

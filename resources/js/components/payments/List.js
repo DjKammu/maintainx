@@ -434,7 +434,7 @@ function List(props) {
         (data.length == 0 ? <div className="text-center text-gray">
                                 <div className="p-3 font-weight-bold">No Data Available</div>
                             </div> : 
-                           <table className="table-fixed w-full">
+                           <table className="responsive-table w-full">
                            <thead><tr className="bg-gray-100">
                            <th className="px-4 py-2">Asset Type</th>
                            <th className="px-4 py-2">Asset Name</th>
@@ -446,6 +446,7 @@ function List(props) {
                            <th className="px-4 py-2">Tenant </th>
                            <th className="px-4 py-2">Work Type </th>
                            <th className="px-4 py-2">Payment </th>
+                           <th className="px-4 py-2">Payment Date </th>
                            <th className="px-4 py-2"> <img className="ext-img-sm" src={`/public/images/paper.png`} /> </th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
@@ -486,7 +487,7 @@ function List(props) {
                         onChangeQueryHandle={onChangeQueryHandle}
                         query={state.query}
                     />
-                    <div className='szn-list-wrapper bg-gradient-light'>
+                    <div className='szn-list-wrapper bg-gradient-light table-outer'>
                             {dataTable()}
                     </div>
                     <div className="pt-3 pb-3">

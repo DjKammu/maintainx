@@ -77,7 +77,7 @@ class ContractorController extends Controller
         $data = $request->except('api_token');
   
         $validate = Validator::make($request->all(),[
-              'name' => 'required|string'
+              'name' => 'nallable|string'
         ]);
 
         if ($validate->fails()) {
@@ -145,7 +145,7 @@ class ContractorController extends Controller
         $data = $request->except(['api_token','extra_attachment','layout_attachment','id']   );
   
         $validate = Validator::make($request->all(),[
-              'name' => 'required|string'
+              'name' => 'nallable|string'
         ]);
 
         if ($validate->fails()) {

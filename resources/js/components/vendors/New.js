@@ -191,7 +191,6 @@ function New(props) {
                                             <input type="text" className="form-control form-control-sm" id="name" name="name" placeholder="Name" 
                                             value={state.name} onChange={onChangeHandle}/>
                                         </div>
-                                        {simpleValidator.current.message('name', state.name, 'required')}
                                     </div>
 
                                      {/* account_number */}

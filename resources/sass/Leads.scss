@@ -23,6 +23,9 @@ table.table-fixed.w-full {
     color: #343a40;
 }
 
+.table-outer{
+    overflow:auto;
+}
 @media (min-width: 576px){
    .modal-dialog {
         max-width: 625px;
