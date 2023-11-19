@@ -17,11 +17,15 @@ function New(props) {
     const [areas, setAreas] = useState([]);
     const [subAreas, setSubAreas] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState(props.dropdowns.property_type ? 
+        props.dropdowns.property_type : null ); 
+    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState(props.dropdowns.sub_area ? 
+        props.dropdowns.sub_area : null ); 
+    const [selectedPropertyOption, setSelectedPropertyOption]  = useState(props.dropdowns.property ? 
+        props.dropdowns.property : null ); 
+    const [selectedAreaOption, setSelectedAreaOption]  = useState(props.dropdowns.area ? 
+        props.dropdowns.area : null);
 
-    const selectedPropertyTypeOption = null;
-    const [selectedAreaOption, setSelectedAreaOption]  = useState([]);
-    const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
-    const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState([]);
     let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
@@ -30,22 +34,42 @@ function New(props) {
     const [quickModal, setQuickModal] = useState(false);
    
     const handleClose = () => setQuickModal(false);
-    const handleShow = () => setQuickModal(true);
+    const handleShow = () => {
+          setQuickModal(true);
+          setState({
+            ...state,
+                property_type_id: props.dropdowns.property_type ? props.dropdowns.property_type.id : null,
+                property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
+                area_id: props.dropdowns.area ? props.dropdowns.area.id : null,
+                sub_area_id: props.dropdowns.sub_area ? props.dropdowns.sub_area.id : null,
+            });
+
+        setSelectedPropertyOption(props.dropdowns.property ? 
+        props.dropdowns.property : null );
+        setSelectedAreaOption(props.dropdowns.area ? 
+        props.dropdowns.area : null );
+
+        setSelectedPropertyTypeOption(props.dropdowns.property_type ? 
+        props.dropdowns.property_type : null );
+        setSelectedSubAreaOption(props.dropdowns.sub_area ? 
+        props.dropdowns.sub_area : null );
+        loadData();
+    }
 
 
     const [state, setState] = useState({
         name: "",
         account_number: "",
-        property_type_id: "",
-        property_id: "",
-        area_id: "",
-        sub_area_id: "",
+        property_type_id: props.dropdowns.property_type ? props.dropdowns.property_type.id : null,
+        property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
+        area_id: props.dropdowns.area ? props.dropdowns.area.id : null,
+        sub_area_id: props.dropdowns.sub_area ? props.dropdowns.sub_area.id : null,
         notes: '',
         loading: false,
         authUser: props.authUserProp
     });
     
-    let history = useHistory();
+   let history = useHistory();
     
     //validator
     const [, forceUpdate] = useState() //this is a dummy state, when form submitted, change the state so that message is rendered
@@ -57,7 +81,7 @@ function New(props) {
     useEffect(() => {
           document.title = 'New Tenant';
         props.setActiveComponentProp('New');
-         loadData();
+       //  loadData();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -83,7 +107,7 @@ function New(props) {
               property_type_id: selectedOption.value,
               property_id   : null
           }));
-
+        setSelectedPropertyTypeOption(selectedOption);
         setProperties([]);
         setSelectedPropertyOption([]);
         setAreas([]);
@@ -249,7 +273,7 @@ function New(props) {
                         message : response.data.message
                     });
                      setQuickModal(false)
-                    // history.push('/tenants')
+                     props.fn();
                 }
             })
             .catch((error) => {
@@ -363,7 +387,7 @@ function New(props) {
                                             </span>
                                         </div>
                                         <Select
-                                        defaultValue={selectedPropertyTypeOption}
+                                        value={selectedPropertyTypeOption}
                                         onChange={handleSelectPropertyTypeChange}
                                         options={ (propertyTypes.length > 0) ? [...propertyTypeNullArr, ...propertyTypes] : []}
                                       />  

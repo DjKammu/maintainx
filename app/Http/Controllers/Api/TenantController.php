@@ -127,7 +127,7 @@ class TenantController extends Controller
 
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-              'account_number' => 'nullable|unique:tenants',
+              // 'account_number' => 'nullable|unique:tenants',
         ]);
 
         if ($validate->fails()) {
@@ -194,7 +194,7 @@ class TenantController extends Controller
 
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-               'account_number' => 'nullable|unique:tenants,account_number,'.$request['id'],
+               // 'account_number' => 'nullable|unique:tenants,account_number,'.$request['id'],
         ]);
 
         if ($validate->fails()) {

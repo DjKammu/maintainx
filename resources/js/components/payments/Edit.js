@@ -161,6 +161,35 @@ function Edit(props) {
           });
         };
 
+
+    const loadAssets = () => {
+
+         if(state.non_asset === '0'){
+            return ;
+         }
+       
+        setAssetModels([]);
+        setIsLoading(true);
+
+         axios.get('/api/v1/payments/assets',{
+            params: {
+                api_token: authUser.api_token,
+                asset_type : state.asset_type_id
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setAssetModels(response.data.message.assets)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
+        };
+
     const loadPropertyTypes = () => {
             setIsLoading(true);
             axios.get('/api/v1/payments/attributes',{
@@ -292,6 +321,34 @@ function Edit(props) {
               });
         });
       };
+
+      const loadTenants = () => {
+      if(state.non_asset === '0'){
+          return ;
+       }
+        setTenants([]);
+        setSelectedTenantOption([]);
+        setIsLoading(true);
+
+          axios.get('/api/v1/payments/tenant',{
+            params: {
+                api_token: authUser.api_token,
+                sub_area_id : selectedSubAreaOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setTenants(response.data.message.tenants)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
+      };
+
     const onNonAssetHandle = (e) =>{
         const { name, value } = e.target;
         setState({
@@ -990,7 +1047,15 @@ function Edit(props) {
                                                       onChange={handleSelectAssetModelChange}
                                                       options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
                                                     />  
-                                                    <QuickAddAsset/>
+                                                    <QuickAddAsset fn={loadAssets} dropdowns={
+                                                        { 
+                                                            asset_type : selectedAssetTypeOption,
+                                                            area : selectedAreaOption , 
+                                                            sub_area : selectedSubAreaOption ,
+                                                            property : selectedPropertyOption ,
+                                                            property_type : selectedPropertyTypeOption 
+                                                       }
+                                                    }/>
                                                   </div>
                                               </div>
 
@@ -1197,7 +1262,14 @@ function Edit(props) {
                                         onChange={handleSelectTenantChange}
                                         options={ (tenants.length > 0) ? [...tenantsNullArr, ...tenants] : []}
                                       /> 
-                                      <QuickAddTenant/>
+                                      <QuickAddTenant fn={loadTenants} dropdowns={
+                                            { area : selectedAreaOption , 
+                                             sub_area : selectedSubAreaOption ,
+                                             property : selectedPropertyOption ,
+                                             property_type : selectedPropertyTypeOption 
+                                           }
+                                        }
+                                        />
                                     </div>
                                     </div>
 
