@@ -163,11 +163,6 @@ function Edit(props) {
 
 
     const loadAssets = () => {
-
-         if(state.non_asset === '0'){
-            return ;
-         }
-       
         setAssetModels([]);
         setIsLoading(true);
 

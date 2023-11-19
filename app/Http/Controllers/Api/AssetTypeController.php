@@ -73,7 +73,7 @@ class AssetTypeController extends Controller
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-            'account_number' => 'required|unique:asset_types',
+            // 'account_number' => 'required|unique:asset_types',
         ]);
 
         if ($validate->fails()) {
@@ -136,7 +136,7 @@ class AssetTypeController extends Controller
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-              'account_number' => 'required|unique:asset_types,account_number,'.$request['id'],
+              // 'account_number' => 'required|unique:asset_types,account_number,'.$request['id'],
         ]);
 
         if ($validate->fails()) {
