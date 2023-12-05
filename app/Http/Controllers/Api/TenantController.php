@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use App\Models\AssetModel;
 use App\Models\SubArea;
+use App\Models\Area;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Role;
@@ -263,6 +265,7 @@ class TenantController extends Controller
 
     public function subArea(Request $request)
     { 
+          $asset_type_id = $request->asset_type_id;
           $whereUserProperties = User::userProperties();
 
           $subAreas = SubArea::when($whereUserProperties, function ($q) use 
@@ -278,9 +281,41 @@ class TenantController extends Controller
                   return $subArea;
               });
           }
+           
+           $area = Area::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->where('id',$request->area_id)
+                       ->first();
+
+           if($area){
+
+              $assets = AssetModel::where([
+                         'area_id' => $area->id,
+                         'property_id' => $area->property_id
+             ])->when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+              })->when($asset_type_id, function ($q) use 
+               ($asset_type_id) {
+                $q->where('asset_type_id', $asset_type_id);
+              })->orderBy('name')->get();
+
+            if($assets){
+
+                $assets = @$assets->filter(function($asset){
+                    $asset->label = $tenant->name;
+                    $asset->value = $tenant->id;
+                    return $asset;
+                });
+            }
+
+          }
+
+         $assets = (@$assets) ? $assets : [];  
          $subArea = ($subAreas) ?  $subAreas : []; 
          return response()->json([
-            'message' => compact('subArea'),
+            'message' => compact('subArea','assets'),
             'status' => 'successs'       
         ]);
     }  

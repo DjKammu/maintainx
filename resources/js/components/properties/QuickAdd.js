@@ -15,7 +15,7 @@ function New(props) {
     const [quickModal, setQuickModal] = useState(false);
     const [propertyTypes, setPropertyTypes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState(props.dropdowns.property_type ? 
+    const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState((props.dropdowns && props.dropdowns.property_type) ? 
         props.dropdowns.property_type : null ); 
     let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
    
@@ -25,9 +25,9 @@ function New(props) {
           loadData();
           setState({
             ...state,
-            property_type_id: props.dropdowns.property_type ? props.dropdowns.property_type.id : null,
+            property_type_id: (props.dropdowns && props.dropdowns.property_type) ? props.dropdowns.property_type.id : null,
         });
-        setSelectedPropertyTypeOption(props.dropdowns.property_type ? 
+        setSelectedPropertyTypeOption((props.dropdowns && props.dropdowns.property_type) ? 
         props.dropdowns.property_type : null );
     }
 

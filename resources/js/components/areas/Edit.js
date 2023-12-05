@@ -8,6 +8,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
+import QuickAddProperty from '../properties/QuickAdd';
 
 function Edit(props) {
     const [properties, setProperties] = useState([]);
@@ -35,7 +36,7 @@ function Edit(props) {
     useEffect(() => {
         document.title = 'Edit Area';
         props.setActiveComponentProp('Edit');
-        loadData();
+        loadProperty();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -53,7 +54,7 @@ function Edit(props) {
           }));
       }
 
-    const loadData = () => {
+    const loadProperty = () => {
             setIsLoading(true);
             axios.get('/api/v1/areas/properties',{
                 params: {
@@ -209,7 +210,8 @@ function Edit(props) {
                                         defaultValue={selectedPropertyOption}
                                         onChange={handleSelectPropertyChange}
                                         options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
-                                      />  
+                                      /> 
+                                       <QuickAddProperty fn={loadProperty} /> 
                                     </div>
                                     </div>
                    

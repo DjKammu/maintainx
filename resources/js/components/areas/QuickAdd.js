@@ -16,7 +16,7 @@ function New(props) {
     const [areas, setAreas] = useState([]);
     const [isQuickLoading, setIsQuickLoading] = useState(true);
      const [isLoading, setIsLoading] = useState(true);
-    const [selectedPropertyOption, setSelectedPropertyOption]  = useState(props.dropdowns.property ? 
+    const [selectedPropertyOption, setSelectedPropertyOption]  = useState((props.dropdowns && props.dropdowns.property) ? 
         props.dropdowns.property : null ); 
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     
@@ -28,9 +28,9 @@ function New(props) {
           loadData();
           setState({
             ...state,
-            property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
+            property_id: (props.dropdowns && props.dropdowns.property) ? props.dropdowns.property.id : null,
         });
-        setSelectedPropertyOption(props.dropdowns.property ? 
+        setSelectedPropertyOption((props.dropdowns && props.dropdowns.property) ? 
         props.dropdowns.property : null );
     }
 

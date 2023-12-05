@@ -8,6 +8,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
+import QuickAddPropertyType from '../property-types/QuickAdd';
 
 function Edit(props) {
     
@@ -46,7 +47,7 @@ function Edit(props) {
     useEffect(() => {
         document.title = 'Edit Property';
         props.setActiveComponentProp('Edit');
-         loadData();
+         loadPropertyTypes();
     }, []);
 
     const handleSelectPropertyTypeChange = (selectedOption) => {
@@ -73,9 +74,9 @@ function Edit(props) {
               }));
       } 
 
-       const loadData = () => {
+    const loadPropertyTypes = () => {
             setIsLoading(true);
-            axios.get('/api/v1/properties/property-types',{
+             axios.get('/api/v1/properties/property-types',{
                 params: {
                     api_token: authUser.api_token
                 }
@@ -83,12 +84,11 @@ function Edit(props) {
             .then(response => {
                 setIsLoading(false);
                 setPropertyTypes(response.data.message.propertyTypes);
-                
             })
             .catch((error) => {
                 showSznNotification({
                     type : 'error',
-                    message : error.response.data.message
+                    message : 'Error! '
                 });
             });
         };
@@ -225,6 +225,7 @@ function Edit(props) {
                                         onChange={handleSelectPropertyTypeChange}
                                         options={ (propertyTypes.length > 0) ? [...propertyTypeNullArr, ...propertyTypes] : []}
                                       />  
+                                      <QuickAddPropertyType fn={loadPropertyTypes} />
                                     </div>
                                     </div>
 

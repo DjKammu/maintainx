@@ -8,6 +8,8 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
+import QuickAddProperty from '../properties/QuickAdd';
+import QuickAddArea from '../areas/QuickAdd';
 
 function New(props) {
     
@@ -41,7 +43,7 @@ function New(props) {
     useEffect(() => {
         document.title = 'New Sub Area/Suite';
         props.setActiveComponentProp('New');
-        loadData();
+        loadProperty();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -97,7 +99,7 @@ function New(props) {
          setSelectedAreaOption(selectedOption);
      }
 
-    const loadData = () => {
+    const loadProperty = () => {
             setIsLoading(true);
             axios.get('/api/v1/areas/properties',{
                 params: {
@@ -115,6 +117,27 @@ function New(props) {
                 });
             });
         };
+
+      const loadArea = () => {
+         setIsLoading(true);
+         axios.get('/api/v1/sub-areas/areas',{
+            params: {
+                api_token: authUser.api_token,
+                property : selectedPropertyOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setAreas(response.data.message.area)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+        };
+
 
     const onSubmitHandle = (e) =>{
         e.preventDefault();
@@ -251,6 +274,7 @@ function New(props) {
                                         onChange={handleSelectPropertyChange}
                                         options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
                                       />  
+                                       <QuickAddProperty fn={loadProperty} />
                                     </div>
                                     </div>
 
@@ -270,6 +294,13 @@ function New(props) {
                                         onChange={handleSelectAreaChange}
                                         options={ (areas.length > 0) ? [...areaNullArr, ...areas] : []}
                                       />  
+                                      <QuickAddArea fn={loadArea} 
+                                       dropdowns={
+                                            {
+                                             property : selectedPropertyOption 
+                                           }
+                                        }
+                                        />
                                     </div>
                                     </div>
 

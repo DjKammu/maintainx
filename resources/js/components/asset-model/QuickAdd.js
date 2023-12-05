@@ -122,7 +122,7 @@ function New(props) {
               property_type_id: selectedOption.value,
               property_id   : null
           }));
-         setSelectedPropertyTypeOption(selectedOption);
+        setSelectedPropertyTypeOption(selectedOption);
         setProperties([]);
         setSelectedPropertyOption([]);
         setAreas([]);

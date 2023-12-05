@@ -276,12 +276,21 @@ class PaymentController extends Controller
 
     public function assets(Request $request)
     { 
+          $area_id = $request->area_id;
+          $sub_area_id = $request->sub_area_id;
           $whereUserProperties = User::userProperties();
           $assets = AssetModel::when($whereUserProperties, function ($q) use 
                      ($whereUserProperties) {
                       $q->whereIn('property_id', $whereUserProperties);
-                    })->where('asset_type_id',$request->asset_type)
-                       ->orderBy('name')->get();
+                    })->where('asset_type_id',$request->asset_type);
+
+          if($sub_area_id) {
+              $assets = $assets->where('sub_area_id', $sub_area_id);
+          } elseif($area_id) {
+              $assets = $assets->orWhere('area_id', $area_id);
+          }
+
+          $assets =  $assets->orderBy('name')->get();
 
           if($assets){
 
@@ -378,6 +387,7 @@ class PaymentController extends Controller
 
     public function tenant (Request $request)
     { 
+          $asset_type_id = $request->asset_type_id;
           $whereUserProperties = User::userProperties(); 
           $subarea = SubArea::when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
@@ -387,7 +397,7 @@ class PaymentController extends Controller
 
          if (empty($subarea)) {
               return response()->json([
-                  'message' => 'Tenant Not Found',
+                  'message' => 'Sub Area Not Found',
                   'status' => 'error'
               ]);
           }             
@@ -411,12 +421,35 @@ class PaymentController extends Controller
                     return $tenant;
                 });
             }
+
+            $assets = AssetModel::where([
+                         'sub_area_id' => $subarea->id,
+                         'area_id' => $subarea->area_id,
+                         'property_id' => $subarea->property_id
+             ])->when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+              })->when($asset_type_id, function ($q) use 
+               ($asset_type_id) {
+                $q->where('asset_type_id', $asset_type_id);
+              })->orderBy('name')->get();
+
+            if($assets){
+
+                $assets = @$assets->filter(function($asset){
+                    $asset->label = $tenant->name;
+                    $asset->value = $tenant->id;
+                    return $asset;
+                });
+            }
+
           }
 
          $tenants = ($tenants) ? $tenants : [];  
+         $assets = ($assets) ? $assets : [];  
          
          return response()->json([
-            'message' => compact('tenants'),
+            'message' => compact('tenants','assets'),
             'status' => 'success'
         ]);
     }

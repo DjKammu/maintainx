@@ -8,6 +8,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
+import QuickAddProperty from '../properties/QuickAdd';
 
 function New(props) {
     
@@ -35,7 +36,7 @@ function New(props) {
     useEffect(() => {
         document.title = 'New Area';
         props.setActiveComponentProp('New');
-        loadData();
+        loadProperty();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -53,7 +54,7 @@ function New(props) {
           }));
       }
 
-    const loadData = () => {
+    const loadProperty = () => {
             setIsLoading(true);
             axios.get('/api/v1/areas/properties',{
                 params: {
@@ -205,6 +206,7 @@ function New(props) {
                                         onChange={handleSelectPropertyChange}
                                         options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
                                       />  
+                                       <QuickAddProperty fn={loadProperty} />
                                     </div>
                                     </div>
                    

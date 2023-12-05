@@ -73,7 +73,7 @@ class PropertyTypeController extends Controller
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-            'account_number' => 'required|unique:property_types',
+            // 'account_number' => 'required|unique:property_types',
         ]);
 
         if ($validate->fails()) {
@@ -136,7 +136,7 @@ class PropertyTypeController extends Controller
   
         $validate = Validator::make($request->all(),[
               'name' => 'required|string',
-              'account_number' => 'required|unique:property_types,account_number,'.$request['id'],
+              // 'account_number' => 'required|unique:property_types,account_number,'.$request['id'],
         ]);
 
         if ($validate->fails()) {
@@ -179,6 +179,15 @@ class PropertyTypeController extends Controller
         if (empty($destroy)) {
             return response()->json([
                 'message' => 'Property Type Not Found',
+                'status' => 'error'
+            ]);
+        }
+        
+        $exists = PropertyType::has('property')->whereId($request['id'])->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'Property Type have been used  in Property',
                 'status' => 'error'
             ]);
         }

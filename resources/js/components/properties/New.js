@@ -42,7 +42,7 @@ function New(props) {
     useEffect(() => {
         document.title = 'New Property';
         props.setActiveComponentProp('New');
-         loadData();
+         loadPropertyTypes();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -69,10 +69,9 @@ function New(props) {
           }));
       }
 
-
-     const loadData = () => {
+     const loadPropertyTypes = () => {
             setIsLoading(true);
-            axios.get('/api/v1/properties/property-types',{
+             axios.get('/api/v1/properties/property-types',{
                 params: {
                     api_token: authUser.api_token
                 }
@@ -80,15 +79,15 @@ function New(props) {
             .then(response => {
                 setIsLoading(false);
                 setPropertyTypes(response.data.message.propertyTypes);
-                
             })
             .catch((error) => {
                 showSznNotification({
                     type : 'error',
-                    message : error.response.data.message
+                    message : 'Error! '
                 });
             });
         };
+
 
     const onSubmitHandle = (e) =>{
         e.preventDefault();
@@ -217,6 +216,7 @@ function New(props) {
                                         onChange={handleSelectPropertyTypeChange}
                                         options={ (propertyTypes.length > 0) ? [...propertyTypeNullArr, ...propertyTypes] : []}
                                       />  
+                                      <QuickAddPropertyType fn={loadPropertyTypes} />
                                     </div>
                                     </div>
 

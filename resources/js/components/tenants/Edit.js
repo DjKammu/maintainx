@@ -9,6 +9,10 @@ import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
 import QuickAdd from '../sub-areas/QuickAdd';
+import QuickAddPropertyType from '../property-types/QuickAdd';
+import QuickAddProperty from '../properties/QuickAdd';
+import QuickAddArea from '../areas/QuickAdd';
+
 
 function Edit(props) {
     const [properties, setProperties] = useState([]);
@@ -53,7 +57,7 @@ function Edit(props) {
     useEffect(() => {
         document.title = 'Edit Tenants';
         props.setActiveComponentProp('Edit');
-        loadData();
+        loadPropertyTypes();
     }, []);
 
     const onChangeHandle = (e) =>{
@@ -195,10 +199,52 @@ function Edit(props) {
 
      }
 
+         const loadArea = () => {
+         setIsLoading(true);
+         axios.get('/api/v1/sub-areas/areas',{
+            params: {
+                api_token: authUser.api_token,
+                property : selectedPropertyOption.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setAreas(response.data.message.area)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+        };
 
-     const loadData = () => {
+
+
+     const loadProperty = () => {
+         setIsLoading(true);
+
+         axios.get('/api/v1/payments/property',{
+            params: {
+                api_token: authUser.api_token,
+                property_type : selectedPropertyTypeOption.id
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+            setProperties(response.data.message.property)
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+    };
+    
+        const loadPropertyTypes = () => {
             setIsLoading(true);
-            axios.get('/api/v1/properties/property-types',{
+             axios.get('/api/v1/properties/property-types',{
                 params: {
                     api_token: authUser.api_token
                 }
@@ -206,12 +252,11 @@ function Edit(props) {
             .then(response => {
                 setIsLoading(false);
                 setPropertyTypes(response.data.message.propertyTypes);
-                
             })
             .catch((error) => {
                 showSznNotification({
                     type : 'error',
-                    message : error.response.data.message
+                    message : 'Error! '
                 });
             });
         };
@@ -378,6 +423,7 @@ function Edit(props) {
                                         onChange={handleSelectPropertyTypeChange}
                                         options={ (propertyTypes.length > 0) ? [...propertyTypeNullArr, ...propertyTypes] : []}
                                       />  
+                                       <QuickAddPropertyType fn={loadPropertyTypes} />
                                     </div>
                                     </div>
 
@@ -397,7 +443,13 @@ function Edit(props) {
                                         value={selectedPropertyOption}
                                         onChange={handleSelectPropertyChange}
                                         options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
-                                      />  
+                                      />
+                                       <QuickAddProperty fn={loadProperty} 
+                                       dropdowns={
+                                            {
+                                             property_type : selectedPropertyTypeOption 
+                                           }
+                                        } />  
                                     </div>
                                     </div> 
 
@@ -418,6 +470,13 @@ function Edit(props) {
                                         onChange={handleSelectAreaChange}
                                         options={ (areas.length > 0) ? [...areaNullArr, ...areas] : []}
                                       />  
+                                      <QuickAddArea fn={loadArea} 
+                                       dropdowns={
+                                            {
+                                             property : selectedPropertyOption 
+                                           }
+                                        }
+                                        />
                                     </div>
                                     </div>
                                    {/* sub_area */}

@@ -136,9 +136,9 @@ function Edit(props) {
     
     const loadProperty = () => {
 
-         if(state.non_asset === '0'){
-            return ;
-         }
+         // if(state.non_asset === '0'){
+         //    return ;
+         // }
        
         setProperties([]);
         setIsLoading(true);
@@ -169,7 +169,9 @@ function Edit(props) {
          axios.get('/api/v1/payments/assets',{
             params: {
                 api_token: authUser.api_token,
-                asset_type : state.asset_type_id
+                asset_type : state.asset_type_id,
+                area_id : state.area_id,
+                sub_area_id : state.sub_area_id
              }
             })
           .then(response => {
@@ -266,9 +268,9 @@ function Edit(props) {
         };
 
      const loadArea = () => {
-        if(state.non_asset === '0'){
-            return ;
-         }
+        // if(state.non_asset === '0'){
+        //     return ;
+        //  }
         setAreas([]);
         setIsLoading(true);
          axios.get('/api/v1/sub-areas/areas',{
@@ -291,9 +293,9 @@ function Edit(props) {
         };
 
   const loadSubarea = () => {
-      if(state.non_asset === '0'){
-          return ;
-       }
+      // if(state.non_asset === '0'){
+      //     return ;
+      //  }
 
       setSubAreas([]);
       setSelectedSubAreaOption([]);
@@ -318,9 +320,9 @@ function Edit(props) {
       };
 
       const loadTenants = () => {
-      if(state.non_asset === '0'){
-          return ;
-       }
+      // if(state.non_asset === '0'){
+      //     return ;
+      //  }
         setTenants([]);
         setSelectedTenantOption([]);
         setIsLoading(true);
@@ -402,7 +404,7 @@ function Edit(props) {
         }));
 
         setSelectedAssetTypeOption(option);
-        setAssetModels([]);
+        // setAssetModels([]);
         setIsLoading(true);
 
         setPropertyTypes([]);
@@ -433,7 +435,7 @@ function Edit(props) {
             })
           .then(response => {
             setIsLoading(false);
-            setAssetModels(response.data.message.assets)
+            // setAssetModels(response.data.message.assets)
           })
           .catch(error => {
                  showSznNotification({
@@ -450,21 +452,21 @@ function Edit(props) {
               asset_model_id: option.value,
           }));
         setSelectedAssetModelOption(option);
-        setPropertyTypes([]);
-        setSelectedPropertyTypeOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.property_type ? 
-        props.location.state.property_type : null) : []);
-        setProperties([]);
-        setSelectedPropertyOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.property ? 
-        props.location.state.property : null) : []);
-        setAreas([]);
-        setSelectedAreaOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.area ? 
-        props.location.state.area : null) : []);
-        setSubAreas([]);
-        setTenants([]);
-        setSelectedSubAreaOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.sub_area ? 
-        props.location.state.sub_area : null) : []);
-        setSelectedTenantOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.tenant ? 
-        props.location.state.tenant : null) : []);
+        // setPropertyTypes([]);
+        // setSelectedPropertyTypeOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.property_type ? 
+        // props.location.state.property_type : null) : []);
+        // setProperties([]);
+        // setSelectedPropertyOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.property ? 
+        // props.location.state.property : null) : []);
+        // setAreas([]);
+        // setSelectedAreaOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.area ? 
+        // props.location.state.area : null) : []);
+        // setSubAreas([]);
+        // setTenants([]);
+        // setSelectedSubAreaOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.sub_area ? 
+        // props.location.state.sub_area : null) : []);
+        // setSelectedTenantOption((props.location.state.asset_model_id == option.value)  ? (props.location.state.tenant ? 
+        // props.location.state.tenant : null) : []);
 
         setIsLoading(true);
 
@@ -476,20 +478,20 @@ function Edit(props) {
             })
           .then(response => {
             setIsLoading(false);
-            setSelectedPropertyTypeOption(response.data.message.asset.property_type)
-            setSelectedPropertyOption(response.data.message.asset.property)
-            setSelectedAreaOption(response.data.message.asset.area)
-            setSelectedSubAreaOption(response.data.message.asset.sub_area)
-            setTenants(response.data.message.tenants)  
+          //   setSelectedPropertyTypeOption(response.data.message.asset.property_type)
+          //   setSelectedPropertyOption(response.data.message.asset.property)
+          //   setSelectedAreaOption(response.data.message.asset.area)
+          //   setSelectedSubAreaOption(response.data.message.asset.sub_area)
+          //   setTenants(response.data.message.tenants)  
 
-             setState(state => ({
-              ...state,
-              asset_model_id: option.value,
-              property_type_id: response.data.message.asset.property_type_id,
-              property_id: response.data.message.asset.property_id,
-              area_id: response.data.message.asset.area_id,
-              sub_area_id: response.data.message.asset.sub_area_id
-          }));
+          //    setState(state => ({
+          //     ...state,
+          //     asset_model_id: option.value,
+          //     property_type_id: response.data.message.asset.property_type_id,
+          //     property_id: response.data.message.asset.property_id,
+          //     area_id: response.data.message.asset.area_id,
+          //     sub_area_id: response.data.message.asset.sub_area_id
+          // }));
 
           })
           .catch(error => {
@@ -534,9 +536,9 @@ function Edit(props) {
 
        const handleSelectPropertyTypeChange = (selectedOption) => {
 
-         if(state.non_asset === '0'){
-            return ;
-         }
+         // if(state.non_asset === '0'){
+         //    return ;
+         // }
          setState(state => ({
               ...state,
               property_type_id: selectedOption.value,
@@ -576,9 +578,9 @@ function Edit(props) {
     }
     
       const handleSelectPropertyChange = (selectedOption) => {
-        if(state.non_asset === '0'){
-            return ;
-         }
+        // if(state.non_asset === '0'){
+        //     return ;
+        //  }
          setState(state => ({
               ...state,
               property_id: selectedOption.value,
@@ -613,9 +615,9 @@ function Edit(props) {
      } 
 
       const handleSelectAreaChange = (selectedOption) => {
-        if(state.non_asset === '0'){
-            return ;
-         }
+        // if(state.non_asset === '0'){
+        //     return ;
+        //  }
          setState(state => ({
               ...state,
               area_id: selectedOption.value,
@@ -630,7 +632,8 @@ function Edit(props) {
          axios.get('/api/v1/tenants/sub-area',{
             params: {
                 api_token: authUser.api_token,
-                area_id : selectedOption.value
+                area_id : selectedOption.value,
+                asset_type : state.asset_type_id
              }
             })
           .then(response => {
@@ -646,9 +649,9 @@ function Edit(props) {
      }
        
     const handleSelectSubAreaChange = (selectedOption) => {
-      if(state.non_asset === '0'){
-            return ;
-         }
+      // if(state.non_asset === '0'){
+      //       return ;
+      //    }
          setState(state => ({
               ...state,
               sub_area_id: selectedOption.value,
@@ -664,7 +667,8 @@ function Edit(props) {
           axios.get('/api/v1/payments/tenant',{
             params: {
                 api_token: authUser.api_token,
-                sub_area_id : selectedOption.value
+                sub_area_id : selectedOption.value,
+                asset_type : state.asset_type_id
              }
             })
           .then(response => {
@@ -798,11 +802,12 @@ function Edit(props) {
           .then(response => {
               setIsLoading(false);
               setAssetTypes(response.data.message.assetTypes)  
-               setPropertyTypes2(response.data.message.propertyTypes)  
-              setAssetModels(response.data.message.assetModels)  
+              //setPropertyTypes2(response.data.message.propertyTypes)  
+              setPropertyTypes(response.data.message.propertyTypes)  
+              // setAssetModels(response.data.message.assetModels)  
               setVendors(response.data.message.vendors)  
               setContractors(response.data.message.contractors)  
-               setTenants(response.data.message.tenants)  
+              // setTenants(response.data.message.tenants)  
               setWorkTypes(response.data.message.workTypes)  
           })
           .catch((error) => {
@@ -1007,8 +1012,7 @@ function Edit(props) {
                                           </div>
 
                                        {state.non_asset ===  "0" &&
-                                       <div>
-                                           <div className="form-group" >
+                                          <div className="form-group" >
                                             <label className="block text-sm font-medium text-gray-700" htmlFor="property">
                                               <span>Asset Type</span>
                                             </label>
@@ -1025,36 +1029,7 @@ function Edit(props) {
                                             /> 
                                              <QuickAddAssetType fn={loadAssetTypes} /> 
                                           </div>
-                                          </div> 
-                                                                                    
-                                              <div className="form-group">
-                                                    <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                                      <span>Asset</span>
-                                                    </label>
-                                                     <div className="input-group input-group-sm">
-                                                      <div className="input-group-prepend">
-                                                          <span className="input-group-text bg-gradient-success text-white">
-                                                              <i className="mdi mdi-home-outline"></i>
-                                                          </span>
-                                                      </div>
-                                                      <Select
-                                                      value={selectedAssetModelOption}
-                                                      onChange={handleSelectAssetModelChange}
-                                                      options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
-                                                    />  
-                                                    <QuickAddAsset fn={loadAssets} dropdowns={
-                                                        { 
-                                                            asset_type : selectedAssetTypeOption,
-                                                            area : selectedAreaOption , 
-                                                            sub_area : selectedSubAreaOption ,
-                                                            property : selectedPropertyOption ,
-                                                            property_type : selectedPropertyTypeOption 
-                                                       }
-                                                    }/>
-                                                  </div>
-                                              </div>
-
-                                              </div>
+                                          </div>
                                           }
 
 
@@ -1300,6 +1275,37 @@ function Edit(props) {
                                             value={state.payment} onChange={onChangeHandle}/>
                                         </div>
                                     </div> 
+                                      
+                                      {state.non_asset ===  "0" &&
+                                                                            
+                                              <div className="form-group">
+                                                    <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                                      <span>Asset</span>
+                                                    </label>
+                                                     <div className="input-group input-group-sm">
+                                                      <div className="input-group-prepend">
+                                                          <span className="input-group-text bg-gradient-success text-white">
+                                                              <i className="mdi mdi-home-outline"></i>
+                                                          </span>
+                                                      </div>
+                                                      <Select
+                                                      value={selectedAssetModelOption}
+                                                      onChange={handleSelectAssetModelChange}
+                                                      options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
+                                                    />  
+                                                     <QuickAddAsset fn={loadAssets} dropdowns={
+                                                        { 
+                                                            asset_type : selectedAssetTypeOption,
+                                                            area : selectedAreaOption , 
+                                                            sub_area : selectedSubAreaOption ,
+                                                            property : selectedPropertyOption ,
+                                                            property_type : selectedPropertyTypeOption 
+                                                       }
+                                                    }/>
+                                                  </div>
+                                                  {simpleValidator.current.message('Asset', state.asset_model_id, 'required')}
+                                              </div>
+                                          }
 
                                      <div className="form-group">
                                         <label>Payment Date</label>

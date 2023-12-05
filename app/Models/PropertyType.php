@@ -14,4 +14,10 @@ class PropertyType extends Model
         'slug', 
         'account_number'
     ];
+
+
+    public function property()
+    {
+        return $this->hasOne('App\Models\Property','id');
+    }
 }
