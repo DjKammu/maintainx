@@ -133,4 +133,9 @@ class Payment extends Model
         $this->attributes['payment_date'] =  ($value == 'null') ? NULL :  $value;
     }
 
+     public static function format($num){
+        return number_format($num, 2, '.', ',');
+        return preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $num);
+    }
+
 }

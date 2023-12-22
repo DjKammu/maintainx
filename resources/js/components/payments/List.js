@@ -9,6 +9,7 @@ import { showSznNotification} from '../../Helpers'
 import TopControl from './TopControl'
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import { Link } from "react-router-dom";
 
 function List(props) {
     const [data, setData] = useState([]);
@@ -39,6 +40,7 @@ function List(props) {
        subArea:'',
        tenant:'',
        workType:'',
+       grandTotal : 0,
     });
 
     //get reducer
@@ -310,6 +312,7 @@ function List(props) {
                 nextPageUrl: response.data.message.next_page_url,
                 prevPageUrl: response.data.message.prev_page_url,
                 perPage: parseInt(response.data.message.per_page),
+                grandTotal: response.data.grandTotal,
                 total: response.data.message.total,
             })
         })
@@ -457,7 +460,21 @@ function List(props) {
         <React.Fragment>
             <div className="card animated fadeIn">
                 <div className="card-body">
-                    <TopControl 
+                <div className="pt-3 pb-3">
+                   <div className="float-right">
+
+                        <a
+                          className="btn btn-gradient-primary mr-3"
+                          href={`/api/v1/payments/download?page=${state.currentPage}&api_token=${authUser.api_token}&per_page=${state.perPage}&query=${state.query}&sort_by=${state.sortBy}&sort_type=${state.sortType}&property_type=${state.propertyType}&property=${state.property}&area=${state.area}&sub_area=${state.subArea}&tenant=${state.tenant}&work_type=${state.workType}
+                       `} >
+                         Download
+                        </a>
+                          <a className="btn btn-gradient-primary mr-2" href="/payments/create">
+                             Mail
+                          </a>
+                    </div>
+                  </div>  
+                 <TopControl 
                         isLoading={isLoading} 
                         perPage={state.perPage} 
                         onChangePerPageHandle={onChangePerPageHandle}
@@ -492,6 +509,9 @@ function List(props) {
                     </div>
                     <div className="pt-3 pb-3">
                         <div className="">
+                        <div className="float-right">
+                              <b>  Total :  ${state.grandTotal} </b>
+                        </div>
                             <div className="d-flex justify-content-center">
                                 <div className="p-2">
                                     <Pagination
@@ -504,6 +524,7 @@ function List(props) {
                                         onChange={isLoading ?  (e) => {e.preventDefault();} : handlePageChange}
                                     />
                                 </div>
+
                             </div>
                         </div>
                         <div>

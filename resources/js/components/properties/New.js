@@ -8,6 +8,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
+import QuickAddPropertyType from '../property-types/QuickAdd';
 
 function New(props) {
     const [propertyTypes, setPropertyTypes] = useState([]);

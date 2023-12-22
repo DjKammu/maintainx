@@ -86,8 +86,9 @@ class User extends Authenticatable
        if(Gate::allows('administrator') || $user->is_all == Property::ALL) {
              return;
        }
-
+       
        $properties = $user->properties()->pluck('properties.id')->toArray();
+
        return  ($properties) ? $properties : [0];
 
     }

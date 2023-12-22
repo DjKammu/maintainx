@@ -19,6 +19,7 @@ use App\Models\Area;
 use App\Models\User;
 use Gate;
 use Validator;
+use PDF;
 
 class PaymentController extends Controller
 {
@@ -42,7 +43,20 @@ class PaymentController extends Controller
         if(Gate::denies('view')) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
-        
+
+        $allData = $this->getData($request);
+        $data = @$allData['data'];
+        $grandTotal = @$allData['grandTotal'];
+
+        return response()->json([
+            'message' => $data,
+            'grandTotal' => Payment::format($grandTotal),
+            'status' => 'success'
+        ]);
+    }
+
+    public function getData($request){
+
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
@@ -59,7 +73,8 @@ class PaymentController extends Controller
         }
 
         if ($request['query'] != '') {
-            $data->where('name', 'like', '%' . $request['query'] . '%');
+            $data->where('brand', 'like', '%' . $request['query'] . '%');
+            $data->orWhere('description', 'like', '%' . $request['query'] . '%');
         }
         
         if ($request['id'] != '') {
@@ -115,7 +130,11 @@ class PaymentController extends Controller
 
         $data = $data->paginate($perPage);
 
-        $data->data = @collect($data->items())->filter(function($payment){
+        $grandTotal = 0;
+
+        $data->data = @collect($data->items())->filter(function($payment) use (&$grandTotal){
+                 $grandTotal = $payment->payment + $grandTotal;
+          
                  $payment->property_name = $payment->property->name; 
                  if(@$payment->property ){
                     @$payment->property->label = $payment->property->name;
@@ -185,13 +204,9 @@ class PaymentController extends Controller
               $media =  @$payment->getMediaPathWithExtension()['file'] ? [@$payment->getMediaPathWithExtension()] : @$payment->getMediaPathWithExtension();
                $payment->media = @collect($media)->all(); 
         });
+     
+        return compact('data','grandTotal');
 
-
-
-        return response()->json([
-            'message' => $data,
-            'status' => 'success'
-        ]);
     }
 
     /**
@@ -510,7 +525,7 @@ class PaymentController extends Controller
         $assetModels = AssetModel::query();
         $whereUserProperties = User::userProperties();
 
-        if ($payment['asset_type_id'] != '') {
+        if (@$payment['asset_type_id'] != '') {
             $assetModels->where('asset_type_id',$payment['asset_type_id']);
         }
        
@@ -540,7 +555,7 @@ class PaymentController extends Controller
          $tenants = [];
          $allTenants = [];
 
-        if($payment->tenant_id){
+        if(@$payment->tenant_id){
             
              $tenants = Tenant::where([
                          'id' => $payment->tenant_id
@@ -786,6 +801,30 @@ class PaymentController extends Controller
                 'status' => 'error'
             ]);
         }
+    }
+
+    public function download(Request $request){
+      
+      $data = $this->getData($request);
+      $items = @$data['data'];
+      $grandTotal = @$data['grandTotal'];
+
+      $view = $request['view'];
+
+      $pdf = PDF::loadView('pdf.payments',
+        ['items' => $items,
+        'grandTotal' => Payment::format($grandTotal)]
+      );
+
+       //return $pdf->stream('all_payment_s.pdf');
+
+       if($view){
+         return $pdf->setPaper('a4')->output();
+        }
+
+        return $pdf->download('all_payment_s.pdf');
+
+
     }
 
 }

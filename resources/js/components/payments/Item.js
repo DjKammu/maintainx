@@ -30,8 +30,7 @@ class Item extends Component {
                         <td className="border px-4 py-3">${ this.props.obj.payment }</td>
                         <td className="border px-4 py-3">{ this.props.obj.payment_date }</td>
                         <td className="border px-2 py-1">
-                        {this.props.obj.media && this.props.obj.media.length > 0 && 
-                                                       
+                        {this.props.obj.media && this.props.obj.media.length > 0 &&                                
                            this.props.obj.media.map((element, index) => (
                              <a key={index} className="col-span-3 sm:col-span-3 delete-file" href={element.file} target="_new">
                                <img className="ext-img-sm" src={`/public/images/${element.ext}.png`} />
