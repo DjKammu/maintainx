@@ -231,7 +231,8 @@ function List(props) {
                         <table className="table-fixed w-full">
                         <thead>
                         <tr className="bg-gray-100">
-                        <th className="px-4 py-2">Name
+                        <th className="px-4 py-2">Company Name
+                        </th><th className="px-4 py-2">Contact Name
                         </th>
                         <th className="px-4 py-2">Address</th>
                         <th className="px-4 py-2">City</th>

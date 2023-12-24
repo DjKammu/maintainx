@@ -18,6 +18,7 @@ class Item extends Component {
             <React.Fragment>
 
                <tr>
+                       <td className="border px-4 py-3">{ this.props.obj.company_name }</td>
                        <td className="border px-4 py-3">{ this.props.obj.name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.address }</td>
                         <td className="border px-4 py-3">{ this.props.obj.city }</td>

@@ -194,7 +194,7 @@ function New(props) {
                                     <div className="form-group">
                                         <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
                                             <li className="nav-item">
-                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW CONTRACTOR</span>
+                                                <span className="nav-link btn btn-gradient-primary btn-block active">NEW VENDOR</span>
                                             </li>
                                         </ul>
                                     </div>
@@ -209,8 +209,7 @@ function New(props) {
                                             <input type="text" className="form-control form-control-sm" id="company_name" name="company_name" placeholder="Company Name" 
                                             value={state.company_name} onChange={onChangeHandle}/>
                                         </div>
-                                        {simpleValidator.current.message('company_name', state.company_name, 'required')}
-                                    </div>
+                                     </div>
 
                                     <div className="form-group">
                                         <label>Name</label>

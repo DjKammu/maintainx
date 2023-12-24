@@ -188,8 +188,7 @@ const handleFileChange = (e) => {
                                             <input type="text" className="form-control form-control-sm" id="company_name" name="company_name" placeholder="Company Name" 
                                             value={state.company_name} onChange={onChangeHandle}/>
                                         </div>
-                                        {simpleValidator.current.message('company_name', state.company_name, 'required')}
-                                    </div>
+                                     </div>
                                         <div className="form-group">
                                             <label>Name</label>
                                             <div className="input-group input-group-sm">

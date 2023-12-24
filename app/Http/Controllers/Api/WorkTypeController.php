@@ -174,7 +174,7 @@ class WorkTypeController extends Controller
    
     public function destroy(Request $request)
     {
-        $destroy = PropertyType::where('id',$request['id'])->first();
+        $destroy = WorkType::where('id',$request['id'])->first();
                   
         if (empty($destroy)) {
             return response()->json([

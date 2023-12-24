@@ -177,15 +177,16 @@ class PaymentController extends Controller
                     @$payment->asset_model->value = $payment->asset_model->id;
                  } 
 
-                 $payment->vendor_name = (@$payment->vendor->company_name) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : @$payment->vendor->name;
+                 $payment->vendor_name = (@$payment->vendor->company_name && @$payment->vendor->name ) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : (@$payment->vendor->company_name ? @$payment->vendor->company_name : @$payment->vendor->name);
+                 
                  if(@$payment->vendor ){
-                    @$payment->vendor->label = (@$payment->vendor->company_name) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : @$payment->vendor->name;
+                    @$payment->vendor->label = (@$payment->vendor->company_name && @$payment->vendor->name ) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : (@$payment->vendor->company_name ? @$payment->vendor->company_name : @$payment->vendor->name);
                     @$payment->vendor->value = $payment->vendor->id;
                  }
 
-                 $payment->contractor_name = (@$payment->contractor->company_name) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : @$payment->contractor->name;
+                 $payment->contractor_name = (@$payment->contractor->company_name && @$payment->contractor->name ) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : (@$payment->contractor->company_name ? @$payment->contractor->company_name : @$payment->contractor->name);
                  if(@$payment->contractor ){
-                    @$payment->contractor->label = (@$payment->contractor->company_name) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : @$payment->contractor->name;
+                    @$payment->contractor->label = (@$payment->contractor->company_name && @$payment->contractor->name ) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : (@$payment->contractor->company_name ? @$payment->contractor->company_name : @$payment->contractor->name);
                     @$payment->contractor->value = $payment->contractor->id;
                  }
 
@@ -541,13 +542,13 @@ class PaymentController extends Controller
           });
          $vendors = Vendor::orderBy('name')->get();
          $vendors = @$vendors->filter(function($vendor){
-              $vendor->label = ($vendor->company_name) ? ( $vendor->company_name .'-'. $vendor->name ) : $vendor->name;
+              $vendor->label = ($vendor->company_name && $vendor->name) ? ( $vendor->company_name .'-'. $vendor->name ) : ($vendor->company_name ? $vendor->company_name : $vendor->name);
               $vendor->value = $vendor->id;
               return $vendor;
           }); 
          $contractors = Contractor::orderBy('name')->get();
          $contractors = @$contractors->filter(function($contractor){
-              $contractor->label = ($contractor->company_name) ? ( $contractor->company_name .'-'. $contractor->name ) : $contractor->name;
+              $contractor->label = ($contractor->company_name && $contractor->name) ? ( $contractor->company_name .'-'. $contractor->name ) : ($contractor->company_name ? $contractor->company_name : $contractor->name);
               $contractor->value = $contractor->id;
               return $contractor;
           });

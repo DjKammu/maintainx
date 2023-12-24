@@ -196,11 +196,11 @@ function Edit(props) {
             })
             .then(response => {
                 setIsLoading(false);
-                if(state.non_asset ===  "0" ){
-                   setPropertyTypes2(response.data.message.propertyTypes)  
-                }else{
-                   setPropertyTypes1(response.data.message.propertyTypes)  
-                }
+                // if(state.non_asset ===  "0" ){
+                //    setPropertyTypes2(response.data.message.propertyTypes)  
+                // }else{
+                   setPropertyTypes(response.data.message.propertyTypes)  
+               // }
             })
             .catch((error) => {
                 showSznNotification({
@@ -361,7 +361,7 @@ function Edit(props) {
         });
        
         setAssetModels([]);
-        setPropertyTypes([]);
+        // setPropertyTypes([]);
         setProperties([]);
         setAreas([]);
         setSubAreas([]);
@@ -381,9 +381,9 @@ function Edit(props) {
         setSelectedTenantOption((props.location.state.tenant) ? 
         props.location.state.tenant : []);
 
-        if(value === "1"){
-          setPropertyTypes(propertyTypes2);
-        }
+        // if(value === "1"){
+        //   setPropertyTypes(propertyTypes2);
+        // }
 
     }
 

@@ -116,7 +116,7 @@ function New(props) {
         setAssetModels([]);
         setSelectedAssetModelOption([]);
         setSelectedAssetTypeOption([]);
-        setPropertyTypes([]);
+        // setPropertyTypes([]);
         setSelectedPropertyTypeOption([]);
         setProperties([]);
         setSelectedPropertyOption([]);
@@ -127,9 +127,9 @@ function New(props) {
         setSelectedSubAreaOption([]);
         setSelectedTenantOption([]);
 
-        if(value === "1"){
-          setPropertyTypes(propertyTypes2);
-        }
+        // if(value === "1"){
+        //   setPropertyTypes(propertyTypes2);
+        // }
 
     }
 
