@@ -665,7 +665,12 @@ function New(props) {
 
     const onSubmitHandle = (e) =>{
         e.preventDefault();
-        if (simpleValidator.current.allValid()) {
+
+        if (state.non_asset === '0' && !simpleValidator.current.allValid()) {
+            simpleValidator.current.showMessages();
+            forceUpdate(1);
+            return;
+          }
             setState({
                 ...state,
                 loading: true
@@ -750,10 +755,10 @@ function New(props) {
                     });
                 } 
             });
-        } else {
-            simpleValidator.current.showMessages();
-            forceUpdate(1);
-        }
+        // } else {
+        //     simpleValidator.current.showMessages();
+        //     forceUpdate(1);
+        // }
 
     }
 

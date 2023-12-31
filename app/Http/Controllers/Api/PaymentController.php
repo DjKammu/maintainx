@@ -453,8 +453,8 @@ class PaymentController extends Controller
             if($assets){
 
                 $assets = @$assets->filter(function($asset){
-                    $asset->label = $tenant->name;
-                    $asset->value = $tenant->id;
+                    $asset->label = $asset->name;
+                    $asset->value = $asset->id;
                     return $asset;
                 });
             }
