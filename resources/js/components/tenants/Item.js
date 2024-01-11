@@ -19,6 +19,7 @@ class Item extends Component {
 
                <tr>
                        <td className="border px-4 py-3">{ this.props.obj.name }</td>
+                       <td className="border px-4 py-3">{ (this.props.obj.active && this.props.obj.active == 1 ) ? 'Yes' : 'No' }</td>
                         <td className="border px-4 py-3">{ this.props.obj.account_number }</td>
                         <td className="border px-4 py-3">{ this.props.obj.property_type_name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.property_name }</td>

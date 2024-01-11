@@ -10,6 +10,10 @@ import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
 import { Button, Modal } from 'react-bootstrap';
 
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+
 function New(props) {
     
     const [properties, setProperties] = useState([]);
@@ -25,6 +29,7 @@ function New(props) {
         props.dropdowns.property : null ); 
     const [selectedAreaOption, setSelectedAreaOption]  = useState(props.dropdowns.area ? 
         props.dropdowns.area : null);
+    const [checkedActive, setCheckedActive] = useState(true);
 
     let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
@@ -59,6 +64,7 @@ function New(props) {
 
     const [state, setState] = useState({
         name: "",
+        active: "",
         account_number: "",
         property_type_id: props.dropdowns.property_type ? props.dropdowns.property_type.id : null,
         property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
@@ -91,6 +97,14 @@ function New(props) {
             [name] : value
         });
     }
+    
+       const handleChangeActive = (event) => {
+      setState({
+            ...state,
+            active : (event.target.checked) ? 1 : 0
+        });
+      setCheckedActive(event.target.checked);
+    };
 
     const handleFileChange = (e) => {
          e.persist();
@@ -235,6 +249,7 @@ function New(props) {
 
             var formData = new FormData();
             formData.append('name', state.name);
+            formData.append('active', state.active);
             formData.append('account_number', state.account_number);
             formData.append('property_type_id', state.property_type_id);
             formData.append('property_id', state.property_id);
@@ -453,7 +468,23 @@ function New(props) {
                                     </div>
                                       
                                     </div>
-                      
+                                
+                                       {/* active */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Is Active</span>
+                                      </label>
+
+                                        <FormGroup>
+                                          <FormControlLabel control={<Checkbox
+                                              checked={checkedActive}
+                                              onChange={handleChangeActive}
+                                            />} 
+                                          label="Active" />
+                                        </FormGroup>
+                                                                          
+                                      
+                                    </div>
 
                        <div className="form-group text-center">
                             <button type="submit" onClick={onQuickSubmitHandle} className="btn btn-gradient-primary btn-md mr-2">Save</button>

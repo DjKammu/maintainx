@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Tenant extends Model
 {
     use HasFactory;
-
+    
+    CONST ACTIVE = '1';
+    
     protected $fillable = [
         'name', 
         'slug', 
@@ -16,7 +18,8 @@ class Tenant extends Model
         'property_type_id', 
         'property_id', 
         'area_id',
-        'sub_area_id'
+        'sub_area_id',
+        'active'
     ];
 
     public function property_type()

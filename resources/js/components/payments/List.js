@@ -10,6 +10,7 @@ import TopControl from './TopControl'
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { Link } from "react-router-dom";
+import Mail from './Mail';
 
 function List(props) {
     const [data, setData] = useState([]);
@@ -469,10 +470,19 @@ function List(props) {
                        `} >
                          Download
                         </a>
-                          <a className="btn btn-gradient-primary mr-2" href="/payments/create">
-                             Mail
-                          </a>
-                    </div>
+                      <Mail params= {{
+                                query: state.query,
+                                sort_by: state.sortBy,
+                                sort_type: state.sortType,
+                                property_type: state.propertyType,
+                                property: state.property,
+                                area: state.area,
+                                sub_area: state.subArea,
+                                tenant: state.tenant,
+                                work_type: state.workType,
+                            }}
+                        />
+                      </div>
                   </div>  
                  <TopControl 
                         isLoading={isLoading} 

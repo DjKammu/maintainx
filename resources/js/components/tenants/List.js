@@ -319,6 +319,8 @@ function List(props) {
                                 <tr className="bg-gray-100">
                                     
                                     <th className="px-4 py-2">Name
+                                    </th> 
+                                    <th className="px-4 py-2">Active
                                     </th>
                                     <th className="px-4 py-2">Account Number</th>
                                     <th className="px-4 py-2">Property Type</th>

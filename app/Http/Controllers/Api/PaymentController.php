@@ -17,8 +17,9 @@ use App\Models\Vendor;
 use App\Models\SubArea;
 use App\Models\Area;
 use App\Models\User;
-use Gate;
+use App\Mail\MaitTo;
 use Validator;
+use Gate;
 use PDF;
 
 class PaymentController extends Controller
@@ -126,14 +127,31 @@ class PaymentController extends Controller
                 $q->where('id', $work_type);
             });
         } 
-
-
-        $data = $data->paginate($perPage);
+         
+        $allData =  $data->get();
 
         $grandTotal = 0;
 
-        $data->data = @collect($data->items())->filter(function($payment) use (&$grandTotal){
+        $dt = @collect($allData)->filter(function($payment) use (&$grandTotal){
                  $grandTotal = $payment->payment + $grandTotal;
+        });
+
+        if(request()->is('*/payments/download')){
+           $data = $allData;
+           $vData = $allData;
+           $items = $allData;
+        } else{
+              $data = $data->paginate($perPage);
+              $vData =  @$data->data; 
+              $items = $data->items();
+        }
+
+        //$grandTotal = 0;
+
+       
+
+        $vData = @collect($items)->filter(function($payment) use (&$grandTotal){
+               //  $grandTotal = $payment->payment + $grandTotal;
           
                  $payment->property_name = $payment->property->name; 
                  if(@$payment->property ){
@@ -427,7 +445,7 @@ class PaymentController extends Controller
              ])->when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
                           $q->whereIn('property_id', $whereUserProperties);
-                        })->orderBy('name')->get();;
+                        })->where('active',Tenant::ACTIVE)->orderBy('name')->get();;
 
             if($tenants){
 
@@ -804,28 +822,111 @@ class PaymentController extends Controller
         }
     }
 
-    public function download(Request $request){
+    public function download(Request $request, $view = false){
       
-      $data = $this->getData($request);
-      $items = @$data['data'];
-      $grandTotal = @$data['grandTotal'];
+        $data = $this->getData($request);
+        $items = @$data['data'];
+        $grandTotal = @$data['grandTotal'];
 
-      $view = $request['view'];
+        $pdf = PDF::loadView('pdf.payments',
+          ['items' => $items,
+          'grandTotal' => Payment::format($grandTotal)]
+        );
 
-      $pdf = PDF::loadView('pdf.payments',
-        ['items' => $items,
-        'grandTotal' => Payment::format($grandTotal)]
-      );
 
-       //return $pdf->stream('all_payment_s.pdf');
+        if ($request['tenant'] != '') {
+            $tenant = $request['tenant'];
+            $tenant = Tenant::find($tenant);
+            $slug = @$tenant->slug;
+        } 
 
-       if($view){
-         return $pdf->setPaper('a4')->output();
+        if ($request['work_type'] != '') {
+            $work_type = $request['work_type'];
+            $work_type = WorkType::find($work_type);
+            $slug = @$work_type->slug;
+        } 
+         
+         if ($request['property_type'] != '') {
+
+            $property_type = $request['property_type'];
+            $property_type = PropertyType::find($property_type);
+            $slug = @$property_type->slug;
+        }
+         
+
+        if ($request['property'] != '') {
+            $property = $request['property'];
+            $property = Property::find($property);
+            $slug = \Str::slug(@$property->name);
         }
 
-        return $pdf->download('all_payment_s.pdf');
+        if ($request['area'] != '') {
+            $area = $request['area'];
+            $area = Area::find($area);
+            $slug = \Str::slug(@$area->name);
+        }
+         
+         
+        if ($request['sub_area'] != '') {
+            $sub_area = $request['sub_area'];
+            $sub_area = SubArea::find($sub_area);
+            $slug = \Str::slug(@$sub_area->name);
+        } 
+
+       // return $pdf->stream('all_payment_s.pdf');
+         $slug = (  @$slug ) ? $slug : 'all';
+
+       if($view){
+         $pdffile = $pdf->setPaper('a4')->output();
+         $slug = $slug.'_payments_'.date('m-d-Y').'.pdf';
+         return [$slug,$pdffile];
+        }
+      
+        return $pdf->download($slug.'_payments_'.date('m-d-Y').'.pdf');
 
 
     }
+
+      public function sendMail(Request $request){
+
+         set_time_limit(0);
+          $data = [
+            'heading' => '',
+            'plans' => '',
+            'file' => '',
+            'subject' => $request->subject,
+            'content' => $request->message,
+          ];
+         
+          list($fileName,$pdffile)  =  @$this->download($request,true);
+
+          $ccUsers = ($request->filled('cc')) ? explode(',',$request->cc) : [];
+          $bccUsers = ($request->filled('cc')) ? explode(',',$request->bcc) : [];
+
+          $data['pdffile'] = $pdffile;
+          $data['fileName'] = $fileName;
+
+          dispatch(
+             function() use ($request, $data, $ccUsers, $bccUsers){
+             $mail = \Mail::to($request->recipient);
+               if(array_filter($ccUsers)  &&  count($ccUsers) > 0){
+                $mail->cc($ccUsers);
+               }
+               if(array_filter($bccUsers)  && count($bccUsers) > 0){
+                $mail->bcc($bccUsers);
+               }
+               $mail->send(new MaitTo($data));
+            }
+
+          )->afterResponse();
+
+        return response()->json(
+             [
+              'status' => 'success',
+              'message' => 'Sent Successfully!'
+             ]
+         );
+
+      } 
 
 }

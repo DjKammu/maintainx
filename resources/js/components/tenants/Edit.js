@@ -12,6 +12,9 @@ import QuickAdd from '../sub-areas/QuickAdd';
 import QuickAddPropertyType from '../property-types/QuickAdd';
 import QuickAddProperty from '../properties/QuickAdd';
 import QuickAddArea from '../areas/QuickAdd';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 
 function Edit(props) {
@@ -28,14 +31,20 @@ function Edit(props) {
     const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState(props.location.state.sub_area ? 
         props.location.state.sub_area : null );
 
+    const [checkedActive, setCheckedActive] = useState(( props.location.state.active && props.location.state.active == 1 )? 
+        true : false);
+    
     let propertyTypeNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
     let subAreaNullArr = [{'label' : 'Select Sub Area' , 'value' : null}];
+
+
    
     const [state, setState] = useState({
         id: props.location.state.id ? props.location.state.id : '',
         name: props.location.state.name ? props.location.state.name : '',
+        active: props.location.state.active ? props.location.state.active : '',
         account_number: props.location.state.account_number ? props.location.state.account_number : '',
         property_type_id: props.location.state.property_type ? props.location.state.property_type.id : null,
         property_id: props.location.state.property ? props.location.state.property.id : null,
@@ -67,6 +76,14 @@ function Edit(props) {
             [name] : value
         });
     }
+
+    const handleChangeActive = (event) => {
+      setState({
+            ...state,
+            active : (event.target.checked) ? 1 : 0
+        });
+      setCheckedActive(event.target.checked);
+    };
 
     const handleSelectPropertyTypeChange = (selectedOption) => {
          setState(state => ({
@@ -274,6 +291,7 @@ function Edit(props) {
 
             var formData = new FormData();
             formData.append('name', state.name);
+            formData.append('active', state.active);
             formData.append('account_number', state.account_number);
             formData.append('property_type_id', state.property_type_id);
             formData.append('property_id', state.property_id);
@@ -505,6 +523,23 @@ function Edit(props) {
                                         }
                                        />
                                     </div>
+                                      
+                                    </div>
+
+                                       {/* active */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Is Active</span>
+                                      </label>
+
+                                        <FormGroup>
+                                          <FormControlLabel control={<Checkbox
+                                              checked={checkedActive}
+                                              onChange={handleChangeActive}
+                                            />} 
+                                          label="Active" />
+                                        </FormGroup>
+                                                                          
                                       
                                     </div>
 
