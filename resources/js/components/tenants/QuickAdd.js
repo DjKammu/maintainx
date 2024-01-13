@@ -64,7 +64,7 @@ function New(props) {
 
     const [state, setState] = useState({
         name: "",
-        active: "",
+        active: 1,
         account_number: "",
         property_type_id: props.dropdowns.property_type ? props.dropdowns.property_type.id : null,
         property_id: props.dropdowns.property ? props.dropdowns.property.id : null,

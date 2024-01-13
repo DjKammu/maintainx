@@ -124,13 +124,18 @@ class Payment extends Model
 
     public function setPaymentAttribute($value)
     {
-        $this->attributes['payment'] =  ($value == 'null') ? NULL :  $value;
+        $this->attributes['payment'] =  ($value == 'null') ? NULL :  str_replace( ',', '', $value );
     }
 
 
     public function setPaymentDateAttribute($value)
     {
         $this->attributes['payment_date'] =  ($value == 'null') ? NULL :  $value;
+    } 
+
+    public function getPaymentAttribute($value)
+    {
+        return  ($value) ? number_format($value, 2, '.', ',') : NULL;
     }
 
      public static function format($num){

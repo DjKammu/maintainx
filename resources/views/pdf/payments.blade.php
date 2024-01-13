@@ -104,7 +104,7 @@
                        <th >{{$item->asset_type_name}}</th>
                        <th >{{$item->asset_model_name}}</th>
                        <th >{{$item->property_name}}</th>
-                       <th >{{$item->area_namev}}</th>
+                       <th >{{$item->area_name}}</th>
                        <th >{{$item->sub_area_name}}</th>
                        <th >{{$item->vendor_name}}</th>
                        <th >{{$item->contractor_name}}</th>

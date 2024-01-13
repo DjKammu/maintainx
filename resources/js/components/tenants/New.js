@@ -37,7 +37,7 @@ function New(props) {
 
     const [state, setState] = useState({
         name: "",
-        active:'',
+        active:1,
         account_number: "",
         property_type_id: "",
         property_id: "",

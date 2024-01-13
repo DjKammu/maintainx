@@ -62,7 +62,11 @@ class PaymentController extends Controller
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
+
+
         $whereUserProperties = User::userProperties();
+
+
 
         $data = Payment::when($whereUserProperties, function ($q) use 
                ($whereUserProperties) {
@@ -72,6 +76,7 @@ class PaymentController extends Controller
         if ($sortBy && $sortType) {
             $data->orderBy($sortBy, $sortType);
         }
+
 
         if ($request['query'] != '') {
             $data->where('brand', 'like', '%' . $request['query'] . '%');
@@ -127,7 +132,7 @@ class PaymentController extends Controller
                 $q->where('id', $work_type);
             });
         } 
-         
+
         $allData =  $data->get();
 
         $grandTotal = 0;
@@ -135,8 +140,8 @@ class PaymentController extends Controller
         $dt = @collect($allData)->filter(function($payment) use (&$grandTotal){
                  $grandTotal = $payment->payment + $grandTotal;
         });
-
-        if(request()->is('*/payments/download')){
+        
+        if(request()->is('*/payments/download') || request()->is('*/payments/mail')){
            $data = $allData;
            $vData = $allData;
            $items = $allData;
@@ -145,10 +150,7 @@ class PaymentController extends Controller
               $vData =  @$data->data; 
               $items = $data->items();
         }
-
-        //$grandTotal = 0;
-
-       
+          
 
         $vData = @collect($items)->filter(function($payment) use (&$grandTotal){
                //  $grandTotal = $payment->payment + $grandTotal;

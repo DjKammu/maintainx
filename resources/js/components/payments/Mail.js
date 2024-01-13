@@ -28,15 +28,15 @@ function New(props) {
           //loadData();
           setState({
             ...state,
-                query: props.params.query ? props.params.query : null,
-                sort_by: props.params.sort_by ? props.params.sort_by : null,
-                sort_type: props.params.sort_type ? props.params.sort_type : null,
-                property_type: props.params.property_type ? props.params.property_type : null,
-                property: props.params.property ? props.params.property : null,
-                area: props.params.area ? props.params.area : null,
-                sub_area: props.params.sub_area ? props.params.sub_area : null,
-                tenant: props.params.tenant ? props.params.tenant : null,
-                work_type: props.params.work_type ? props.params.work_type : null
+                query: props.params.query ? props.params.query : '',
+                sort_by: props.params.sort_by ? props.params.sort_by : '',
+                sort_type: props.params.sort_type ? props.params.sort_type : '',
+                property_type: props.params.property_type ? props.params.property_type : '',
+                property: props.params.property ? props.params.property : '',
+                area: props.params.area ? props.params.area : '',
+                sub_area: props.params.sub_area ? props.params.sub_area : '',
+                tenant: props.params.tenant ? props.params.tenant : '',
+                work_type: props.params.work_type ? props.params.work_type : ''
      });
     }
 
@@ -46,15 +46,15 @@ function New(props) {
         message: '',
         cc: '',
         bcc: '',
-        query: props.params.query ? props.params.query : null,
-        sort_by: props.params.sort_by ? props.params.sort_by : null,
-        sort_type: props.params.sort_type ? props.params.sort_type : null,
-        property_type: props.params.property_type ? props.params.property_type : null,
-        property: props.params.property ? props.params.property : null,
-        area: props.params.area ? props.params.area : null,
-        sub_area: props.params.sub_area ? props.params.sub_area : null,
-        tenant: props.params.tenant ? props.params.tenant : null,
-        work_type: props.params.work_type ? props.params.work_type : null,
+        query: props.params.query ? props.params.query : '',
+        sort_by: props.params.sort_by ? props.params.sort_by : '',
+        sort_type: props.params.sort_type ? props.params.sort_type : '',
+        property_type: props.params.property_type ? props.params.property_type : '',
+        property: props.params.property ? props.params.property : '',
+        area: props.params.area ? props.params.area : '',
+        sub_area: props.params.sub_area ? props.params.sub_area : '',
+        tenant: props.params.tenant ? props.params.tenant : '',
+        work_type: props.params.work_type ? props.params.work_type : '',
         loading: false,
         authUser: props.authUserProp
     });
