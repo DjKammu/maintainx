@@ -308,7 +308,7 @@ function List(props) {
         (data.length == 0 ? <div className="text-center text-gray">
                                 <div className="p-3 font-weight-bold">No Data Available</div>
                             </div> : 
-                            <table className="table-fixed w-full">
+                            <table className="responsive-table w-full">
                             <thead>
                                 <tr className="bg-gray-100">
                                     
@@ -323,7 +323,7 @@ function List(props) {
                                    <th className="px-4 py-2">Model Number  </th>
                                    <th className="px-4 py-2">Serial Number </th>
                                    <th className="px-4 py-2">Attachments </th>
-                                    <th className="px-4 py-2">Action</th>
+                                  <th className="px-4 py-2">Action</th>
                                 </tr>
                             </thead> <tbody>{
                                    data.map((dt, i) => {

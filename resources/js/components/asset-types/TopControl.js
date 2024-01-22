@@ -37,6 +37,19 @@ function TopControl(props) {
                                 </div>
                             </div>
                         </div>
+                    <div className="p-2">
+                    <div className="input-group input-group-sm">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text"> All / Trashed </span>
+                    </div>
+                        <div className="input-group-append">
+                        <button className="btn btn-sm btn-gradient-primary" onClick={props.onClickTrashed} type="button">
+                        {props.isTrashed ? 'All' :  'Trashed' } 
+                        </button>
+                        </div>
+                    
+                    </div>
+                    </div>
                     </div>
                     <form className="p-2 col-md-4" onSubmit={props.onSubmitQueryHandle}>
                         <div className="input-group">

@@ -29,6 +29,10 @@ class AssetTypeController extends Controller
      */
     public function index(Request $request)
     {
+        if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
         $perPage = $request['per_page'];
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
@@ -52,9 +56,28 @@ class AssetTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function trashed(Request $request)
     {
-          // 
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = AssetType::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
     }
 
     /**
@@ -66,7 +89,7 @@ class AssetTypeController extends Controller
     public function store(Request $request)
     {
         if(Gate::denies('add')) {
-               return abort('401');
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
 
         $data = $request->except('api_token');
@@ -174,6 +197,22 @@ class AssetTypeController extends Controller
    
     public function destroy(Request $request)
     {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+
         $destroy = AssetType::where('id',$request['id'])->first();
                   
         if (empty($destroy)) {
@@ -188,6 +227,35 @@ class AssetTypeController extends Controller
         if ($delete) {
             return response()->json([
                 'message' => 'Asset Type successfully deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = AssetType::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Asset Type Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Asset Type successfully restored',
                 'status' => 'success'
             ]);
         } else {

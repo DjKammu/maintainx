@@ -62,11 +62,7 @@ class PaymentController extends Controller
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-
-
         $whereUserProperties = User::userProperties();
-
-
 
         $data = Payment::when($whereUserProperties, function ($q) use 
                ($whereUserProperties) {
@@ -74,7 +70,7 @@ class PaymentController extends Controller
               });
 
         if ($sortBy && $sortType) {
-            $data->orderBy($sortBy, $sortType);
+            $data->orderBy('payments.'.$sortBy, $sortType);
         }
 
 
@@ -87,10 +83,7 @@ class PaymentController extends Controller
             $data->where('id',$request['id']);
         }
        
-       
-
         if ($request['property_type'] != '') {
-
             $property_type = $request['property_type'];
             $data->whereHas('property_type', function($q) use ($property_type){
                 $q->where('id', $property_type);
@@ -126,21 +119,34 @@ class PaymentController extends Controller
             });
         } 
 
-        if ($request['work_type'] != '') {
-            $work_type = $request['work_type'];
-            $data->whereHas('work_type', function($q) use ($work_type){
-                $q->where('id', $work_type);
-            });
-        } 
+        $work_type = $request['work_type'];
+        $data->where(function($q) use ($work_type){
+              $q->whereHas('work_type', function($q) use ($work_type){
+                  $q->when($work_type, function ($q) use 
+                   ($work_type) {
+                      $q->where('id',$work_type);
+                  });
+              })->orWhereNull('work_type_id');
+        });
+
+        $asset_type = $request['asset_type'];
+        $data->where(function($q) use ($asset_type){
+              $q->whereHas('asset_type', function($q) use ($asset_type){
+                  $q->when($asset_type, function ($q) use 
+                   ($asset_type) {
+                      $q->where('id',$asset_type);
+                  });
+              })->orWhereNull('asset_type_id');
+        });
 
         $allData =  $data->get();
 
         $grandTotal = 0;
 
         $dt = @collect($allData)->filter(function($payment) use (&$grandTotal){
-                 $grandTotal = $payment->payment + $grandTotal;
+                 $grandTotal =  @$payment->getRawOriginal('payment') + $grandTotal;
         });
-        
+
         if(request()->is('*/payments/download') || request()->is('*/payments/mail')){
            $data = $allData;
            $vData = $allData;
@@ -230,28 +236,6 @@ class PaymentController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    // public function areas(Request $request)
-    // { 
-    //       $area = Area::where('property_id',$request->property)
-    //                     ->whereNotNull('property_id')
-    //                    ->orderBy('name')->first();
-    //       if($area){
-    //         $area->label = @$area->name;
-    //         $area->value = @$area->id;
-    //       }
-    //        $area = ($area) ?  [$area] : []; 
-    //      return response()->json([
-    //         'message' => compact('area'),
-    //         'status' => 'success'
-    //     ]);
-    // }  
-
-
     public function assetSelection(Request $request)
     { 
           
@@ -314,11 +298,15 @@ class PaymentController extends Controller
     { 
           $area_id = $request->area_id;
           $sub_area_id = $request->sub_area_id;
+          $asset_type = $request->asset_type;
           $whereUserProperties = User::userProperties();
           $assets = AssetModel::when($whereUserProperties, function ($q) use 
                      ($whereUserProperties) {
                       $q->whereIn('property_id', $whereUserProperties);
-                    })->where('asset_type_id',$request->asset_type);
+                    })->whereHas('asset_type', function($q) use ($asset_type){
+                            $q->whereNull('deleted_at')
+                            ->where('id',$asset_type);
+                   });
 
           if($sub_area_id) {
               $assets = $assets->where('sub_area_id', $sub_area_id);
@@ -465,10 +453,13 @@ class PaymentController extends Controller
              ])->when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
                           $q->whereIn('property_id', $whereUserProperties);
-              })->when($asset_type_id, function ($q) use 
-               ($asset_type_id) {
-                $q->where('asset_type_id', $asset_type_id);
-              })->orderBy('name')->get();
+              })->whereHas('asset_type', function($q) use ($asset_type_id){
+                            $q->whereNull('deleted_at')
+                            ->when($asset_type_id, function ($q) use 
+                             ($asset_type_id) {
+                                $q->where('id',$asset_type_id);
+                            });
+                   })->orderBy('name')->get();
 
             if($assets){
 
@@ -546,10 +537,20 @@ class PaymentController extends Controller
         $assetModels = AssetModel::query();
         $whereUserProperties = User::userProperties();
 
-        if (@$payment['asset_type_id'] != '') {
-            $assetModels->where('asset_type_id',$payment['asset_type_id']);
-        }
-       
+        // if (@$payment['asset_type_id'] != '') {
+        //     $assetModels->where('asset_type_id',$payment['asset_type_id']);
+        // }
+
+        $asset_type_id = $request['asset_type_id']; 
+
+        $assetModels->whereHas('asset_type', function($q) use ($asset_type_id){
+                  $q->whereNull('deleted_at')
+                  ->when($asset_type_id, function ($q) use 
+                   ($asset_type_id) {
+                      $q->where('id',$asset_type_id);
+                  });
+         });
+
         $assetModels = $assetModels->when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
                           $q->whereIn('property_id', $whereUserProperties);

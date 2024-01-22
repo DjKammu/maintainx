@@ -47,16 +47,29 @@ class WorkTypeController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function trashed(Request $request)
     {
-          // 
-    }
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
 
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = WorkType::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -174,6 +187,22 @@ class WorkTypeController extends Controller
    
     public function destroy(Request $request)
     {
+        if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+        
         $destroy = WorkType::where('id',$request['id'])->first();
                   
         if (empty($destroy)) {
@@ -188,6 +217,35 @@ class WorkTypeController extends Controller
         if ($delete) {
             return response()->json([
                 'message' => 'Work Type successfully deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = WorkType::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Work Type Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Work Type successfully restored',
                 'status' => 'success'
             ]);
         } else {

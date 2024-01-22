@@ -63,6 +63,11 @@ class AssetModelController extends Controller
                 $q->where('id', $property);
             });
         }
+        
+        $asset_type = $request['asset_type']; 
+        $data->whereHas('asset_type', function($q) use ($asset_type){
+                $q->whereNull('deleted_at');
+       });
 
          
         $data = $data->paginate($perPage);

@@ -30,6 +30,10 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::post('/asset-types', 'Api\AssetTypeController@store');
      Route::post('/asset-types/update', 'Api\AssetTypeController@update');
      Route::post('/asset-types/destroy', 'Api\AssetTypeController@destroy');
+     Route::get('/asset-types/trashed', 'Api\AssetTypeController@trashed'); 
+     Route::post('/asset-types/restore', 'Api\AssetTypeController@restore');
+
+
 
      Route::get('/order-types', 'Api\OrderTypeController@index');
      Route::post('/order-types', 'Api\OrderTypeController@store');
@@ -66,7 +70,7 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::get('/asset', 'Api\AssetController@index');
      Route::post('/asset', 'Api\AssetController@store');
      Route::post('/asset/update', 'Api\AssetController@update');
-     Route::post('/asset/destroy', 'Api\AssetController@destroy'); 
+     Route::post('/asset/destroy', 'Api\AssetController@destroy');  
 
 
      Route::get('/property-types', 'Api\PropertyTypeController@index');
@@ -91,6 +95,8 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::post('/work-types', 'Api\WorkTypeController@store');
      Route::post('/work-types/update', 'Api\WorkTypeController@update');
      Route::post('/work-types/destroy', 'Api\WorkTypeController@destroy'); 
+     Route::get('/work-types/trashed', 'Api\WorkTypeController@trashed'); 
+     Route::post('/work-types/restore', 'Api\WorkTypeController@restore');
 
 
      Route::get('/payments', 'Api\PaymentController@index');
