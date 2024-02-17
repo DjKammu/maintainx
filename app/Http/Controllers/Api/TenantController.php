@@ -51,20 +51,46 @@ class TenantController extends Controller
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
 
-        if ($request['property_type'] != '') {
+        $property_type = $request['property_type'];
+        $data->where(function($q) use ($property_type){
+              $q->whereHas('property_type', function($q) use ($property_type){
+                  $q->when($property_type, function ($q) use 
+                   ($property_type) {
+                      $q->where('id',$property_type);
+                  });
+              })->orWhereNull('property_type_id');
+        });
 
-            $property_type = $request['property_type'];
-            $data->whereHas('property_type', function($q) use ($property_type){
-                $q->where('id', $property_type);
-            });
-        }
+        $property = $request['property'];
+        $data->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->orWhereNull('property_id');
+        });
 
-        if ($request['property'] != '') {
-            $property = $request['property'];
-            $data->whereHas('property', function($q) use ($property){
-                $q->where('id', $property);
-            });
-        }
+        $area = $request['area'];
+        $data->where(function($q) use ($area){
+              $q->whereHas('area', function($q) use ($area){
+                  $q->when($area, function ($q) use 
+                   ($area) {
+                      $q->where('id',$area);
+                  });
+              })->orWhereNull('area_id');
+        });
+        
+        $sub_area = $request['sub_area'];
+        $data->where(function($q) use ($sub_area){
+              $q->whereHas('sub_area', function($q) use ($sub_area){
+                  $q->when($sub_area, function ($q) use 
+                   ($sub_area) {
+                      $q->where('id',$sub_area);
+                  });
+              })->orWhereNull('sub_area_id');
+        });
+
          
         $data = $data->paginate($perPage);
 
@@ -234,13 +260,25 @@ class TenantController extends Controller
    
     public function destroy(Request $request)
     {
-        $destroy = Tenant::where('id',$request['id'])->first();
-
-        if(Gate::denies('administrator') && !User::propertyBelongsToUser($destroy['property_id'])) {
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         }  
+         
+        $password = $request->password;
+        $user = \Auth::user();
 
-                  
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+           
+
+        $destroy = Tenant::where('id',$request['id'])->first();
+         
         if (empty($destroy)) {
             return response()->json([
                 'message' => 'Tenant Not Found',
@@ -261,6 +299,7 @@ class TenantController extends Controller
                 'status' => 'error'
             ]);
         }
+        
     }
 
     public function subArea(Request $request)
@@ -273,7 +312,9 @@ class TenantController extends Controller
                         $q->whereIn('property_id', $whereUserProperties);
                       })->where('area_id',$request->area_id)
                         ->whereNotNull('area_id')
-                       ->orderBy('name')->get();
+                        ->whereHas('property', function($q){
+                        })->orderBy('name')->get();
+
           if($subAreas){
              $subAreas = @$subAreas->filter(function($subArea){
                   $subArea->label = $subArea->name;
@@ -286,7 +327,8 @@ class TenantController extends Controller
                          ($whereUserProperties) {
                           $q->whereIn('property_id', $whereUserProperties);
                         })->where('id',$request->area_id)
-                       ->first();
+                        ->whereHas('property', function($q){
+                        })->first();
 
            if($area){
 
@@ -319,4 +361,58 @@ class TenantController extends Controller
             'status' => 'successs'       
         ]);
     }  
+
+    public function trashed(Request $request)
+    {
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = Tenant::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
+    }
+    
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = Tenant::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Tenant Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Tenant successfully restored',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
 }

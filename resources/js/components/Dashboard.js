@@ -17,19 +17,19 @@ function Dashboard(props) {
     });
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const iziToast = require('iziToast');
+        // if (typeof window !== "undefined") {
+        //     const iziToast = require('iziToast');
 
-            iziToast.show({
-                timeout: 0,
-                progressBar: false,
-                displayMode: 'once',
-                theme: 'light',
-                id: 'star-notification',
-                title: '<a target="_blank" rel="noopener noreferrer" href="https://github.com/arifszn/react-laravel"><img src="https://img.shields.io/github/stars/arifszn/react-laravel?style=social" alt="Github Star"/></a>',
-                message: 'We need your support. Please ⭐️ on <a target="_blank" rel="noopener noreferrer" href="https://github.com/arifszn/react-laravel">GitHub</a> to help us increase.'
-            });
-        }
+        //     iziToast.show({
+        //         timeout: 0,
+        //         progressBar: false,
+        //         displayMode: 'once',
+        //         theme: 'light',
+        //         id: 'star-notification',
+        //         title: '<a target="_blank" rel="noopener noreferrer" href="https://github.com/arifszn/react-laravel"><img src="https://img.shields.io/github/stars/arifszn/react-laravel?style=social" alt="Github Star"/></a>',
+        //         message: 'We need your support. Please ⭐️ on <a target="_blank" rel="noopener noreferrer" href="https://github.com/arifszn/react-laravel">GitHub</a> to help us increase.'
+        //     });
+        // }
         
         props.setActiveComponentProp('Dashboard');
         loadData();

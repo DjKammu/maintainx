@@ -52,10 +52,30 @@ class PropertyTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function trashed(Request $request)
     {
-          // 
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = PropertyType::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -174,6 +194,22 @@ class PropertyTypeController extends Controller
    
     public function destroy(Request $request)
     {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+
         $destroy = PropertyType::where('id',$request['id'])->first();
                   
         if (empty($destroy)) {
@@ -183,20 +219,49 @@ class PropertyTypeController extends Controller
             ]);
         }
         
-        $exists = PropertyType::has('property')->whereId($request['id'])->exists();
+        // $exists = PropertyType::has('property')->whereId($request['id'])->exists();
 
-        if ($exists) {
-            return response()->json([
-                'message' => 'Property Type have been used  in Property',
-                'status' => 'error'
-            ]);
-        }
+        // if ($exists) {
+        //     return response()->json([
+        //         'message' => 'Property Type have been used  in Property',
+        //         'status' => 'error'
+        //     ]);
+        // }
          
         $delete  = $destroy->delete();
 
         if ($delete) {
             return response()->json([
                 'message' => 'Property Type successfully deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = PropertyType::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Property Type Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Property Type successfully restored',
                 'status' => 'success'
             ]);
         } else {

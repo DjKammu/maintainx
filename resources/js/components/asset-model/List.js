@@ -355,7 +355,7 @@ function List(props) {
                         onChangeQueryHandle={onChangeQueryHandle}
                         query={state.query}
                     />
-                    <div className='szn-list-wrapper bg-gradient-light'>
+                    <div className='szn-list-wrapper bg-gradient-light table-outer'>
                             {dataTable()}
                     </div>
                     <div className="pt-3 pb-3">

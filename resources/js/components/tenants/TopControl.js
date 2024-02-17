@@ -72,9 +72,22 @@ function TopControl(props) {
                             </div>
                         </div>
 
+                        <div className="p-2">
+                            <div className="input-group input-group-sm">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text"> All / Trashed </span>
+                            </div>
+                                <div className="input-group-append">
+                                <button className="btn btn-sm btn-gradient-primary" onClick={props.onClickTrashed} type="button">
+                                {props.isTrashed ? 'All' :  'Trashed' } 
+                                </button>
+                                </div>
+                          </div>
+                     </div>
+                    </div> 
+                </div>
 
-                    </div>
-                    <form className="p-2 col-md-4" onSubmit={props.onSubmitQueryHandle}>
+                  <form className="p-2 col-md-4" onSubmit={props.onSubmitQueryHandle}>
                         <div className="input-group">
                             <input type="search" className="form-control form-control-sm" placeholder="Search Here" value={props.query} onChange={props.onChangeQueryHandle}/>
                             <div className="input-group-append">
@@ -82,7 +95,6 @@ function TopControl(props) {
                             </div>
                         </div>
                     </form>
-                </div>
             </div>
         </React.Fragment>
     );

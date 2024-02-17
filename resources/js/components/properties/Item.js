@@ -39,14 +39,15 @@ class Item extends Component {
                             </td>
 
                         <td className="border px-4 py-3 w-auto">
-                         <div className="szn-widget__action">
+                         <div className="input-group-prepend szn-widget__action">
                             <Link to={{
                                 pathname: `/properties/${this.props.obj.id}`,
                                 state: this.props.obj
                                
                             }} type="button" className="btn btn-outline-success btn-sm btn-upper">Edit</Link>&nbsp;
-                            <button type="button" className="btn btn-danger btn-sm btn-upper" onClick={() => this.props.onClickDeleteHandler(this.props.obj.id)}>Delete</button>
-                        </div>
+                            <this.props.action fn={this.props.loadData} id={this.props.obj.id}
+                             url={'/api/v1/properties'}/>
+                             </div>
                         </td>
                 
                 </tr>

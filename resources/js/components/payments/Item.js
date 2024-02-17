@@ -40,7 +40,7 @@ class Item extends Component {
                     
                             </td>
                             <td className="border px-4 py-3 w-auto">
-                           <div className="szn-widget__action">
+                           <div className="input-group-prepend szn-widget__action">
                             <Link to={{
                                 pathname: `/payments/${this.props.obj.id}`,
                                 state: this.props.obj

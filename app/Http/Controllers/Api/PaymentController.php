@@ -83,41 +83,80 @@ class PaymentController extends Controller
             $data->where('id',$request['id']);
         }
        
-        if ($request['property_type'] != '') {
-            $property_type = $request['property_type'];
-            $data->whereHas('property_type', function($q) use ($property_type){
-                $q->where('id', $property_type);
-            });
-        }
+       $property_type = $request['property_type'];
+       $data->where(function($q) use ($property_type){
+              $q->whereHas('property_type', function($q) use ($property_type){
+                  $q->when($property_type, function ($q) use 
+                   ($property_type) {
+                      $q->where('id',$property_type);
+                  });
+              })->orWhereNull('property_type_id');
+        });
 
-        if ($request['property'] != '') {
-            $property = $request['property'];
-            $data->whereHas('property', function($q) use ($property){
-                $q->where('id', $property);
-            });
-        }
+       $property = $request['property'];
+        $data->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->orWhereNull('property_id');
+        });
 
-          if ($request['area'] != '') {
-            $area = $request['area'];
-            $data->whereHas('area', function($q) use ($area){
-                $q->where('id', $area);
-            });
-        }
-         
-         
-        if ($request['sub_area'] != '') {
-            $sub_area = $request['sub_area'];
-            $data->whereHas('sub_area', function($q) use ($sub_area){
-                $q->where('id', $sub_area);
-            });
-        } 
+        $area = $request['area'];
+        $data->where(function($q) use ($area){
+              $q->whereHas('area', function($q) use ($area){
+                  $q->when($area, function ($q) use 
+                   ($area) {
+                      $q->where('id',$area);
+                  });
+              })->orWhereNull('area_id');
+        });
+        
+        $sub_area = $request['sub_area'];
+        $data->where(function($q) use ($sub_area){
+              $q->whereHas('sub_area', function($q) use ($sub_area){
+                  $q->when($sub_area, function ($q) use 
+                   ($sub_area) {
+                      $q->where('id',$sub_area);
+                  });
+              })->orWhereNull('sub_area_id');
+        });
 
-        if ($request['tenant'] != '') {
-            $tenant = $request['tenant'];
-            $data->whereHas('tenant', function($q) use ($tenant){
-                $q->where('id', $tenant);
-            });
-        } 
+
+        $tenant = $request['tenant'];
+
+         $data->where(function($q) use ($tenant){
+              $q->whereHas('tenant', function($q) use ($tenant){
+                  $q->when($tenant, function ($q) use 
+                   ($tenant) {
+                      $q->where('id',$tenant);
+                  });
+              })->orWhereNull('tenant_id');
+        }); 
+
+         $contractor = $request['contractor'];
+
+         $data->where(function($q) use ($contractor){
+              $q->whereHas('contractor', function($q) use ($contractor){
+                  $q->when($contractor, function ($q) use 
+                   ($contractor) {
+                      $q->where('id',$contractor);
+                  });
+              })->orWhereNull('contractor_id');
+        });
+        
+        $vendor = $request['vendor'];
+
+        $data->where(function($q) use ($vendor){
+              $q->whereHas('vendor', function($q) use ($vendor){
+                  $q->when($vendor, function ($q) use 
+                   ($vendor) {
+                      $q->where('id',$vendor);
+                  });
+              })->orWhereNull('vendor_id');
+        });
+
 
         $work_type = $request['work_type'];
         $data->where(function($q) use ($work_type){
@@ -273,7 +312,7 @@ class PaymentController extends Controller
                          'property_id' => $asset->property_id,
                          'area_id' => $asset->area_id,
                          'sub_area_id' => $asset->sub_area_id
-             ])->orderBy('name')->get();
+             ])->where('active',Tenant::ACTIVE)->orderBy('name')->get();
 
             if($tenants){
 
@@ -551,6 +590,47 @@ class PaymentController extends Controller
                   });
          });
 
+      $property_type = $request['property_type'];
+      $assetModels->where(function($q) use ($property_type){
+              $q->whereHas('property_type', function($q) use ($property_type){
+                  $q->when($property_type, function ($q) use 
+                   ($property_type) {
+                      $q->where('id',$property_type);
+                  });
+              })->orWhereNull('property_type_id');
+        });
+
+       $property = $request['property'];
+       $assetModels->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->orWhereNull('property_id');
+        });
+
+       $area = $request['area'];
+        $assetModels->where(function($q) use ($area){
+              $q->whereHas('area', function($q) use ($area){
+                  $q->when($area, function ($q) use 
+                   ($area) {
+                      $q->where('id',$area);
+                  });
+              })->orWhereNull('area_id');
+        });
+        
+        $sub_area = $request['sub_area'];
+        $assetModels->where(function($q) use ($sub_area){
+              $q->whereHas('sub_area', function($q) use ($sub_area){
+                  $q->when($sub_area, function ($q) use 
+                   ($sub_area) {
+                      $q->where('id',$sub_area);
+                  });
+              })->orWhereNull('sub_area_id');
+        });
+
+
         $assetModels = $assetModels->when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
                           $q->whereIn('property_id', $whereUserProperties);
@@ -584,7 +664,7 @@ class PaymentController extends Controller
              ])->when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
                           $q->whereIn('property_id', $whereUserProperties);
-                        })->orderBy('name')->get();
+                        })->where('active',Tenant::ACTIVE)->orderBy('name')->get();
 
             if($tenants){
 
@@ -597,15 +677,55 @@ class PaymentController extends Controller
 
          }
 
-
-            
            $allTenants = Tenant::when($whereUserProperties, function ($q) use 
                        ($whereUserProperties) {
                         $q->whereIn('property_id', $whereUserProperties);
-                      })->orderBy('name')->get();
+                      });
 
+          $allTenants->where(function($q) use ($property_type){
+                $q->whereHas('property_type', function($q) use ($property_type){
+                    $q->when($property_type, function ($q) use 
+                     ($property_type) {
+                        $q->where('id',$property_type);
+                    });
+                })->orWhereNull('property_type_id');
+          });
+
+          
+          $allTenants->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->orWhereNull('property_id');
+        });
+
+        $area = $request['area'];
+        $allTenants->where(function($q) use ($area){
+              $q->whereHas('area', function($q) use ($area){
+                  $q->when($area, function ($q) use 
+                   ($area) {
+                      $q->where('id',$area);
+                  });
+              })->orWhereNull('area_id');
+        });
+        
+        $sub_area = $request['sub_area'];
+        $allTenants->where(function($q) use ($sub_area){
+              $q->whereHas('sub_area', function($q) use ($sub_area){
+                  $q->when($sub_area, function ($q) use 
+                   ($sub_area) {
+                      $q->where('id',$sub_area);
+                  });
+              })->orWhereNull('sub_area_id');
+        });
+
+
+          $allTenants = $allTenants->where('active',Tenant::ACTIVE)
+                         ->orderBy('name')->get();
+          
           if($allTenants){
-
               $allTenants = @$allTenants->filter(function($tenant){
                   $tenant->label = $tenant->name;
                   $tenant->value = $tenant->id;

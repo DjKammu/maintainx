@@ -224,7 +224,23 @@ class PropertyController extends Controller
             ], 401);
         }
          
-         $property =  Property::find($request['id']);
+        $property =  Property::find($request['id']);
+
+        if (empty($property)) {
+            return response()->json([
+                'message' => 'Property Not Found',
+                'status' => 'error'
+            ]);
+        }
+
+        $exists = Property::has('area')->whereId($request['id']);
+
+        if (@$exists->exists()  && ($property->property_type_id != $data['property_type_id'])) {
+            return response()->json([
+                'message' => "Property have been used  in Area, So i'ts cant be changed",
+                'status' => 'error'
+            ]);
+        }
 
        if ($property) {
             $property->update($data);
@@ -264,6 +280,18 @@ class PropertyController extends Controller
         if(Gate::denies('administrator') && !User::propertyBelongsToUser($request['id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
+
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
         
         $property = Property::where('id',$request['id'])->first();
                   
@@ -274,12 +302,70 @@ class PropertyController extends Controller
             ]);
         }
          
-        $property->deleteFile();
+        //$property->deleteFile();
         $delete  = $property->delete();
 
         if ($delete) {
             return response()->json([
                 'message' => 'Property successfully deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function trashed(Request $request)
+    {
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = Property::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
+    }
+    
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = Property::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Property Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Property successfully restored',
                 'status' => 'success'
             ]);
         } else {

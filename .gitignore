@@ -3,7 +3,8 @@
 /public/storage
 /public/layout_attachments/*
 /public/area_layout_attachments/*
-public/payment_attachments/*
+/public/payment_attachments/*
+/public/contractor_attachments/*
 /public/js/*
 /public/asset_attachments/*
 /storage/*.key

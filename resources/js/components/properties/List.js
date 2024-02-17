@@ -9,10 +9,13 @@ import { showSznNotification} from '../../Helpers'
 import TopControl from './TopControl'
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import DeleteWithForm from "../../models/DeleteWithForm";
+import RestoreForm from "../../models/RestoreForm";
 
 function List(props) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isTrashed, setIsTrashed] = useState(false);
 
     const [state, setState] = useState({
        pageRangeDisplayed: 5,
@@ -43,7 +46,7 @@ function List(props) {
 
     useEffect(() => {
         loadData();
-    }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType]);
+    }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,isTrashed]);
 
     const skeletonLoader = () => {
         return <div className="content-loader-wrapper">
@@ -92,7 +95,8 @@ function List(props) {
 
     const loadData = () => {
         setIsLoading(true);
-        axios.get('/api/v1/properties?page='+state.currentPage, {
+        let trashUrl = (isTrashed) ? '/trashed' : '';
+        axios.get('/api/v1/properties'+trashUrl+'?page='+state.currentPage, {
             params: {
                 api_token: authUser.api_token,
                 per_page: state.perPage,
@@ -129,6 +133,10 @@ function List(props) {
             currentPage: pageNumber 
         });
     }
+
+    const onClickTrashed = (e) => {
+        setIsTrashed(!isTrashed);
+    };
 
     const onChangeQueryHandle = (e) => {
         setState({
@@ -228,7 +236,7 @@ function List(props) {
         (data.length == 0 ? <div className="text-center text-gray">
                                 <div className="p-3 font-weight-bold">No Data Available</div>
                             </div> : 
-                            <table className="table-fixed w-full">
+                            <table className="responsive-table w-full">
                             <thead>
                                 <tr className="bg-gray-100">
                                     
@@ -245,7 +253,10 @@ function List(props) {
                                 </tr>
                             </thead> <tbody>{
                                    data.map((dt, i) => {
-                                    return  <Item onClickDeleteHandler={onClickDeleteHandler} obj={dt} key={i} />;
+                                    return  <Item 
+                                    action={ isTrashed ? RestoreForm : DeleteWithForm } 
+                                    loadData={loadData}  
+                                    obj={dt} key={i} />;
                                 })  
                             } </tbody>
                            </table>);
@@ -256,18 +267,20 @@ function List(props) {
             <div className="card animated fadeIn">
                 <div className="card-body">
                     <TopControl 
-                        isLoading={isLoading} 
+                        isLoading={isLoading}
+                        isTrashed={isTrashed} 
                         perPage={state.perPage} 
                         onChangePerPageHandle={onChangePerPageHandle}
                         sortBy={state.sortBy}
                         sortType={state.sortType}
                         onChangeSortByHandle={onChangeSortByHandle}
                         onClickSortTypeHandle={onClickSortTypeHandle}
+                        onClickTrashed={onClickTrashed}
                         onSubmitQueryHandle={onSubmitQueryHandle}
                         onChangeQueryHandle={onChangeQueryHandle}
                         query={state.query}
                     />
-                    <div className='szn-list-wrapper bg-gradient-light'>
+                    <div className='szn-list-wrapper bg-gradient-light table-outer'>
                             {dataTable()}
                     </div>
                     <div className="pt-3 pb-3">

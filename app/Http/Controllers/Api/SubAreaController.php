@@ -48,6 +48,27 @@ class SubAreaController extends Controller
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
          
+        $property = $request['property'];
+        $data->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->orWhereNull('property_id');
+        });
+
+        $area = $request['area'];
+        $data->where(function($q) use ($area){
+              $q->whereHas('area', function($q) use ($area){
+                  $q->when($area, function ($q) use 
+                   ($area) {
+                      $q->where('id',$area);
+                  });
+              })->orWhereNull('area_id');
+        });
+
+ 
         $data = $data->paginate($perPage);
 
         $data->data = @collect($data->items())->filter(function($subArea){
@@ -198,6 +219,19 @@ class SubAreaController extends Controller
 
        $subArea =  SubArea::find($request['id']);
 
+       $exitsWith = '';
+       $withAsset = SubArea::has('asset')->whereId($request['id']);
+       $withPayment = SubArea::has('payment')->whereId($request['id']);
+
+       $exitsWith = @$withAsset->exists() ? 'Asset' : (@$withPayment->exists() ? 'Payment' : '');
+
+       if (($exitsWith  && ($subArea->area_id != $data['area_id'])) || ($exitsWith  && ($subArea->property_id != $data['property_id']))) {
+            return response()->json([
+                'message' => "Sub Area have been used  in $exitsWith, So it's Property & Area cant be changed",
+                'status' => 'error'
+            ]);
+        }
+
        if ($subArea) {
             $subArea->update($data);
 
@@ -230,12 +264,25 @@ class SubAreaController extends Controller
    
     public function destroy(Request $request)
     {
-        $area = SubArea::where('id',$request['id'])->first();
 
-         if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         }  
+         
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
            
+        $area = SubArea::where('id',$request['id'])->first();
+
         if (empty($area)) {
             return response()->json([
                 'message' => 'Sub Area Not Found',
@@ -243,12 +290,66 @@ class SubAreaController extends Controller
             ]);
         }
          
-        $area->deleteFile();
+        //$area->deleteFile();
         $delete  = $area->delete();
 
         if ($delete) {
             return response()->json([
                 'message' => 'Sub Area successfully deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
+    public function trashed(Request $request)
+    {
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = SubArea::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
+    }
+    
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = SubArea::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Sub Area Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Sub Area successfully restored',
                 'status' => 'success'
             ]);
         } else {

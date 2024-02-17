@@ -26,13 +26,14 @@ class Item extends Component {
                         <td className="border px-4 py-3">{ this.props.obj.area_name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.sub_area_name }</td>
                             <td className="border px-4 py-3 w-auto">
-                         <div className="szn-widget__action">
+                         <div className="szn-widget__action input-group-prepend">
                             <Link to={{
                                 pathname: `/tenants/${this.props.obj.id}`,
                                 state: this.props.obj
                                
                             }} type="button" className="btn btn-outline-success btn-sm btn-upper">Edit</Link>&nbsp;
-                            <button type="button" className="btn btn-danger btn-sm btn-upper" onClick={() => this.props.onClickDeleteHandler(this.props.obj.id)}>Delete</button>
+                            <this.props.action fn={this.props.loadData} id={this.props.obj.id}
+                             url={'/api/v1/tenants'}/>
                         </div>
                         </td>
                 

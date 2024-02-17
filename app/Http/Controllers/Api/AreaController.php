@@ -47,6 +47,17 @@ class AreaController extends Controller
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
+
+        $property = $request['property'];
+        $data->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->orWhereNull('property_id');
+        });
+
          
         $data = $data->paginate($perPage);
 
@@ -181,8 +192,27 @@ class AreaController extends Controller
             ], 401);
         }
          
-         $area =  Area::find($request['id']);
-       
+        $area =  Area::find($request['id']);
+
+        if (empty($area)) {
+            return response()->json([
+                'message' => 'Area Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+         $exitsWith = '';
+         $withSubarea = Area::has('sub_area')->whereId($request['id']);
+         $withAsset = Area::has('asset')->whereId($request['id']);
+         $withPayment = Area::has('payment')->whereId($request['id']);
+         $exitsWith = @$withSubarea->exists() ? 'Sub Area' : ( @$withAsset->exists() ? 'Asset' : (@$withPayment->exists() ? 'Payment' : ''));
+
+        if ($exitsWith  && ($area->property_id != $data['property_id'])) {
+            return response()->json([
+                'message' => "Area have been used  in $exitsWith, So it's Property cant be changed",
+                'status' => 'error'
+            ]);
+        } 
 
        if ($area) {
             $area->update($data);
@@ -209,12 +239,25 @@ class AreaController extends Controller
    
     public function destroy(Request $request)
     {
-        $area = Area::where('id',$request['id'])->first();
 
         if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         }  
-                 
+         
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+
+        $area = Area::where('id',$request['id'])->first();
+
         if (empty($area)) {
             return response()->json([
                 'message' => 'Area Not Found',
@@ -222,12 +265,71 @@ class AreaController extends Controller
             ]);
         }
          
-        $area->deleteFile();
+        //$area->deleteFile();
         $delete  = $area->delete();
 
         if ($delete) {
             return response()->json([
                 'message' => 'Area successfully deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function trashed(Request $request)
+    {
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = Area::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
+    }
+    
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = Area::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Area Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Area successfully restored',
                 'status' => 'success'
             ]);
         } else {

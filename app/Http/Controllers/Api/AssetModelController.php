@@ -48,26 +48,57 @@ class AssetModelController extends Controller
         if ($request['query'] != '') {
             $data->where('name', 'like', '%' . $request['query'] . '%');
         }
+        
+        $property_type = $request['property_type'];
+        $data->where(function($q) use ($property_type){
+              $q->whereHas('property_type', function($q) use ($property_type){
+                  $q->when($property_type, function ($q) use 
+                   ($property_type) {
+                      $q->where('id',$property_type);
+                  });
+              })->orWhereNull('property_type_id');
+        });
 
-        if ($request['property_type'] != '') {
+        $property = $request['property'];
+        $data->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->orWhereNull('property_id');
+        });
 
-            $property_type = $request['property_type'];
-            $data->whereHas('property_type', function($q) use ($property_type){
-                $q->where('id', $property_type);
-            });
-        }
+        $area = $request['area'];
+        $data->where(function($q) use ($area){
+              $q->whereHas('area', function($q) use ($area){
+                  $q->when($area, function ($q) use 
+                   ($area) {
+                      $q->where('id',$area);
+                  });
+              })->orWhereNull('area_id');
+        });
 
-        if ($request['property'] != '') {
-            $property = $request['property'];
-            $data->whereHas('property', function($q) use ($property){
-                $q->where('id', $property);
-            });
-        }
+        $sub_area = $request['sub_area'];
+        $data->where(function($q) use ($sub_area){
+              $q->whereHas('sub_area', function($q) use ($sub_area){
+                  $q->when($sub_area, function ($q) use 
+                   ($sub_area) {
+                      $q->where('id',$sub_area);
+                  });
+              })->orWhereNull('sub_area_id');
+        });
+
         
         $asset_type = $request['asset_type']; 
-        $data->whereHas('asset_type', function($q) use ($asset_type){
-                $q->whereNull('deleted_at');
-       });
+        $data->where(function($q) use ($asset_type){
+              $q->whereHas('asset_type', function($q) use ($asset_type){
+                  $q->when($asset_type, function ($q) use 
+                   ($asset_type) {
+                      $q->where('id',$asset_type);
+                  });
+              })->orWhereNull('asset_type_id');
+        });
 
          
         $data = $data->paginate($perPage);

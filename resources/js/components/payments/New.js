@@ -66,7 +66,7 @@ function New(props) {
         tenant_id: "",
         work_type_id: "",
         notes: "",
-        payment:'',
+        payment: 0,
         payment_date:'',
         photos: "",
         brand: "",

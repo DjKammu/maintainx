@@ -9,10 +9,14 @@ import { showSznNotification} from '../../Helpers'
 import TopControl from './TopControl'
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import DeleteWithForm from "../../models/DeleteWithForm";
+import RestoreForm from "../../models/RestoreForm";
 
 function List(props) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isTrashed, setIsTrashed] = useState(false); 
+
     const [propertyTypes, setPropertyTypes] = useState([]);
     const [properties, setProperties] = useState([]);
     
@@ -52,7 +56,7 @@ function List(props) {
         }
 
     }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
-    state.property]);
+    state.property,isTrashed]);
 
     // useEffect(() => {
     //     { state.propertyType && 
@@ -134,7 +138,8 @@ function List(props) {
 
     const loadData = () => {
         setIsLoading(true);
-        axios.get('/api/v1/tenants?page='+state.currentPage, {
+        let trashUrl = (isTrashed) ? '/trashed' : '';
+        axios.get('/api/v1/tenants'+trashUrl+'?page='+state.currentPage, {
             params: {
                 api_token: authUser.api_token,
                 per_page: state.perPage,
@@ -173,6 +178,10 @@ function List(props) {
             currentPage: pageNumber 
         });
     }
+
+     const onClickTrashed = (e) => {
+        setIsTrashed(!isTrashed);
+    };
 
     const onChangeQueryHandle = (e) => {
         setState({
@@ -237,54 +246,6 @@ function List(props) {
         });
     };
 
-    const onClickDeleteHandler = (id) => {
-
-        confirmAlert({
-            title: 'Confirm to delete',
-            message: 'Are you sure to do this.',
-            buttons: [
-                {
-                label: 'Yes',
-                    onClick: () => {
-                        setIsLoading(true);
-
-                        axios.post('/api/v1/tenants/destroy', {
-                            api_token: authUser.api_token,
-                            id: id
-                        })
-                        .then(response => {
-                            setIsLoading(false);
-                            if (response.data.status == 'error') {
-                                    showSznNotification({
-                                        type : 'error',
-                                        message : response.data.message
-                                    });
-                            } else if (response.data.status == 'success') {
-                                showSznNotification({
-                                    type : 'success',
-                                    message : response.data.message
-                                });
-                                loadData();
-                            }
-                        })
-                        .catch((error) => {
-                            setIsLoading(false);
-                            if (error.response.data.status == 'error') {
-                                showSznNotification({
-                                    type : 'error',
-                                    message : error.response.data.message
-                                });
-                            } 
-                        });
-                    }
-                },
-                {
-                label: 'No',
-                    //do nothing
-                }
-            ]
-        });
-    };
 
     const onClickSortTypeHandle = (e) => {
         if (state.sortType == 'asc') {
@@ -332,7 +293,10 @@ function List(props) {
                                 </tr>
                             </thead> <tbody>{
                                    data.map((dt, i) => {
-                                    return  <Item onClickDeleteHandler={onClickDeleteHandler} obj={dt} key={i} />;
+                                    return  <Item 
+                                    loadData={loadData} 
+                                    action={ isTrashed ? RestoreForm : DeleteWithForm } 
+                                    obj={dt} key={i} />;
                                 })  
                             } </tbody>
                            </table>);
@@ -343,7 +307,8 @@ function List(props) {
             <div className="card animated fadeIn">
                 <div className="card-body">
                     <TopControl 
-                        isLoading={isLoading} 
+                        isLoading={isLoading}
+                        isTrashed={isTrashed} 
                         perPage={state.perPage} 
                         onChangePerPageHandle={onChangePerPageHandle}
                         propertyType={state.propertyType} 
@@ -356,6 +321,7 @@ function List(props) {
                         sortType={state.sortType}
                         onChangeSortByHandle={onChangeSortByHandle}
                         onClickSortTypeHandle={onClickSortTypeHandle}
+                        onClickTrashed={onClickTrashed}
                         onSubmitQueryHandle={onSubmitQueryHandle}
                         onChangeQueryHandle={onChangeQueryHandle}
                         query={state.query}

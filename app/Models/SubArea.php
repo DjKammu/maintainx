@@ -2,12 +2,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Traits\MediaManager;
 
 class SubArea extends Model
 {
-    use HasFactory, MediaManager; 
+    use HasFactory, MediaManager, SoftDeletes;
     CONST AREA_LAYOUT_ATTACHMENTS = "area_layout_attachments";
 
     protected $fillable = [
@@ -25,6 +26,16 @@ class SubArea extends Model
     public function area()
     {
         return $this->hasOne('App\Models\Area', 'id', 'area_id');
+    }
+
+    public function asset()
+    {
+        return $this->belongsTo('App\Models\AssetModel', 'id', 'sub_area_id');
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo('App\Models\Payment', 'id', 'sub_area_id');
     }
 
     public function setPropertyIdAttribute($value)
