@@ -9,6 +9,8 @@ import { showSznNotification} from '../../Helpers'
 import TopControl from './TopControl'
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import DeleteWithForm from "../../models/DeleteWithForm";
+import RestoreForm from "../../models/RestoreForm";
 import { Link } from "react-router-dom";
 import Mail from './Mail';
 
@@ -21,6 +23,7 @@ function List(props) {
     const [subAreas, setsubAreas] = useState([]);
     const [tenants, setTenants] = useState([]);
     const [workTypes, setWorkTypes] = useState([]);
+    const [isTrashed, setIsTrashed] = useState(false); 
 
     const [state, setState] = useState({
        pageRangeDisplayed: 5,
@@ -69,7 +72,7 @@ function List(props) {
            loadSubArea();
         }
     }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
-    state.property,state.area, state.subArea,state.tenant, state.workType]);
+    state.property,state.area, state.subArea,state.tenant, state.workType,isTrashed]);
 
     const skeletonLoader = () => {
         return <div className="content-loader-wrapper">
@@ -287,7 +290,8 @@ function List(props) {
 
     const loadData = () => {
         setIsLoading(true);
-        axios.get('/api/v1/payments?page='+state.currentPage, {
+        let trashUrl = (isTrashed) ? '/trashed' : '';
+        axios.get('/api/v1/payments'+trashUrl+'?page='+state.currentPage, {
             params: {
                 api_token: authUser.api_token,
                 per_page: state.perPage,
@@ -347,6 +351,9 @@ function List(props) {
         });
     };
 
+    const onClickTrashed = (e) => {
+        setIsTrashed(!isTrashed);
+    };
     const onChangePerPageHandle = (e) => {
         setState({
             ...state,
@@ -454,7 +461,10 @@ function List(props) {
                            <th className="px-4 py-2"> <img className="ext-img-sm" src={`/public/images/paper.png`} /> </th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
-                           { data.map((dt, i) => { return <Item onClickDeleteHandler={onClickDeleteHandler} obj={dt} key={i} />; }) }
+                           { data.map((dt, i) => { return <Item 
+                            loadData={loadData} 
+                            action={ isTrashed ? RestoreForm : DeleteWithForm }  
+                            obj={dt} key={i} />; }) }
                            </tbody></table>);
     }
     return (
@@ -485,7 +495,8 @@ function List(props) {
                       </div>
                   </div>  
                  <TopControl 
-                        isLoading={isLoading} 
+                        isLoading={isLoading}
+                        isTrashed={isTrashed}  
                         perPage={state.perPage} 
                         onChangePerPageHandle={onChangePerPageHandle}
                         propertyType={state.propertyType} 
@@ -512,6 +523,7 @@ function List(props) {
                         onClickSortTypeHandle={onClickSortTypeHandle}
                         onSubmitQueryHandle={onSubmitQueryHandle}
                         onChangeQueryHandle={onChangeQueryHandle}
+                        onClickTrashed={onClickTrashed}
                         query={state.query}
                     />
                     <div className='szn-list-wrapper bg-gradient-light table-outer'>
