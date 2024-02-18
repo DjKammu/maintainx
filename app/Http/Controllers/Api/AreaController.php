@@ -55,7 +55,9 @@ class AreaController extends Controller
                    ($property) {
                       $q->where('id',$property);
                   });
-              })->orWhereNull('property_id');
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
         });
 
          

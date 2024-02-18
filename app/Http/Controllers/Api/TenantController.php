@@ -58,7 +58,9 @@ class TenantController extends Controller
                    ($property_type) {
                       $q->where('id',$property_type);
                   });
-              })->orWhereNull('property_type_id');
+              })->when(!$property_type, function ($q){
+                      $q->orWhereNull('property_type_id');
+              });
         });
 
         $property = $request['property'];
@@ -68,7 +70,9 @@ class TenantController extends Controller
                    ($property) {
                       $q->where('id',$property);
                   });
-              })->orWhereNull('property_id');
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
         });
 
         $area = $request['area'];
@@ -78,7 +82,9 @@ class TenantController extends Controller
                    ($area) {
                       $q->where('id',$area);
                   });
-              })->orWhereNull('area_id');
+              })->when(!$area, function ($q){
+                      $q->orWhereNull('area_id');
+              });
         });
         
         $sub_area = $request['sub_area'];
@@ -88,7 +94,9 @@ class TenantController extends Controller
                    ($sub_area) {
                       $q->where('id',$sub_area);
                   });
-              })->orWhereNull('sub_area_id');
+              })->->when(!$sub_area, function ($q){
+                      $q->orWhereNull('sub_area_id');
+              });
         });
 
          

@@ -56,7 +56,9 @@ class AssetModelController extends Controller
                    ($property_type) {
                       $q->where('id',$property_type);
                   });
-              })->orWhereNull('property_type_id');
+              })->when(!$property_type, function ($q){
+                      $q->orWhereNull('property_type_id');
+              });
         });
 
         $property = $request['property'];
@@ -66,8 +68,9 @@ class AssetModelController extends Controller
                    ($property) {
                       $q->where('id',$property);
                   });
-              })->orWhereNull('property_id');
-        });
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
 
         $area = $request['area'];
         $data->where(function($q) use ($area){
@@ -76,7 +79,9 @@ class AssetModelController extends Controller
                    ($area) {
                       $q->where('id',$area);
                   });
-              })->orWhereNull('area_id');
+              })->when(!$area, function ($q){
+                      $q->orWhereNull('area_id');
+              });
         });
 
         $sub_area = $request['sub_area'];
@@ -86,7 +91,9 @@ class AssetModelController extends Controller
                    ($sub_area) {
                       $q->where('id',$sub_area);
                   });
-              })->orWhereNull('sub_area_id');
+              })->when(!$sub_area, function ($q){
+                      $q->orWhereNull('sub_area_id');
+              });
         });
 
         
@@ -97,7 +104,9 @@ class AssetModelController extends Controller
                    ($asset_type) {
                       $q->where('id',$asset_type);
                   });
-              })->orWhereNull('asset_type_id');
+              })->when(!$asset_type, function ($q){
+                      $q->orWhereNull('asset_type_id');
+              });
         });
 
          

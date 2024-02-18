@@ -90,7 +90,9 @@ class PaymentController extends Controller
                    ($property_type) {
                       $q->where('id',$property_type);
                   });
-              })->orWhereNull('property_type_id');
+              })->when(!$property_type, function ($q){
+                      $q->orWhereNull('property_type_id');
+              });
         });
 
        $property = $request['property'];
@@ -100,7 +102,9 @@ class PaymentController extends Controller
                    ($property) {
                       $q->where('id',$property);
                   });
-              })->orWhereNull('property_id');
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
         });
 
         $area = $request['area'];
@@ -110,7 +114,9 @@ class PaymentController extends Controller
                    ($area) {
                       $q->where('id',$area);
                   });
-              })->orWhereNull('area_id');
+              })->when(!$area, function ($q){
+                      $q->orWhereNull('area_id');
+              });
         });
         
         $sub_area = $request['sub_area'];
@@ -120,19 +126,23 @@ class PaymentController extends Controller
                    ($sub_area) {
                       $q->where('id',$sub_area);
                   });
-              })->orWhereNull('sub_area_id');
+              })->when(!$sub_area, function ($q){
+                      $q->orWhereNull('sub_area_id');
+              });
         });
 
 
         $tenant = $request['tenant'];
 
-         $data->where(function($q) use ($tenant){
+        $data->where(function($q) use ($tenant){
               $q->whereHas('tenant', function($q) use ($tenant){
                   $q->when($tenant, function ($q) use 
                    ($tenant) {
                       $q->where('id',$tenant);
                   });
-              })->orWhereNull('tenant_id');
+              })->when(!$tenant, function ($q){
+                      $q->orWhereNull('tenant_id');
+              });
         }); 
 
          $contractor = $request['contractor'];
@@ -143,7 +153,9 @@ class PaymentController extends Controller
                    ($contractor) {
                       $q->where('id',$contractor);
                   });
-              })->orWhereNull('contractor_id');
+              })->when(!$contractor, function ($q){
+                      $q->orWhereNull('contractor_id');
+              });
         });
         
         $vendor = $request['vendor'];
@@ -154,7 +166,9 @@ class PaymentController extends Controller
                    ($vendor) {
                       $q->where('id',$vendor);
                   });
-              })->orWhereNull('vendor_id');
+              })->when(!$vendor, function ($q){
+                      $q->orWhereNull('vendor_id');
+              });
         });
 
 
@@ -165,7 +179,9 @@ class PaymentController extends Controller
                    ($work_type) {
                       $q->where('id',$work_type);
                   });
-              })->orWhereNull('work_type_id');
+              })->when(!$work_type, function ($q){
+                      $q->orWhereNull('work_type_id');
+              });
         });
 
         $asset_type = $request['asset_type'];
@@ -175,7 +191,9 @@ class PaymentController extends Controller
                    ($asset_type) {
                       $q->where('id',$asset_type);
                   });
-              })->orWhereNull('asset_type_id');
+              })->when(!$asset_type, function ($q){
+                      $q->orWhereNull('asset_type_id');
+              });
         });
 
         $allData =  $data->get();
@@ -597,7 +615,9 @@ class PaymentController extends Controller
                    ($property_type) {
                       $q->where('id',$property_type);
                   });
-              })->orWhereNull('property_type_id');
+              })->when(!$property_type, function ($q){
+                      $q->orWhereNull('property_type_id');
+              });
         });
 
        $property = $request['property'];
@@ -607,17 +627,21 @@ class PaymentController extends Controller
                    ($property) {
                       $q->where('id',$property);
                   });
-              })->orWhereNull('property_id');
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
         });
 
        $area = $request['area'];
-        $assetModels->where(function($q) use ($area){
+       $assetModels->where(function($q) use ($area){
               $q->whereHas('area', function($q) use ($area){
                   $q->when($area, function ($q) use 
                    ($area) {
                       $q->where('id',$area);
                   });
-              })->orWhereNull('area_id');
+              })->when(!$area, function ($q){
+                      $q->orWhereNull('area_id');
+              });
         });
         
         $sub_area = $request['sub_area'];
@@ -627,7 +651,9 @@ class PaymentController extends Controller
                    ($sub_area) {
                       $q->where('id',$sub_area);
                   });
-              })->orWhereNull('sub_area_id');
+              })->when(!$sub_area, function ($q){
+                      $q->orWhereNull('sub_area_id');
+              });
         });
 
 
@@ -688,7 +714,9 @@ class PaymentController extends Controller
                      ($property_type) {
                         $q->where('id',$property_type);
                     });
-                })->orWhereNull('property_type_id');
+                })->when(!$property_type, function ($q){
+                      $q->orWhereNull('property_type_id');
+              });
           });
 
           
@@ -698,7 +726,9 @@ class PaymentController extends Controller
                    ($property) {
                       $q->where('id',$property);
                   });
-              })->orWhereNull('property_id');
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
         });
 
         $area = $request['area'];
@@ -708,7 +738,9 @@ class PaymentController extends Controller
                    ($area) {
                       $q->where('id',$area);
                   });
-              })->orWhereNull('area_id');
+              })->when(!$area, function ($q){
+                      $q->orWhereNull('area_id');
+              });
         });
         
         $sub_area = $request['sub_area'];
@@ -718,13 +750,13 @@ class PaymentController extends Controller
                    ($sub_area) {
                       $q->where('id',$sub_area);
                   });
-              })->orWhereNull('sub_area_id');
+              })->when(!$sub_area, function ($q){
+                      $q->orWhereNull('sub_area_id');
+              });
         });
 
-
-          $allTenants = $allTenants->where('active',Tenant::ACTIVE)
+        $allTenants = $allTenants->where('active',Tenant::ACTIVE)
                          ->orderBy('name')->get();
-          
           if($allTenants){
               $allTenants = @$allTenants->filter(function($tenant){
                   $tenant->label = $tenant->name;
@@ -796,27 +828,6 @@ class PaymentController extends Controller
         
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

@@ -55,7 +55,9 @@ class SubAreaController extends Controller
                    ($property) {
                       $q->where('id',$property);
                   });
-              })->orWhereNull('property_id');
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
         });
 
         $area = $request['area'];
@@ -65,7 +67,9 @@ class SubAreaController extends Controller
                    ($area) {
                       $q->where('id',$area);
                   });
-              })->orWhereNull('area_id');
+              })->when(!$area, function ($q){
+                      $q->orWhereNull('area_id');
+              });
         });
 
  

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Traits\MediaManager;
+use Carbon\Carbon;
 
 class Payment extends Model
 {
@@ -136,6 +137,11 @@ class Payment extends Model
     public function getPaymentAttribute($value)
     {
         return  ($value) ? number_format($value, 2, '.', ',') : NULL;
+    }
+
+    public function getPaymentDateAttribute($value)
+    {
+        return  ($value) ? Carbon::parse($value)->format('m-d-Y') : NULL;
     }
 
      public static function format($num){
