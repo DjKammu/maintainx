@@ -94,7 +94,7 @@ class TenantController extends Controller
                    ($sub_area) {
                       $q->where('id',$sub_area);
                   });
-              })->->when(!$sub_area, function ($q){
+              })->when(!$sub_area, function ($q){
                       $q->orWhereNull('sub_area_id');
               });
         });

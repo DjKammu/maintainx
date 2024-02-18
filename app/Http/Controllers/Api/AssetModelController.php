@@ -31,7 +31,7 @@ class AssetModelController extends Controller
      */
     public function index(Request $request)
     {
-         if(Gate::denies('view')) {
+        if(Gate::denies('view')) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
         $perPage = $request['per_page'];
@@ -71,7 +71,8 @@ class AssetModelController extends Controller
               })->when(!$property, function ($q){
                       $q->orWhereNull('property_id');
               });
-
+         });
+        
         $area = $request['area'];
         $data->where(function($q) use ($area){
               $q->whereHas('area', function($q) use ($area){
@@ -155,15 +156,6 @@ class AssetModelController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-          // 
-    }
 
     /**
      * Store a newly created resource in storage.
