@@ -25,7 +25,7 @@ class Item extends Component {
                         <td className="border px-4 py-3">{ this.props.obj.property_name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.area_name }</td>
                         <td className="border px-4 py-3">{ this.props.obj.sub_area_name }</td>
-                        <td className="border px-4 py-3">${ this.props.obj.account_number }</td>
+                        <td className="border px-4 py-3">{ this.props.obj.account_number }</td>
                         <td className="border px-4 py-3">{ this.props.obj.serial_number }</td>
                         <td className="border px-2 py-1">
                         {this.props.obj.media && this.props.obj.media.length > 0 && 

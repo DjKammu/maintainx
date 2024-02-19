@@ -196,6 +196,18 @@ class PaymentController extends Controller
               });
         });
 
+        $asset_model = $request['asset_model'];
+        $data->where(function($q) use ($asset_model){
+              $q->whereHas('asset_model', function($q) use ($asset_model){
+                  $q->when($asset_model, function ($q) use 
+                   ($asset_model) {
+                      $q->where('id',$asset_model);
+                  });
+              })->when(!$asset_model, function ($q){
+                      $q->orWhereNull('asset_model_id');
+              });
+        });
+        
         $allData =  $data->get();
 
         $grandTotal = 0;
