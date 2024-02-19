@@ -240,8 +240,18 @@ class TenantController extends Controller
             ], 401);
         }
          
-         $update =  Tenant::find($request['id']);
-         $data['slug'] = \Str::slug($request->name);
+        $update =  Tenant::find($request['id']);
+        $data['slug'] = \Str::slug($request->name);
+
+        $exitsWith = '';
+        $withAsset = Tenant::has('payment')->whereId($request['id']);
+
+        if ((@$withAsset->exists()  && ($update->sub_area_id != $data['sub_area_id'])) || (@$withAsset->exists()  && ($update->sub_area_id != $data['sub_area_id'])) || (@$withAsset->exists()  && ($update->area_id != $data['area_id'])) || (@$withAsset->exists()   && ($update->property_id != $data['property_id'])) || (@$withAsset->exists()   && ($update->property_type_id != $data['property_type_id'])) ) {
+            return response()->json([
+                'message' => "Tenant have been used  in Payment , So it's Property Type, Property, Area & Sub Area cant be changed",
+                'status' => 'error'
+            ]);
+        }
 
        if ($update) {
             $update->update($data);
@@ -284,7 +294,6 @@ class TenantController extends Controller
             );
         }
            
-
         $destroy = Tenant::where('id',$request['id'])->first();
          
         if (empty($destroy)) {

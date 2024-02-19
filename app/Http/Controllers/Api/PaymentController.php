@@ -890,12 +890,24 @@ class PaymentController extends Controller
    
     public function destroy(Request $request)
     {
-        $area = Payment::where('id',$request['id'])->first();
 
         if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
             
+        // $password = $request->password;
+        // $user = \Auth::user();
+
+        // if(!\Hash::check($password, $user->password)) { 
+        //   return response()->json(
+        //        [
+        //         'status' => 'error',
+        //         'message' => 'Password not matched!'
+        //        ]
+        //     );
+        // }
+           
+        $area = Payment::where('id',$request['id'])->first();
         if (empty($area)) {
             return response()->json([
                 'message' => 'Payment Not Found',
@@ -903,7 +915,7 @@ class PaymentController extends Controller
             ]);
         }
          
-        $area->deleteFile();
+        // $area->deleteFile();
         $delete  = $area->delete();
 
         if ($delete) {
@@ -1062,5 +1074,60 @@ class PaymentController extends Controller
          );
 
       } 
+
+    public function trashed(Request $request)
+    {
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = Payment::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
+    }
+    
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = Payment::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Payment Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Payment successfully restored',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
 
 }

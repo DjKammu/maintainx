@@ -44,9 +44,14 @@ class Item extends Component {
                             <Link to={{
                                 pathname: `/payments/${this.props.obj.id}`,
                                 state: this.props.obj
-                               
                             }} type="button" className="btn btn-outline-success btn-sm btn-upper">Edit</Link>&nbsp;
-                            <button type="button" className="btn btn-danger btn-sm btn-upper" onClick={() => this.props.onClickDeleteHandler(this.props.obj.id)}>Delete</button>
+                            
+                             { this.props.isTrashed ? (
+                                <this.props.action fn={this.props.loadData} id={this.props.obj.id}
+                             url={'/api/v1/payments'}/>
+                              ) : (
+                                 <button type="button" className="btn btn-danger btn-sm btn-upper" onClick={() => this.props.action(this.props.obj.id)}>Delete {this.props.isTrashed}</button>
+                              )}
                         </div>
                         </td>
                 </tr>

@@ -43,6 +43,11 @@ class Tenant extends Model
         return $this->hasOne('App\Models\SubArea', 'id', 'sub_area_id');
     }
 
+    public function payment()
+    {
+        return $this->belongsTo('App\Models\Payment', 'id', 'tenant_id');
+    }
+
     public function setPropertyTypeIdAttribute($value)
     {
         $this->attributes['property_type_id'] =  ($value == 'null') ? NULL :  $value;

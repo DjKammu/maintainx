@@ -45,7 +45,8 @@ class Item extends Component {
                                 state: this.props.obj
                                
                             }} type="button" className="btn btn-outline-success btn-sm btn-upper">Edit</Link>&nbsp;
-                            <button type="button" className="btn btn-danger btn-sm btn-upper" onClick={() => this.props.onClickDeleteHandler(this.props.obj.id)}>Delete</button>
+                            <this.props.action fn={this.props.loadData} id={this.props.obj.id}
+                             url={'/api/v1/asset-model'}/>
                         </div>
                         </td>
                 

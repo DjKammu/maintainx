@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Traits\MediaManager;
 use Carbon\Carbon;
 
 class Payment extends Model
 {
-     use HasFactory, MediaManager;
+     use HasFactory, MediaManager, SoftDeletes;
 
     CONST PAYMENT_ATTACHMENTS = "payment_attachments";
 

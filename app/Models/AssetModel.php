@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Traits\MediaManager;
 
 class AssetModel extends Model
 {
-    use HasFactory, MediaManager; 
+    use HasFactory, MediaManager, SoftDeletes; 
 
     CONST ASSET_ATTACHMENTS = "asset_attachments";
 
@@ -50,6 +51,11 @@ class AssetModel extends Model
     public function sub_area()
     {
         return $this->hasOne('App\Models\SubArea', 'id', 'sub_area_id');
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo('App\Models\Payment', 'id', 'asset_model_id');
     }
 
     public function setAssetTypeIdAttribute($value)

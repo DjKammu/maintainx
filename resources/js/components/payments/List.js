@@ -462,8 +462,9 @@ function List(props) {
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
                            { data.map((dt, i) => { return <Item 
+                            isTrashed={isTrashed}
                             loadData={loadData} 
-                            action={ isTrashed ? RestoreForm : DeleteWithForm }  
+                            action={ isTrashed ? RestoreForm : onClickDeleteHandler }  
                             obj={dt} key={i} />; }) }
                            </tbody></table>);
     }
@@ -471,9 +472,8 @@ function List(props) {
         <React.Fragment>
             <div className="card animated fadeIn">
                 <div className="card-body">
-                <div className="pt-3 pb-3">
-                   <div className="float-right">
-
+                <div className="pt-4 float-right">
+                   <div className="">
                         <a
                           className="btn btn-gradient-primary mr-3"
                           href={`/api/v1/payments/download?page=${state.currentPage}&api_token=${authUser.api_token}&per_page=${state.perPage}&query=${state.query}&sort_by=${state.sortBy}&sort_type=${state.sortType}&property_type=${state.propertyType}&property=${state.property}&area=${state.area}&sub_area=${state.subArea}&tenant=${state.tenant}&work_type=${state.workType}

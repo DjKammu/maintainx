@@ -261,6 +261,15 @@ class AssetModelController extends Controller
          $update =  AssetModel::find($request['id']);
          $data['slug'] = \Str::slug($request->name);
 
+        $withAsset = AssetModel::has('payment')->whereId($request['id']);
+
+        if ((@$withAsset->exists()  && ($update->asset_type_id != $data['asset_type_id'])) ||(@$withAsset->exists()  && ($update->area_id != $data['area_id'])) || (@$withAsset->exists()   && ($update->property_id != $data['property_id'])) || (@$withAsset->exists()   && ($update->property_type_id != $data['property_type_id'])) ) {
+            return response()->json([
+                'message' => "Asset have been used  in Payment , So it's Property Type, Property, Area & Sub Area cant be changed",
+                'status' => 'error'
+            ]);
+        }
+
        if ($update) {
             $update->update($data);
 
@@ -292,12 +301,24 @@ class AssetModelController extends Controller
    
     public function destroy(Request $request)
     {
-        $destroy = AssetModel::where('id',$request['id'])->first();
 
         if(Gate::denies('administrator') && !User::propertyBelongsToUser($destroy['property_id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
+
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
                   
+        $destroy = AssetModel::where('id',$request['id'])->first();
         if (empty($destroy)) {
             return response()->json([
                 'message' => 'Asset Model Not Found',
@@ -305,7 +326,7 @@ class AssetModelController extends Controller
             ]);
         }
          
-        $destroy->deleteFile();
+        // $destroy->deleteFile();
 
         $delete  = $destroy->delete();
 
@@ -376,6 +397,59 @@ class AssetModelController extends Controller
             'status' => 'success'        
         ]);
 
+    }
 
+        public function trashed(Request $request)
+    {
+          if(Gate::denies('view')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+
+        $perPage = $request['per_page'];
+        $sortBy = $request['sort_by'];
+        $sortType = $request['sort_type'];
+
+        $data = AssetModel::orderBy($sortBy, $sortType);
+
+        if ($request['query'] != '') {
+            $data->where('name', 'like', '%' . $request['query'] . '%');
+        }
+         
+        $data = $data->onlyTrashed()->paginate($perPage);
+
+        return response()->json([
+            'message' => $data,
+            'status' => 'success'
+        ]);
+    }
+    
+
+    public function restore(Request $request)
+    {
+         if(Gate::denies('delete')) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        }
+        $restore = AssetModel::withTrashed()->where('id',$request['id'])->first();
+          
+        if (empty($restore)) {
+            return response()->json([
+                'message' => 'Asset Model Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $restored  = $restore->restore();
+
+        if ($restored) {
+            return response()->json([
+                'message' => 'Asset Model successfully restored',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
     }
 }

@@ -99,6 +99,8 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::post('/asset-model', 'Api\AssetModelController@store');
      Route::post('/asset-model/update', 'Api\AssetModelController@update');
      Route::post('/asset-model/destroy', 'Api\AssetModelController@destroy');
+     Route::get('/asset-model/trashed', 'Api\AssetModelController@trashed'); 
+     Route::post('/asset-model/restore', 'Api\AssetModelController@restore');
 
      Route::get('/tenants', 'Api\TenantController@index');
      Route::post('/tenants', 'Api\TenantController@store');
@@ -130,6 +132,8 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::post('/payments/destroy', 'Api\PaymentController@destroy');
      Route::get('/payments/download', 'Api\PaymentController@download');
      Route::post('/payments/mail', 'Api\PaymentController@sendMail');
+     Route::get('/payments/trashed', 'Api\PaymentController@trashed'); 
+     Route::post('/payments/restore', 'Api\PaymentController@restore');
 });
 
 
