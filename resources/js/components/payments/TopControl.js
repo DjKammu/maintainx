@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Autocomplete from '../Autocomplete';
 
 function TopControl(props) {
         
@@ -42,15 +43,8 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Tenant</span>
                                 </div>
-                               
-                                <select className="form-control form-control-sm btn btn-success"
-                                defaultValue={props.tenant}
-                                onChange={props.onChangeTenantHandle}>
-                                <option value=""> Select </option>
-                                
-                                     {props.tenants.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
-                                
-                                </select>
+                                <Autocomplete options={props.tenants} fn={props.onChangeTenantHandle}
+                                url={`api/v1/payments/attributes?api_token=${props.authUser.api_token}&t=`} />
                             </div>
                         </div>
 
@@ -59,15 +53,8 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Work Type</span>
                                 </div>
-                               
-                                <select className="form-control form-control-sm btn btn-success"
-                                defaultValue={props.workType}
-                                onChange={props.onChangeWorkTypeHandle}>
-                                <option value=""> Select </option>
-                                
-                                     {props.workTypes.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
-                                
-                                </select>
+                               <Autocomplete options={props.workTypes} fn={props.onChangeWorkTypeHandle}
+                                url={`api/v1/payments/attributes?api_token=${props.authUser.api_token}&wt=`} />
                             </div>
                         </div>
                     </div>
@@ -80,14 +67,19 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Property Type</span>
                                 </div>
+
                                 {props.propertyTypes.length > 0 &&
-                                <select className="form-control form-control-sm btn btn-success"
-                                defaultValue={props.propertyType}
-                                onChange={props.onChangePropertyTypeHandle}>
-                                <option value=""> Select </option>
-                                 {props.propertyTypes.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
-                                </select>
-                               }
+                                  <Autocomplete options={props.propertyTypes} fn={props.onChangePropertyTypeHandle} />
+                                }
+
+                                {/*props.propertyTypes.length > 0 &&
+                                    <select className="form-control form-control-sm btn btn-success"
+                                    defaultValue={props.propertyType}
+                                    onChange={props.onChangePropertyTypeHandle}>
+                                    <option value=""> Select </option>
+                                     {props.propertyTypes.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
+                                    </select>*/
+                                   }
                             </div>
                         </div>
 
@@ -97,14 +89,16 @@ function TopControl(props) {
                                     <span className="input-group-text">Property</span>
                                 </div>
                                
-                                <select className="form-control form-control-sm btn btn-success"
+                                <Autocomplete options={props.properties} fn={props.onChangePropertyHandle}
+                                url={`api/v1/payments/property?api_token=${props.authUser.api_token}
+                                &property_type=${props.propertyType}&p=`} />
+
+                               {/* <select className="form-control form-control-sm btn btn-success"
                                 defaultValue={props.property}
                                 onChange={props.onChangePropertyHandle}>
                                 <option value=""> Select </option>
-                                
                                      {props.properties.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
-                                
-                                </select>
+                                </select>*/}
                             </div>
                         </div>
 
@@ -114,14 +108,16 @@ function TopControl(props) {
                                     <span className="input-group-text">Area</span>
                                 </div>
                                
-                                <select className="form-control form-control-sm btn btn-success"
+                               <Autocomplete options={props.areas} fn={props.onChangeAreaHandle}
+                                url={`api/v1/payments/area?api_token=${props.authUser.api_token}
+                                &property=${props.property}&a=`} />
+
+                                { /*<select className="form-control form-control-sm btn btn-success"
                                 defaultValue={props.area}
                                 onChange={props.onChangeAreaHandle}>
                                 <option value=""> Select </option>
-                                
                                      {props.areas.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
-                                
-                                </select>
+                                </select>*/ }
                             </div>
                         </div>
 
@@ -130,15 +126,20 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Sub Area</span>
                                 </div>
-                               
-                                <select className="form-control form-control-sm btn btn-success"
+                                
+                                <Autocomplete options={props.subAreas} fn={props.onChangeSubAreaHandle}
+                                url={`api/v1/payments/sub-area?api_token=${props.authUser.api_token}
+                                &area=${props.area}&sa=`} />
+
+                               { /*<select className="form-control form-control-sm btn btn-success"
                                 defaultValue={props.subArea}
                                 onChange={props.onChangeSubAreaHandle}>
                                 <option value=""> Select </option>
                                 
                                      {props.subAreas.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
                                 
-                                </select>
+                                </select>*/ }
+
                             </div>
                         </div>
                          <div className="p-2">

@@ -409,8 +409,13 @@ class PaymentController extends Controller
                          ($whereUserProperties) {
                           $q->whereIn('id', $whereUserProperties);
                         })->where('property_type_id',$request->property_type)
-                       ->whereNotNull('property_type_id')
-                       ->orderBy('name')->get();
+                       ->whereNotNull('property_type_id')->orderBy('name');
+
+        if($request['p']){
+             $properties->where('name', 'like', '%' . $request['p'] . '%');
+        } 
+        $data = [];
+        $properties = $properties->get();      
             
          if($properties){
             $properties = @$properties->filter(function($property){
@@ -419,10 +424,11 @@ class PaymentController extends Controller
                 return $property;
             });
           }
-         $property = ($properties) ? $properties : [];  
+         $property = ($properties) ? $properties : []; 
+         $data = $property; 
          
          return response()->json([
-            'message' => compact('property'),
+            'message' => compact('property','data'),
             'status' => 'success'
         ]);
     }
@@ -435,19 +441,26 @@ class PaymentController extends Controller
                           $q->whereIn('property_id', $whereUserProperties);
                         })->where('property_id',$request->property)
                        ->whereNotNull('property_id')
-                       ->orderBy('name')->get();
+                       ->orderBy('name');
+
+         if($request['a']){
+             $areas->where('name', 'like', '%' . $request['a'] . '%');
+        } 
+        $data = [];  
+        $areas = $areas->get();             
             
-         if($areas){
+        if($areas){
             $areas = @$areas->filter(function($ar){
                 $ar->label = $ar->name;
                 $ar->value = $ar->id;
                 return $ar;
             });
           }
-         $area = ($areas) ? $areas : [];  
+         $area = ($areas) ? $areas : []; 
+         $data = $areas; 
          
          return response()->json([
-            'message' => compact('area'),
+            'message' => compact('area','data'),
             'status' => 'success'
         ]);
     }
@@ -461,7 +474,12 @@ class PaymentController extends Controller
                           $q->whereIn('property_id', $whereUserProperties);
                         })->where('area_id',$request->area)
                        ->whereNotNull('area_id')
-                       ->orderBy('name')->get();
+                       ->orderBy('name');
+        if($request['sa']){
+             $subareas->where('name', 'like', '%' . $request['a'] . '%');
+        } 
+        $data = [];  
+        $subareas = $subareas->get();               
             
          if($subareas){
             $subareas = @$subareas->filter(function($sa){
@@ -471,9 +489,10 @@ class PaymentController extends Controller
             });
           }
          $sub_area = ($subareas) ? $subareas : [];  
+         $data = $sub_area;
          
          return response()->json([
-            'message' => compact('sub_area'),
+            'message' => compact('sub_area','data'),
             'status' => 'success'
         ]);
     }
@@ -715,7 +734,7 @@ class PaymentController extends Controller
 
          }
 
-           $allTenants = Tenant::when($whereUserProperties, function ($q) use 
+          $allTenants = Tenant::when($whereUserProperties, function ($q) use 
                        ($whereUserProperties) {
                         $q->whereIn('property_id', $whereUserProperties);
                       });
@@ -766,10 +785,16 @@ class PaymentController extends Controller
                       $q->orWhereNull('sub_area_id');
               });
         });
+        $data = []; 
+        $allTenants->where('active',Tenant::ACTIVE)
+                         ->orderBy('name');
+        if($request['t']){
+             $allTenants->where('name', 'like', '%' . $request['t'] . '%');
+        }  
+        $allTenants = $allTenants->get();
+                      
 
-        $allTenants = $allTenants->where('active',Tenant::ACTIVE)
-                         ->orderBy('name')->get();
-          if($allTenants){
+        if($allTenants){
               $allTenants = @$allTenants->filter(function($tenant){
                   $tenant->label = $tenant->name;
                   $tenant->value = $tenant->id;
@@ -777,15 +802,36 @@ class PaymentController extends Controller
               });
           }
 
-         $workTypes = WorkType::orderBy('name')->get();
+         $workTypes = WorkType::orderBy('name');
+
+         if($request['wt']){
+             $workTypes->where('name', 'like', '%' . $request['wt'] . '%');
+        }  
+
+        $workTypes = $workTypes->get();
+
          $workTypes = @$workTypes->filter(function($workType){
               $workType->label = $workType->name;
               $workType->value = $workType->id;
               return $workType;
           });
 
+         switch ($request->all()) {
+           case !empty($request['t']):
+               $data = $allTenants;
+             break;
+
+           case !empty($request['wt']):
+               $data = $workTypes;
+             break;
+           
+           default:
+              $data = $data;
+             break;
+         }
+
           return response()->json([
-            'message' => compact('propertyTypes','assetTypes','assetModels','vendors','contractors','tenants','workTypes','allTenants'),
+            'message' => compact('propertyTypes','assetTypes','assetModels','vendors','contractors','tenants','workTypes','allTenants','data'),
             'status' => 'success'
         ]);
 

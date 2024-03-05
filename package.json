@@ -39,6 +39,7 @@
         "material-react-table": "^1.5.9",
         "moment": "^2.24.0",
         "react-animations": "^1.0.0",
+        "react-autosuggest": "^10.1.0",
         "react-bootstrap": "^1.6.7",
         "react-confirm-alert": "^2.6.1",
         "react-content-loader": "^5.0.4",

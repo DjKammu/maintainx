@@ -17,7 +17,7 @@ import Mail from './Mail';
 function List(props) {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-     const [propertyTypes, setPropertyTypes] = useState([]);
+    const [propertyTypes, setPropertyTypes] = useState([]);
     const [properties, setProperties] = useState([]);
     const [areas, setAreas] = useState([]);
     const [subAreas, setsubAreas] = useState([]);
@@ -25,6 +25,11 @@ function List(props) {
     const [workTypes, setWorkTypes] = useState([]);
     const [isTrashed, setIsTrashed] = useState(false); 
 
+
+    const [value, setValue] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+
+  
     const [state, setState] = useState({
        pageRangeDisplayed: 5,
        currentPage: 1, 
@@ -44,7 +49,7 @@ function List(props) {
        subArea:'',
        tenant:'',
        workType:'',
-       grandTotal : 0,
+       grandTotal : 0
     });
 
     //get reducer
@@ -151,7 +156,7 @@ function List(props) {
               }
           })
           .then(response => {
-              setIsLoading(false); 
+               setIsLoading(false); 
                setTenants(response.data.message.allTenants)  
                setWorkTypes(response.data.message.workTypes)  
           })
@@ -257,34 +262,39 @@ function List(props) {
     }; 
 
     const onChangePropertyHandle  = (e) => {
+        let value = !e.target ? (e.id ? e.id : e ) : e.target.value
         setState({
             ...state,
-            property: e.target.value
+            property: value
         });
     };
 
     const onChangeAreaHandle  = (e) => {
+        let value = !e.target ? (e.id ? e.id : e ) : e.target.value
         setState({
             ...state,
-            area: e.target.value
+            area: value
         });
     };
      const onChangeSubAreaHandle  = (e) => {
+        let value = !e.target ? (e.id ? e.id : e ) : e.target.value
         setState({
             ...state,
-            subArea: e.target.value
+            subArea: value
         });
     };
     const onChangeTenantHandle  = (e) => {
+        let value = !e.target ? (e.id ? e.id : e ) : e.target.value
         setState({
             ...state,
-            tenant: e.target.value
+            tenant: value
         });
     };
     const onChangeWorkTypeHandle  = (e) => {
+        let value = !e.target ? (e.id ? e.id : e ) : e.target.value
         setState({
             ...state,
-            workType: e.target.value
+            workType: value
         });
     };
 
@@ -330,10 +340,11 @@ function List(props) {
     };
      
     const onChangePropertyTypeHandle  = (e) => {
+            let value = !e.target ? (e.id ? e.id : e ) : e.target.value
             setState({
                 ...state,
                 property: '',
-                propertyType: e.target.value
+                propertyType: value
             });     
     }
 
@@ -470,6 +481,8 @@ function List(props) {
     }
     return (
         <React.Fragment>
+
+        
             <div className="card animated fadeIn">
                 <div className="card-body">
                 <div className="pt-4 float-right">
@@ -524,6 +537,8 @@ function List(props) {
                         onSubmitQueryHandle={onSubmitQueryHandle}
                         onChangeQueryHandle={onChangeQueryHandle}
                         onClickTrashed={onClickTrashed}
+                        options={state.options}
+                        authUser={authUser}
                         query={state.query}
                     />
                     <div className='szn-list-wrapper bg-gradient-light table-outer'>
