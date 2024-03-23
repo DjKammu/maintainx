@@ -509,6 +509,7 @@ function Edit(props) {
               ...state,
               vendor_id: option.value,
           }));
+         setSelectedVendorOption(option)
       }
 
       const handleSelectContractorChange = (option) => {
@@ -516,6 +517,7 @@ function Edit(props) {
               ...state,
               contractor_id: option.value,
           }));
+         setSelectedContractorOption(option)
       }
 
      const handleSelectTenantChange = (option) => {
@@ -532,6 +534,7 @@ function Edit(props) {
               ...state,
               work_type_id: option.value,
           }));
+         setSelectedWorkTypeOption(option)
       }
 
        const handleSelectPropertyTypeChange = (selectedOption) => {

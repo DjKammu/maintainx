@@ -9,11 +9,16 @@ import SimpleReactValidator from 'simple-react-validator';
 import { Link, useHistory } from 'react-router-dom';
 import Select from 'react-select';
 import { Button, Modal } from 'react-bootstrap';
+import Autocomplete from '../Autocomplete';
+import AutocompleteMulti from '../AutocompleteMulti';
 
 function New(props) {
 
     const [properties, setProperties] = useState([]);
     const [areas, setAreas] = useState([]);
+    const [rcs, setRcs] = useState([]);
+    const [ccs, setCcs] = useState([]);
+    const [bccs, setBccs] = useState([]);
     const [isQuickLoading, setIsQuickLoading] = useState(true);
      const [isLoading, setIsLoading] = useState(true);
     const [selectedPropertyOption, setSelectedPropertyOption]  = useState((props.dropdowns && props.dropdowns.property) ? 
@@ -25,7 +30,7 @@ function New(props) {
     const handleClose = () => setQuickModal(false);
     const handleShow = () => {
           setQuickModal(true);
-          //loadData();
+          loadMails();
           setState({
             ...state,
                 query: props.params.query ? props.params.query : '',
@@ -76,12 +81,88 @@ function New(props) {
         });
     }
 
+
+    const onChangeRecipientHandle = (e) =>{
+        let value = !e.target ? (e.email ? e.email : e ) : e.target.value
+        setState({
+            ...state,
+            recipient : value
+        });
+    } 
+
+     const onChangeCCHandle = (e) =>{
+        let validEmail = true;
+        let value = '';
+         e.map((email) => {
+            if(validateEmail(email.name)){
+                value = value+(value ? ',' : '')+email.name;
+            } else{
+              validEmail = false;    
+            }
+         }); 
+       if(!validEmail) {
+          showSznNotification({
+             type : 'error',
+             message : "Enter Valid Email"
+           });
+       }
+        setState({
+            ...state,
+            cc : value
+        });
+    }
+     const onChangeBCCHandle = (e) =>{
+        let validEmail = true;
+        let value = '';
+         e.map((email) => {
+            if(validateEmail(email.name)){
+                value = value+(value ? ',' : '')+email.name;
+            } else{
+              validEmail = false;    
+            }
+         }); 
+
+        if(!validEmail) {
+          showSznNotification({
+             type : 'error',
+             message : "Enter Valid Email"
+           });
+       }
+       
+
+        setState({
+            ...state,
+            bcc : value
+        });
+    }
+
     const validateEmail = (email) => {
       return String(email)
         .toLowerCase()
         .match(
           /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         );
+    };
+
+    const loadMails = () => {
+            setIsLoading(true);
+            axios.get('/api/v1/payments/mails',{
+                params: {
+                    api_token: authUser.api_token
+                }
+            })
+            .then(response => {
+                setIsLoading(false);
+                setRcs(response.data.message.rcs);
+                setCcs(response.data.message.ccs);
+                setBccs(response.data.message.bccs);
+            })
+            .catch((error) => {
+                showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+            });
     };
     
     const onQuickSubmitHandle = (e) =>{
@@ -208,7 +289,7 @@ function New(props) {
                                     })
                                 }}
                             >
-                                <form className="new-lead-form border">
+                                <form className="new-lead-form border mail-outer">
                                     <input type="hidden" name="api_token" value={state.authUser.api_token} />
                                     <div className="form-group">
                                         <ul className="nav nav-tabs nav-pills c--nav-pills nav-justified">
@@ -218,15 +299,16 @@ function New(props) {
                                         </ul>
                                     </div>
                                     <div className="form-group">
-                                        <label>Recipient</label>
+                                        <label>Recipient </label>
                                         <div className="input-group input-group-sm">
                                             <div className="input-group-prepend">
                                                <span className="input-group-text bg-gradient-success text-white">
                                                     <i className="mdi mdi-account"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" className="form-control form-control-sm" id="recipient" name="recipient" placeholder="Name" 
-                                            value={state.recipient} onChange={onChangeHandle}/>
+                                            <Autocomplete options={rcs} placeholder={'Type'} text={true} fn={onChangeRecipientHandle} />
+                                            {/*<input type="text" className="form-control form-control-sm" id="recipient" name="recipient" placeholder="Name" 
+                                                                                        value={state.recipient} onChange={onChangeHandle}/>*/}
                                         </div>
                                         {simpleValidator.current.message('recipient', state.recipient, 'required|email')}
                                     </div>
@@ -239,8 +321,9 @@ function New(props) {
                                                     <i className="mdi mdi-account"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" className="form-control form-control-sm" id="cc" name="cc" placeholder="CC" 
-                                            value={state.cc} onChange={onChangeHandle}/>
+                                             <AutocompleteMulti options={ccs} placeholder={'Type'} text={true} fn={onChangeCCHandle} />
+                                            {/*<input type="text" className="form-control form-control-sm" id="cc" name="cc" placeholder="CC" 
+                                                                                        value={state.cc} onChange={onChangeHandle}/>*/}
                                         </div>
                                     </div>
 
@@ -252,8 +335,9 @@ function New(props) {
                                                     <i className="mdi mdi-account"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" className="form-control form-control-sm" id="bcc" name="bcc" placeholder="CC" 
-                                            value={state.bcc} onChange={onChangeHandle}/>
+                                             <AutocompleteMulti options={bccs} placeholder={'Type'} text={true} fn={onChangeBCCHandle} />
+                                            {/*<input type="text" className="form-control form-control-sm" id="bcc" name="bcc" placeholder="CC" 
+                                                                                        value={state.bcc} onChange={onChangeHandle}/>*/}
                                         </div>
                                     </div>
 

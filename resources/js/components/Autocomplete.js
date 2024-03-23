@@ -17,9 +17,14 @@ class Autocomplete extends Component {
       value: newValue
     });
 
-    { !newValue && this.props.fn && 
+    {(( !newValue && this.props.fn && !this.props.text ) || ( newValue && this.props.fn && this.props.text) )  && 
          this.props.fn(newValue)
     }
+
+  };
+
+  shouldRenderSuggestions = () => {
+    return true;
   };
 
   onSuggestionsFetchRequested = async ({ value }) => {
@@ -58,11 +63,9 @@ class Autocomplete extends Component {
   getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
-    return inputLength === 0 ? [] : this.props.options.filter(option =>
+    return inputLength === 0 ? this.props.options : this.props.options.filter(option =>
       option.name.toLowerCase().slice(0, inputLength) === inputValue
     );
-
-
   };
 
   getSuggestionValue = suggestion => suggestion.name;
@@ -90,6 +93,7 @@ class Autocomplete extends Component {
         getSuggestionValue={this.getSuggestionValue}
         renderSuggestion={this.renderSuggestion}
         inputProps={inputProps}
+        shouldRenderSuggestions={this.shouldRenderSuggestions}
       />
     );
   }

@@ -43,7 +43,7 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Tenant</span>
                                 </div>
-                                <Autocomplete options={props.tenants} fn={props.onChangeTenantHandle}
+                                <Autocomplete options={props.tenants} placeholder={'Type'} fn={props.onChangeTenantHandle}
                                 url={`api/v1/payments/attributes?api_token=${props.authUser.api_token}&t=`} />
                             </div>
                         </div>
@@ -53,7 +53,7 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Work Type</span>
                                 </div>
-                               <Autocomplete options={props.workTypes} fn={props.onChangeWorkTypeHandle}
+                               <Autocomplete options={props.workTypes} placeholder={'Type'} fn={props.onChangeWorkTypeHandle}
                                 url={`api/v1/payments/attributes?api_token=${props.authUser.api_token}&wt=`} />
                             </div>
                         </div>
@@ -89,11 +89,10 @@ function TopControl(props) {
                                     <span className="input-group-text">Property</span>
                                 </div>
                                
-                                <Autocomplete options={props.properties} fn={props.onChangePropertyHandle}
-                                url={`api/v1/payments/property?api_token=${props.authUser.api_token}
-                                &property_type=${props.propertyType}&p=`} />
+                                <Autocomplete options={props.properties} fn={props.onChangePropertyHandle} />
 
-                               {/* <select className="form-control form-control-sm btn btn-success"
+                               {/* url={`api/v1/payments/property?api_token=${props.authUser.api_token}
+                                &property_type=${props.propertyType}&p=`} <select className="form-control form-control-sm btn btn-success"
                                 defaultValue={props.property}
                                 onChange={props.onChangePropertyHandle}>
                                 <option value=""> Select </option>
@@ -109,10 +108,10 @@ function TopControl(props) {
                                 </div>
                                
                                <Autocomplete options={props.areas} fn={props.onChangeAreaHandle}
-                                url={`api/v1/payments/area?api_token=${props.authUser.api_token}
-                                &property=${props.property}&a=`} />
+                                />
 
-                                { /*<select className="form-control form-control-sm btn btn-success"
+                                { /*  url={`api/v1/payments/area?api_token=${props.authUser.api_token}
+                                &property=${props.property}&a=`} <select className="form-control form-control-sm btn btn-success"
                                 defaultValue={props.area}
                                 onChange={props.onChangeAreaHandle}>
                                 <option value=""> Select </option>
@@ -128,16 +127,14 @@ function TopControl(props) {
                                 </div>
                                 
                                 <Autocomplete options={props.subAreas} fn={props.onChangeSubAreaHandle}
-                                url={`api/v1/payments/sub-area?api_token=${props.authUser.api_token}
-                                &area=${props.area}&sa=`} />
+                                 />
 
-                               { /*<select className="form-control form-control-sm btn btn-success"
+                               { /* url={`api/v1/payments/sub-area?api_token=${props.authUser.api_token}
+                                &area=${props.area}&sa=`} <select className="form-control form-control-sm btn btn-success"
                                 defaultValue={props.subArea}
                                 onChange={props.onChangeSubAreaHandle}>
                                 <option value=""> Select </option>
-                                
                                      {props.subAreas.map(({ value, label }, index) => <option key={value} value={value} >{label}</option>)}
-                                
                                 </select>*/ }
 
                             </div>

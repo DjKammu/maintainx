@@ -51,6 +51,7 @@
         "react-router-dom": "^5.1.2",
         "react-select": "^5.7.0",
         "react-spinners": "^0.8.1",
+        "react-tag-autocomplete": "^6.3.0",
         "redux": "^4.0.5",
         "simple-react-validator": "^1.4.5",
         "validator": "^13.0.0"

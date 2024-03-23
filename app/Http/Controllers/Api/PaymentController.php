@@ -17,6 +17,7 @@ use App\Models\Vendor;
 use App\Models\SubArea;
 use App\Models\Area;
 use App\Models\User;
+use App\Models\Mail;
 use App\Mail\MaitTo;
 use Validator;
 use Gate;
@@ -703,13 +704,15 @@ class PaymentController extends Controller
               $vendor->label = ($vendor->company_name && $vendor->name) ? ( $vendor->company_name .'-'. $vendor->name ) : ($vendor->company_name ? $vendor->company_name : $vendor->name);
               $vendor->value = $vendor->id;
               return $vendor;
-          }); 
+          })->sortBy('label')->values();
+           
+
          $contractors = Contractor::orderBy('name')->get();
          $contractors = @$contractors->filter(function($contractor){
               $contractor->label = ($contractor->company_name && $contractor->name) ? ( $contractor->company_name .'-'. $contractor->name ) : ($contractor->company_name ? $contractor->company_name : $contractor->name);
               $contractor->value = $contractor->id;
               return $contractor;
-          });
+          })->sortBy('label')->values();
 
          $tenants = [];
          $allTenants = [];
@@ -832,6 +835,35 @@ class PaymentController extends Controller
 
           return response()->json([
             'message' => compact('propertyTypes','assetTypes','assetModels','vendors','contractors','tenants','workTypes','allTenants','data'),
+            'status' => 'success'
+        ]);
+
+    }
+    
+
+    public function mails(Request $request)
+    { 
+         $mails = Mail::orderBy('email');
+
+        //  if($request['wt']){
+        //      $mails->where('name', 'like', '%' . $request['wt'] . '%');
+        // }  
+
+        $mails = $mails->get();
+
+        $mails = @$mails->filter(function($mail){
+              $mail->name = $mail->email;
+              $mail->value = $mail->id;
+              return $mail;
+        });
+
+        $rcs = $ccs = $bccs = [];
+        $rcs = @$mails->where('to_type',Mail::RC)->sortBy('email')->values();
+        $ccs = @$mails->where('to_type',Mail::CC)->sortBy('email')->values();
+        $bccs = @$mails->where('to_type',Mail::BCC)->sortBy('email')->values();
+
+        return response()->json([
+            'message' => compact('rcs','ccs','bccs'),
             'status' => 'success'
         ]);
 
@@ -1123,6 +1155,31 @@ class PaymentController extends Controller
             }
 
           )->afterResponse();
+
+          $recipient = $request->recipient;
+
+          Mail::insert(
+            ['email' => $recipient, 'to_type' => Mail::RC ], ['email' => $recipient, 
+            'to_type' => Mail::RC]
+          );
+          
+          $ccs = ($request->cc)  ? explode(',', $request->cc) : [];
+
+          foreach ($ccs as $key => $cc) {
+             Mail::UpdateOrCreate(
+                ['email' => $cc, 'to_type' => Mail::CC],
+                ['email' => $cc, 'to_type' => Mail::CC ]
+              );
+          }
+          
+          $bccs = ($request->bcc)  ? explode(',', $request->bcc) : [];
+
+          foreach ($bccs as $key => $bcc) {
+             Mail::UpdateOrCreate(
+                ['email' => $bcc, 'to_type' => Mail::BCC],
+                ['email' => $bcc, 'to_type' => Mail::BCC ]
+              );
+          }
 
         return response()->json(
              [

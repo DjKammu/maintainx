@@ -134,6 +134,7 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::post('/payments/mail', 'Api\PaymentController@sendMail');
      Route::get('/payments/trashed', 'Api\PaymentController@trashed'); 
      Route::post('/payments/restore', 'Api\PaymentController@restore');
+     Route::get('/payments/mails', 'Api\PaymentController@mails');
 });
 
 
