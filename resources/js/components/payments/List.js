@@ -67,17 +67,21 @@ function List(props) {
 
     useEffect(() => {
          loadData();
-         if (state.propertyType  == '') {
+
+         if ((state.propertyType  == '' && (state.property == '') ) ||  (state.propertyType && (state.property == '') )) {
+          // loadProperty();
+       // } 
+        //if (state.propertyType && (state.property == '')) {
            loadProperty();
-        } 
-        if (state.propertyType && (state.property == '')) {
-           loadProperty();
+           // console.log('property');
         }
         if (/*state.propertyType && */state.property && (state.area == '')) {
            loadArea();
+           // console.log('areaa');
         }
         if (/*state.propertyType &&*/ state.property && state.area && (state.subArea == '')) {
            loadSubArea();
+           // console.log('subarea');
         }
     }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
     state.property,state.area, state.subArea,state.tenant, state.workType,isTrashed]);
