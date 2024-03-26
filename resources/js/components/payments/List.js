@@ -67,13 +67,16 @@ function List(props) {
 
     useEffect(() => {
          loadData();
-         if (state.propertyType && (state.property == '')) {
+         if (state.propertyType  == '') {
+           loadProperty();
+        } 
+        if (state.propertyType && (state.property == '')) {
            loadProperty();
         }
-        if (state.propertyType && state.property && (state.area == '')) {
+        if (/*state.propertyType && */state.property && (state.area == '')) {
            loadArea();
         }
-        if (state.propertyType && state.property && state.area && (state.subArea == '')) {
+        if (/*state.propertyType &&*/ state.property && state.area && (state.subArea == '')) {
            loadSubArea();
         }
     }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
@@ -170,6 +173,8 @@ function List(props) {
 
        const loadPropertyTypes = () => {
             emptyProperties();
+            emptyAreas();
+            emptySubAreas();
             setIsLoading(true);
             axios.get('/api/v1/properties/property-types',{
                 params: {

@@ -406,11 +406,14 @@ class PaymentController extends Controller
     public function property(Request $request)
     { 
           $whereUserProperties = User::userProperties();
+          $property_type = $request->property_type;
           $properties = Property::when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
                           $q->whereIn('id', $whereUserProperties);
-                        })->where('property_type_id',$request->property_type)
-                       ->whereNotNull('property_type_id')->orderBy('name');
+                        })->when($property_type, function ($q) use 
+                         ($property_type) {
+                          $q->where('property_type_id',$property_type);
+                        })->whereNotNull('property_type_id')->orderBy('name');
 
         if($request['p']){
              $properties->where('name', 'like', '%' . $request['p'] . '%');

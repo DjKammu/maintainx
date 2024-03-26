@@ -43,7 +43,7 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Tenant</span>
                                 </div>
-                                <Autocomplete options={props.tenants} placeholder={'Type'} fn={props.onChangeTenantHandle}
+                                <Autocomplete options={props.tenants} placeholder={'Search'} fn={props.onChangeTenantHandle}
                                 url={`api/v1/payments/attributes?api_token=${props.authUser.api_token}&t=`} />
                             </div>
                         </div>
@@ -53,8 +53,7 @@ function TopControl(props) {
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">Work Type</span>
                                 </div>
-                               <Autocomplete options={props.workTypes} placeholder={'Type'} fn={props.onChangeWorkTypeHandle}
-                                url={`api/v1/payments/attributes?api_token=${props.authUser.api_token}&wt=`} />
+                               <Autocomplete options={props.workTypes}  fn={props.onChangeWorkTypeHandle}/>
                             </div>
                         </div>
                     </div>

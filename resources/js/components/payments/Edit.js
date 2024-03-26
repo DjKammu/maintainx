@@ -57,6 +57,7 @@ function Edit(props) {
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
     let subAreaNullArr = [{'label' : 'Select Sub Area' , 'value' : null}];
+
     let { id } = useParams();
 
 
@@ -76,7 +77,7 @@ function Edit(props) {
         payment:'',
         payment_date:'',
         media: "",
-         brand: "",
+        brand: "",
         non_asset: "0",
         description: "",
         loading: false,
@@ -688,10 +689,14 @@ function Edit(props) {
      }
 
      const loadPageData = () => {
+
           setIsLoading(true);
+
+
+
           
           if(props.location.state){
-     
+
             setState(state => ({
             ...state,
                 name: props.location.state.name,
@@ -700,7 +705,7 @@ function Edit(props) {
                 brand: props.location.state.brand,
                 description: props.location.state.description,
                 non_asset: props.location.state.non_asset,
-                payment_date: props.location.state.payment_date,
+                payment_date: props.location.state.payment_date ? new Date(props.location.state.payment_date).toLocaleDateString('en-CA') : null,
                 property_id: props.location.state.property ? props.location.state.property.id : null, 
                 asset_type_id:props.location.state.asset_type ? props.location.state.asset_type.id : null,   
                 asset_model_id: props.location.state.asset_model ? props.location.state.asset_model.id : null, 
@@ -713,6 +718,9 @@ function Edit(props) {
                 work_type_id: props.location.state.work_type ? props.location.state.work_type.id : null,
                 media: props.location.state.media
             }));
+
+            // setState("payment_date", ConvertDateToString(props.location.state.payment_date));
+
 
             setSelectedAssetTypeOption((props.location.state.asset_type ? props.location.state.asset_type : null)); 
             setSelectedAssetModelOption((props.location.state.asset_model ? props.location.state.asset_model : null)); 
@@ -749,7 +757,7 @@ function Edit(props) {
                       name: _data.name,
                       notes: _data.notes,
                       payment: _data.payment,
-                      payment_date: _data.payment_date,
+                      payment_date: _data.payment_date ? new Date(_data.payment_date).toLocaleDateString('en-CA') : null,
                       brand: _data.brand,
                       description: _data.description,
                       non_asset: _data.non_asset,
@@ -1328,7 +1336,7 @@ function Edit(props) {
                                             value={state.payment_date}
                                             onChange={onDateHandle} 
                                             className="form-control form-control-sm"
-                                            type="date" />
+                                            type="date"/>
 
                                         </div>
                                     </div>
