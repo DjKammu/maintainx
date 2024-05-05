@@ -389,7 +389,7 @@ class PaymentController extends Controller
           if($assets){
 
             $assets = @$assets->filter(function($asset){
-                $asset->label = $asset->name;
+                $asset->label = $asset->name .( $asset->serial_number ? ' - '.$asset->serial_number : ( $asset->account_number ? ' - '.$asset->account_number : '' ) );
                 $asset->value = $asset->id;
                 return $asset;
             });
@@ -556,7 +556,7 @@ class PaymentController extends Controller
             if($assets){
 
                 $assets = @$assets->filter(function($asset){
-                    $asset->label = $asset->name;
+                    $asset->label = $asset->name .( $asset->serial_number ? ' - '.$asset->serial_number : ( $asset->account_number ? ' - '.$asset->account_number : '' ) );
                     $asset->value = $asset->id;
                     return $asset;
                 });

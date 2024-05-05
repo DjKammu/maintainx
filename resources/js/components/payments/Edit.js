@@ -692,9 +692,6 @@ function Edit(props) {
 
           setIsLoading(true);
 
-
-
-          
           if(props.location.state){
 
             setState(state => ({

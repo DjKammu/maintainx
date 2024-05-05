@@ -466,7 +466,7 @@ input.react-tags__search-input--focused {
 .react-autosuggest__suggestions-container--open {
   display: block;
   position: absolute;
-  width: 100%;
+  //width: 100%;
   border: 1px solid #aaa;
   background-color: #1bcfb4;
   font-family: "ubuntu-regular", sans-serif;
@@ -474,8 +474,9 @@ input.react-tags__search-input--focused {
   font-size: 16px;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
-  z-index: 2;
+  z-index: 3;
    color: #fff;
+   min-width: 100%;
 }
 
 .mail-outer .react-autosuggest__suggestions-container--open {
@@ -505,8 +506,8 @@ input.react-tags__search-input--focused {
         font-weight: normal;
         display: block;
         min-height: 1.2em;
-        padding: 0px 2px 1px;
-        /* white-space: nowrap; */
+        padding: 0px 5px 1px;
+        white-space: nowrap;
 }
 
 .react-autosuggest__suggestion--highlighted {
@@ -717,5 +718,42 @@ input.react-tags__search-input::placeholder { /* Most modern browsers support th
 .react-tags__suggestions li.is-disabled {
   opacity: 0.5;
   cursor: auto;
+}
+
+.coulmns-select{
+    position: absolute;
+    right: 21px;
+    margin-top: -63px;
+    width:150px;
+}
+
+.coulmns-select .input-group-prepend{
+    width:150px;
+    position:absolute;
+}
+
+.coulmns-select span.input-group-text{
+    width:150px;
+}
+
+.coulmns-select li{
+    list-style: none;
+    padding: 6px 10px;
+    background: #dbd1d1;
+        width: 250px;
+}
+
+.coulmns-select ul{
+   position: relative;
+    padding: 0px;
+    right: 99px;
+    top: 40px;
+    z-index: 3;
+}
+.coulmns-select input[type="checkbox"]{
+       height: 15px;
+    width: 15px;
+    margin-right: 5px;
+    margin-left: 5px;
 }
 

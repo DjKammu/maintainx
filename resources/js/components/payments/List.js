@@ -24,10 +24,31 @@ function List(props) {
     const [tenants, setTenants] = useState([]);
     const [workTypes, setWorkTypes] = useState([]);
     const [isTrashed, setIsTrashed] = useState(false); 
+    const [isColumn, setIsColumn] = useState(false); 
 
 
     const [value, setValue] = useState("");
     const [suggestions, setSuggestions] = useState([]);
+    const [columns, setColumns] = useState({
+          all : true ,
+          asset_type_id : true ,
+          asset_model_id : true ,
+          asset_serial_number : false ,
+          vendor_id : true ,
+          contractor_id : true ,
+          property_type_id : false ,
+          area_id : true ,
+          sub_area_id : true ,
+          property_id : true ,
+          tenant_id : true ,
+          work_type_id : true ,
+          payment : true ,
+          notes : false ,
+          payment_date : true ,
+          brand : false ,
+          description : false ,
+          non_asset : false ,
+      });
 
   
     const [state, setState] = useState({
@@ -369,11 +390,26 @@ function List(props) {
             ...state,
             query: e.target.value
         });
+    }; 
+
+    const onClickSelectCoulmn = (e) => {
+      let name = e.target.name;
+      let checked = e.target.checked;
+      setColumns({
+           ...columns,
+          [name] : checked
+      });
     };
 
     const onClickTrashed = (e) => {
         setIsTrashed(!isTrashed);
     };
+
+
+    const onClickColumn = (e) => {
+          setIsColumn(!isColumn);
+    };
+
     const onChangePerPageHandle = (e) => {
         setState({
             ...state,
@@ -467,17 +503,60 @@ function List(props) {
                             </div> : 
                            <table className="responsive-table w-full">
                            <thead><tr className="bg-gray-100">
+                        {columns.asset_type_id && 
                            <th className="px-4 py-2">Asset Type</th>
+                         }
+
+                        {columns.asset_model_id &&
                            <th className="px-4 py-2">Asset Name</th>
+                         }
+
+
+                         {columns.property_type_id &&
+                           <th className="px-4 py-2">Property Type</th>
+                         }
+
+                        {columns.property_id &&
                            <th className="px-4 py-2">Property</th>
+                         }
+                        {columns.area_id &&
                            <th className="px-4 py-2">Area </th>
+                         }
+                         {columns.sub_area_id &&
                            <th className="px-4 py-2">Sub Area </th>
+                         }
+                         {columns.vendor_id &&
                            <th className="px-4 py-2">Vendor  </th>
+                         }
+                         {columns.contractor_id &&
                            <th className="px-4 py-2">Contractor </th>
+                         }
+                         {columns.tenant_id &&
                            <th className="px-4 py-2">Tenant </th>
+                         }
+                         {columns.work_type_id &&
                            <th className="px-4 py-2">Work Type </th>
+                         }
+                         {columns.payment &&
                            <th className="px-4 py-2">Payment </th>
+                         }
+                         {columns.payment_date &&
                            <th className="px-4 py-2">Payment Date </th>
+                          }
+
+                          {columns.notes &&
+                           <th className="px-4 py-2">Notes</th>
+                          }
+                          {columns.brand &&
+                           <th className="px-4 py-2">Brand</th>
+                          }
+                          {columns.description &&
+                           <th className="px-4 py-2">Description</th>
+                          }
+
+                          {columns.non_asset &&
+                           <th className="px-4 py-2">Non Asset</th>
+                          }
                            <th className="px-4 py-2"> <img className="ext-img-sm" src={`/public/images/paper.png`} /> </th>
                            <th className="px-4 py-2">Action</th>
                            </tr></thead><tbody>
@@ -485,7 +564,7 @@ function List(props) {
                             isTrashed={isTrashed}
                             loadData={loadData} 
                             action={ isTrashed ? RestoreForm : onClickDeleteHandler }  
-                            obj={dt} key={i} />; }) }
+                            obj={dt} key={i} columns={columns}/>; }) }
                            </tbody></table>);
     }
     return (
@@ -550,6 +629,38 @@ function List(props) {
                         authUser={authUser}
                         query={state.query}
                     />
+
+                     <div className="coulmns-select">
+                        <div className="input-group input-group-sm">
+                            <div onClick={onClickColumn} className="input-group-prepend">
+                                <span className="input-group-text">Columns</span>
+                            </div>
+
+                            {isColumn && 
+                             <ul >
+                               <li > <input defaultChecked={columns.asset_type_id}  onChange={onClickSelectCoulmn} name="asset_type_id" type="checkbox" />Asset Type 
+                                <input defaultChecked={columns.asset_model_id}  onChange={onClickSelectCoulmn} name="asset_model_id" type="checkbox" />Asset Name </li>
+                                <li > <input defaultChecked={columns.vendor_id}  onChange={onClickSelectCoulmn} name="vendor_id" type="checkbox" />Vendor 
+                                <input defaultChecked={columns.contractor_id}  onChange={onClickSelectCoulmn} name="contractor_id" type="checkbox" />Contractor</li>
+                                <li > <input defaultChecked={columns.property_type_id}  onChange={onClickSelectCoulmn} name="property_type_id" type="checkbox" />Property Type 
+                                 <input defaultChecked={columns.property_id}  onChange={onClickSelectCoulmn} name="property_id" type="checkbox" />Property </li>
+                                <li > <input defaultChecked={columns.area_id}  onChange={onClickSelectCoulmn} name="area_id" type="checkbox" />Area 
+                                <input defaultChecked={columns.sub_area_id}  onChange={onClickSelectCoulmn} name="sub_area_id" type="checkbox" />Sub Area </li>
+                                <li > <input defaultChecked={columns.tenant_id}  onChange={onClickSelectCoulmn} name="tenant_id" type="checkbox" />Tenant 
+                                 <input defaultChecked={columns.work_type_id}  onChange={onClickSelectCoulmn} name="work_type_id" type="checkbox" />Work Typ </li>
+                                <li > <input defaultChecked={columns.payment}  onChange={onClickSelectCoulmn} name="payment" type="checkbox" />Payment
+                                 <input defaultChecked={columns.notes}  onChange={onClickSelectCoulmn} name="notes" type="checkbox" />Notes</li>
+                                <li > <input defaultChecked={columns.payment_date}  onChange={onClickSelectCoulmn} name="payment_date" type="checkbox" />Payment Date 
+                                <input defaultChecked={columns.brand}  onChange={onClickSelectCoulmn} name="brand" type="checkbox" />Brand </li>
+                                <li > <input defaultChecked={columns.description}  onChange={onClickSelectCoulmn} name="description" type="checkbox" />Description 
+                                 <input defaultChecked={columns.non_asset}  onChange={onClickSelectCoulmn} name="non_asset" type="checkbox" />Non Asset </li>
+                              </ul>
+
+                            }
+                           
+                        </div>                      
+                    </div>
+
                     <div className='szn-list-wrapper bg-gradient-light table-outer'>
                             {dataTable()}
                     </div>
