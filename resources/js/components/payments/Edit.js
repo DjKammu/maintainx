@@ -382,6 +382,8 @@ function Edit(props) {
         setSelectedTenantOption((props.location.state.tenant) ? 
         props.location.state.tenant : []);
 
+        loadData();
+
         // if(value === "1"){
         //   setPropertyTypes(propertyTypes2);
         // }
@@ -663,6 +665,7 @@ function Edit(props) {
         setSelectedSubAreaOption(selectedOption);
 
         setTenants([]);
+         setAssetModels([]);
         setSelectedTenantOption((props.location.state.sub_area_id == selectedOption.value)  ? (props.location.state.tenant ? 
         props.location.state.tenant : null) : []);
 
@@ -678,6 +681,7 @@ function Edit(props) {
           .then(response => {
             setIsLoading(false);
             setTenants(response.data.message.tenants)
+            setAssetModels(response.data.message.assets)
           })
           .catch(error => {
                  showSznNotification({
@@ -810,12 +814,14 @@ function Edit(props) {
           .then(response => {
               setIsLoading(false);
               setAssetTypes(response.data.message.assetTypes)  
-              //setPropertyTypes2(response.data.message.propertyTypes)  
+              setProperties(response.data.message.properties)  
+              setAreas(response.data.message.areas)  
+              setSubAreas(response.data.message.sub_areas)  
               setPropertyTypes(response.data.message.propertyTypes)  
-              // setAssetModels(response.data.message.assetModels)  
+              setAssetModels(response.data.message.assets)  
               setVendors(response.data.message.vendors)  
               setContractors(response.data.message.contractors)  
-              // setTenants(response.data.message.tenants)  
+              setTenants(response.data.message.tenants)  
               setWorkTypes(response.data.message.workTypes)  
           })
           .catch((error) => {

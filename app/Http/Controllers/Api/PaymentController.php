@@ -503,7 +503,7 @@ class PaymentController extends Controller
 
     public function tenant (Request $request)
     { 
-          $asset_type_id = $request->asset_type_id;
+          $asset_type_id = $request->asset_type;
           $whereUserProperties = User::userProperties(); 
           $subarea = SubArea::when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
@@ -541,7 +541,8 @@ class PaymentController extends Controller
             $assets = AssetModel::where([
                          'sub_area_id' => $subarea->id,
                          'area_id' => $subarea->area_id,
-                         'property_id' => $subarea->property_id
+                         'property_id' => $subarea->property_id,
+                         'asset_type_id' => $asset_type_id
              ])->when($whereUserProperties, function ($q) use 
                          ($whereUserProperties) {
                           $q->whereIn('property_id', $whereUserProperties);
@@ -717,8 +718,7 @@ class PaymentController extends Controller
               return $contractor;
           })->sortBy('label')->values();
 
-         $tenants = [];
-         $allTenants = [];
+         $tenants = $allTenants = $properties = $areas = $sub_areas = $assets = [];
 
         if(@$payment->tenant_id){
             
@@ -738,6 +738,96 @@ class PaymentController extends Controller
                 });
             }
 
+         }
+
+        if(@$payment->property_type_id){
+            $property_type = $payment->property_type_id;
+            $properties = Property::when($whereUserProperties, function ($q) use 
+                           ($whereUserProperties) {
+                            $q->whereIn('id', $whereUserProperties);
+                          })->when($property_type, function ($q) use 
+                           ($property_type) {
+                            $q->where('property_type_id',$property_type);
+                          })->whereNotNull('property_type_id')->orderBy('name');
+
+          $properties = $properties->get();           
+          if($properties){
+              $properties = @$properties->filter(function($property){
+                  $property->label = $property->name;
+                  $property->value = $property->id;
+                  return $property;
+              });
+           }
+         }
+
+        if(@$payment->property_id){
+            $property = $payment->property_id;
+            $areas = Area::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->where('property_id',$property)
+                       ->whereNotNull('property_id')
+                       ->orderBy('name');
+              $areas = $areas->get();             
+                  
+              if($areas){
+                  $areas = @$areas->filter(function($ar){
+                      $ar->label = $ar->name;
+                      $ar->value = $ar->id;
+                      return $ar;
+                  });
+              }
+         } 
+
+         if(@$payment->area_id){
+             $area_id = $payment->area_id;
+             $sub_areas = SubArea::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->where('area_id',$area_id)
+                       ->whereNotNull('area_id')
+                       ->orderBy('name');
+            
+            $sub_areas = $sub_areas->get();               
+           if($sub_areas){
+                $sub_areas = @$sub_areas->filter(function($sa){
+                    $sa->label = $sa->name;
+                    $sa->value = $sa->id;
+                    return $sa;
+                });
+              }
+         } 
+
+
+         if(@$payment){
+              $area_id = $payment->area_id;
+              $sub_area_id = $payment->sub_area_id;
+              $asset_type = $payment->asset_type;
+              $whereUserProperties = User::userProperties();
+              $assets = AssetModel::when($whereUserProperties, function ($q) use 
+                         ($whereUserProperties) {
+                          $q->whereIn('property_id', $whereUserProperties);
+                        })->whereHas('asset_type', function($q) use ($asset_type){
+                                $q->whereNull('deleted_at')
+                                ->where('id',$asset_type);
+                       });
+
+              if($sub_area_id) {
+                  $assets = $assets->where('sub_area_id', $sub_area_id);
+              } elseif($area_id) {
+                  $assets = $assets->orWhere('area_id', $area_id);
+              }
+
+              $assets =  $assets->orderBy('name')->get();
+
+              if($assets){
+
+                $assets = @$assets->filter(function($asset){
+                    $asset->label = $asset->name .( $asset->serial_number ? ' - '.$asset->serial_number : ( $asset->account_number ? ' - '.$asset->account_number : '' ) );
+                    $asset->value = $asset->id;
+                    return $asset;
+                });
+              }
          }
 
           $allTenants = Tenant::when($whereUserProperties, function ($q) use 
@@ -837,7 +927,7 @@ class PaymentController extends Controller
          }
 
           return response()->json([
-            'message' => compact('propertyTypes','assetTypes','assetModels','vendors','contractors','tenants','workTypes','allTenants','data'),
+            'message' => compact('propertyTypes','assetTypes','assetModels','vendors','contractors','tenants','workTypes','allTenants','data','properties','areas','sub_areas','assets'),
             'status' => 'success'
         ]);
 
@@ -1063,15 +1153,17 @@ class PaymentController extends Controller
 
     public function download(Request $request, $view = false){
       
+
+        $columns = $request->columns;
         $data = $this->getData($request);
         $items = @$data['data'];
         $grandTotal = @$data['grandTotal'];
 
         $pdf = PDF::loadView('pdf.payments',
           ['items' => $items,
+          'columns' => @json_decode($columns),
           'grandTotal' => Payment::format($grandTotal)]
         );
-
 
         if ($request['tenant'] != '') {
             $tenant = $request['tenant'];

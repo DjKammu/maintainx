@@ -46,13 +46,13 @@ function New(props) {
           setQuickModal(true);
           setState({
             ...state,
-                asset_type_id: props.dropdowns.asset_type ? props.dropdowns.asset_type.id : null,
-                property_type_id: props.dropdowns.property_type ? props.dropdowns.property_type.id : null,
-                property_id: props.dropdowns.property ? props.dropdowns.property.id : null,
-                area_id: props.dropdowns.area ? props.dropdowns.area.id : null,
-                sub_area_id: props.dropdowns.sub_area ? props.dropdowns.sub_area.id : null,
+                asset_type_id: !IsEmpty(props.dropdowns.asset_type) ? props.dropdowns.asset_type.id : null,
+                property_type_id: !IsEmpty(props.dropdowns.property_type)  ? props.dropdowns.property_type.id : null,
+                property_id: !IsEmpty(props.dropdowns.property) ? props.dropdowns.property.id : null,
+                area_id: !IsEmpty(props.dropdowns.area) ? props.dropdowns.area.id : null,
+                sub_area_id: !IsEmpty(props.dropdowns.sub_area) ? props.dropdowns.sub_area.id : null,
             });
-
+        
         setSelectedPropertyOption(props.dropdowns.property ? 
         props.dropdowns.property : null );
         setSelectedAreaOption(props.dropdowns.area ? 
@@ -157,6 +157,10 @@ function New(props) {
           }));
           setSelectedAssetTypeOption(selectedOption);
       }
+
+    const IsEmpty = (obj) => {
+        return Object.keys(obj).length === 0;
+    }
 
 
       const handleSelectPropertyChange = (selectedOption) => {

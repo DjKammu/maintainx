@@ -577,7 +577,10 @@ function List(props) {
                    <div className="">
                         <a
                           className="btn btn-gradient-primary mr-3"
-                          href={`/api/v1/payments/download?page=${state.currentPage}&api_token=${authUser.api_token}&per_page=${state.perPage}&query=${state.query}&sort_by=${state.sortBy}&sort_type=${state.sortType}&property_type=${state.propertyType}&property=${state.property}&area=${state.area}&sub_area=${state.subArea}&tenant=${state.tenant}&work_type=${state.workType}
+                          href={`/api/v1/payments/download?page=${state.currentPage}&api_token=${authUser.api_token}
+                          &per_page=${state.perPage}&query=${state.query}&sort_by=${state.sortBy}&sort_type=${state.sortType}
+                          &property_type=${state.propertyType}&property=${state.property}&area=${state.area}&sub_area=${state.subArea}
+                          &tenant=${state.tenant}&work_type=${state.workType}&columns=${JSON.stringify(columns)}
                        `} >
                          Download
                         </a>
@@ -591,6 +594,7 @@ function List(props) {
                                 sub_area: state.subArea,
                                 tenant: state.tenant,
                                 work_type: state.workType,
+                                columns:JSON.stringify(columns)
                             }}
                         />
                       </div>

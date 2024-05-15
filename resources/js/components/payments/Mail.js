@@ -41,7 +41,8 @@ function New(props) {
                 area: props.params.area ? props.params.area : '',
                 sub_area: props.params.sub_area ? props.params.sub_area : '',
                 tenant: props.params.tenant ? props.params.tenant : '',
-                work_type: props.params.work_type ? props.params.work_type : ''
+                work_type: props.params.work_type ? props.params.work_type : '',
+                columns: props.params.columns ? props.params.columns : ''
      });
     }
 
@@ -60,6 +61,7 @@ function New(props) {
         sub_area: props.params.sub_area ? props.params.sub_area : '',
         tenant: props.params.tenant ? props.params.tenant : '',
         work_type: props.params.work_type ? props.params.work_type : '',
+        columns: props.params.columns ? props.params.columns : '',
         loading: false,
         authUser: props.authUserProp
     });
@@ -188,6 +190,7 @@ function New(props) {
             formData.append('sub_area', state.sub_area);
             formData.append('tenant', state.tenant);
             formData.append('work_type', state.work_type);
+            formData.append('columns', state.columns);
           
             axios.post(
               '/api/v1/payments/mail',formData,{

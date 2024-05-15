@@ -82,47 +82,116 @@
 
         <main>
           <table id="project-types-table" class="table table-hover text-center payments-table">
-                <thead>
-                <tr class="text-danger">
-                 <th >Asset Type</th>
-                 <th >Asset Name</th>
-                 <th >Property</th>
-                 <th >Area </th>
-                 <th >Sub Area </th>
-                 <th >Vendor  </th>
-                 <th >Contractor </th>
-                 <th >Tenant </th>
-                 <th >Work Type </th>
-                 <th >Payment </th>
-                 <th >Payment Date </th>
+              <thead>
+              <tr class="text-danger">
+              @if($columns->asset_type_id)
+              <th >Asset Type</th>
+              @endif 
+              @if($columns->asset_model_id)
+              <th >Asset Name</th>
+              @endif 
+              @if($columns->property_type_id)   
+              <th >Property Type</th>
+              @endif 
+              @if($columns->property_id)   
+              <th >Property</th>
+              @endif 
+              @if($columns->area_id)
+              <th >Area </th>
+              @endif 
+              @if($columns->sub_area_id)
+              <th >Sub Area </th>
+              @endif 
+              @if($columns->vendor_id)
+              <th >Vendor  </th>
+              @endif 
+              @if($columns->contractor_id)
+              <th >Contractor </th>
+              @endif 
+              @if($columns->tenant_id)
+              <th >Tenant </th>
+              @endif 
+              @if($columns->work_type_id)
+              <th >Work Type </th>
+              @endif 
+              @if($columns->payment)
+              <th >Payment </th>
+              @endif 
+              @if($columns->payment_date)
+              <th >Payment Date </th>
+              @endif 
+              @if($columns->brand)
+              <th >Brand </th>
+              @endif 
+              @if($columns->description)
+              <th >Description </th>
+              @endif
+               @if($columns->non_asset)
+              <th >Non Asset </th>
+              @endif 
                 </tr>
                 </thead>
                 <tbody>
-
+ 
                   @foreach($items as $item)
                       <tr class="text-danger">
+                       @if($columns->asset_type_id)
                        <th >{{$item->asset_type_name}}</th>
+                       @endif 
+                       @if($columns->asset_model_id)
                        <th >{{$item->asset_model_name}}</th>
+                       @endif 
+                       @if($columns->property_type_id)
                        <th >{{$item->property_name}}</th>
+                       @endif
+                        @if($columns->property_id)
+                       <th >{{$item->property_type_name}}</th>
+                       @endif 
+                       @if($columns->area_id)
                        <th >{{$item->area_name}}</th>
+                       @endif 
+                       @if($columns->sub_area_id)
                        <th >{{$item->sub_area_name}}</th>
+                       @endif 
+                       @if($columns->vendor_id)
                        <th >{{$item->vendor_name}}</th>
+                       @endif 
+                       @if($columns->contractor_id)
                        <th >{{$item->contractor_name}}</th>
+                       @endif 
+                       @if($columns->tenant_id)
                        <th >{{$item->tenant_name}}</th>
+                       @endif 
+                       @if($columns->work_type_id)
                        <th >{{$item->work_type_name}}</th>
+                       @endif 
+                       @if($columns->payment)
                        <th >{{$item->payment}}</th>
+                       @endif 
+                       @if($columns->payment_date)
                        <th >{{$item->payment_date}}</th>
+                       @endif 
+                       @if($columns->brand)
+                       <th >{{$item->brand}}</th>
+                       @endif  
+                       @if($columns->description)
+                       <th >{{$item->description}}</th>
+                       @endif  
+
+                       @if($columns->non_asset)
+                       <th >{{$item->non_asset}}</th>
+                       @endif 
                       </tr>
 
                   @endforeach
                   
                    <tr class="text-danger">
-                    <th colspan="11"></th>
+                    <th colspan="100%"></th>
                    </tr>
                    <tr class="text-danger">
-                     <th colspan="9"></th>
-                     <th >Total</th>
-                     <th >${{$grandTotal}} </th>
+                     <th style="text-align: right;"colspan="100%"> Total : ${{$grandTotal}}</th>
+                     <!-- <th >Total</th>
+                     <th >${{$grandTotal}} </th> -->
                     </tr>
                 </tbody>
                 </table> 
