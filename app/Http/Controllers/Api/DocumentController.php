@@ -11,7 +11,7 @@ use App\Models\Contractor;
 use App\Models\AssetType;
 use App\Models\WorkType;
 use App\Models\Property;
-use App\Models\Payment;
+use App\Models\Document;
 use App\Models\Tenant;
 use App\Models\Vendor;
 use App\Models\SubArea;
@@ -23,7 +23,7 @@ use Validator;
 use Gate;
 use PDF;
 
-class PaymentController extends Controller
+class DocumentController extends Controller
 {
    /**
      * Create a new controller instance.
@@ -48,11 +48,9 @@ class PaymentController extends Controller
 
         $allData = $this->getData($request);
         $data = @$allData['data'];
-        $grandTotal = @$allData['grandTotal'];
 
         return response()->json([
             'message' => $data,
-            'grandTotal' => Payment::format($grandTotal),
             'status' => 'success'
         ]);
     }
@@ -65,13 +63,13 @@ class PaymentController extends Controller
 
         $whereUserProperties = User::userProperties();
 
-        $data = Payment::when($whereUserProperties, function ($q) use 
+        $data = Document::when($whereUserProperties, function ($q) use 
                ($whereUserProperties) {
                 $q->whereIn('property_id', $whereUserProperties);
               });
 
         if ($sortBy && $sortType) {
-            $data->orderBy('payments.'.$sortBy, $sortType);
+            $data->orderBy('documents.'.$sortBy, $sortType);
         }
 
 
@@ -84,6 +82,19 @@ class PaymentController extends Controller
             $data->where('id',$request['id']);
         }
        
+       $document_type = $request['document_type'];
+       $data->where(function($q) use ($document_type){
+              $q->whereHas('document_type', function($q) use ($document_type){
+                  $q->when($document_type, function ($q) use 
+                   ($document_type) {
+                      $q->where('id',$document_type);
+                  });
+              })->when(!$document_type, function ($q){
+                      $q->orWhereNull('document_type_id');
+              });
+        }); 
+
+
        $property_type = $request['property_type'];
        $data->where(function($q) use ($property_type){
               $q->whereHas('property_type', function($q) use ($property_type){
@@ -146,44 +157,6 @@ class PaymentController extends Controller
               });
         }); 
 
-         $contractor = $request['contractor'];
-
-         $data->where(function($q) use ($contractor){
-              $q->whereHas('contractor', function($q) use ($contractor){
-                  $q->when($contractor, function ($q) use 
-                   ($contractor) {
-                      $q->where('id',$contractor);
-                  });
-              })->when(!$contractor, function ($q){
-                      $q->orWhereNull('contractor_id');
-              });
-        });
-        
-        $vendor = $request['vendor'];
-
-        $data->where(function($q) use ($vendor){
-              $q->whereHas('vendor', function($q) use ($vendor){
-                  $q->when($vendor, function ($q) use 
-                   ($vendor) {
-                      $q->where('id',$vendor);
-                  });
-              })->when(!$vendor, function ($q){
-                      $q->orWhereNull('vendor_id');
-              });
-        });
-
-
-        $work_type = $request['work_type'];
-        $data->where(function($q) use ($work_type){
-              $q->whereHas('work_type', function($q) use ($work_type){
-                  $q->when($work_type, function ($q) use 
-                   ($work_type) {
-                      $q->where('id',$work_type);
-                  });
-              })->when(!$work_type, function ($q){
-                      $q->orWhereNull('work_type_id');
-              });
-        });
 
         $asset_type = $request['asset_type'];
         $data->where(function($q) use ($asset_type){
@@ -196,113 +169,77 @@ class PaymentController extends Controller
                       $q->orWhereNull('asset_type_id');
               });
         });
-
-        $asset_model = $request['asset_model'];
-        $data->where(function($q) use ($asset_model){
-              $q->whereHas('asset_model', function($q) use ($asset_model){
-                  $q->when($asset_model, function ($q) use 
-                   ($asset_model) {
-                      $q->where('id',$asset_model);
-                  });
-              })->when(!$asset_model, function ($q){
-                      $q->orWhereNull('asset_model_id');
-              });
-        });
         
         $allData =  $data->get();
 
-        $grandTotal = 0;
-
-        $dt = @collect($allData)->filter(function($payment) use (&$grandTotal){
-                 $grandTotal =  @$payment->getRawOriginal('payment') + $grandTotal;
-        });
 
         if(request()->is('*/payments/download') || request()->is('*/payments/mail')){
-           $data = $allData;
-           $vData = $allData;
-           $items = $allData;
+           // $data = $allData;
+           // $vData = $allData;
+           // $items = $allData;
         } else{
-              $data = $data->paginate($perPage);
+             $data = $data->paginate($perPage);
               $vData =  @$data->data; 
               $items = $data->items();
         }
-          
+        
 
-        $vData = @collect($items)->filter(function($payment) use (&$grandTotal){
+        $vData = @collect($items)->filter(function($document) {
                //  $grandTotal = $payment->payment + $grandTotal;
           
-                 $payment->property_name = $payment->property->name; 
-                 if(@$payment->property ){
-                    @$payment->property->label = $payment->property->name;
-                    @$payment->property->value = $payment->property->id;
+                 $document->document_type_name = @$document->document_type->name; 
+                 if(@$document->document_type ){
+                    @$document->document_type->label = $document->document_type->name;
+                    @$document->document_type->value = $document->document_type->id;
                  }
 
-                 $payment->property_type_name = $payment->property_type->name; 
-                 if(@$payment->property_type ){
-                    @$payment->property_type->label = $payment->property_type->name;
-                    @$payment->property_type->value = $payment->property_type->id;
+                 $document->property_name = @$document->property->name; 
+                 if(@$document->property ){
+                    @$document->property->label = $document->property->name;
+                    @$document->property->value = $document->property->id;
                  }
 
-                 $payment->area_name = $payment->area->name; 
-                 if(@$payment->area ){
-                    @$payment->area->label = $payment->area->name;
-                    @$payment->area->value = $payment->area->id;
+                 $document->property_type_name = @$document->property_type->name; 
+                 if(@$document->property_type ){
+                    @$document->property_type->label = $document->property_type->name;
+                    @$document->property_type->value = $document->property_type->id;
                  }
 
-                 $payment->area_name = $payment->area->name; 
-                 if(@$payment->area ){
-                    @$payment->area->label = $payment->area->name;
-                    @$payment->area->value = $payment->area->id;
+                 $document->area_name = @$document->area->name; 
+                 if(@$document->area ){
+                    @$document->area->label = $document->area->name;
+                    @$document->area->value = $document->area->id;
                  }
 
-                 $payment->sub_area_name = $payment->sub_area->name; 
-                 if(@$payment->sub_area ){
-                    @$payment->sub_area->label = $payment->sub_area->name;
-                    @$payment->sub_area->value = $payment->sub_area->id;
+                 $document->area_name = @$document->area->name; 
+                 if(@$document->area ){
+                    @$document->area->label = $document->area->name;
+                    @$document->area->value = $document->area->id;
                  }
 
-                 $payment->asset_type_name = $payment->asset_type->name; 
-                 if(@$payment->asset_type ){
-                    @$payment->asset_type->label = $payment->asset_type->name;
-                    @$payment->asset_type->value = $payment->asset_type->id;
+                 $document->sub_area_name = @$document->sub_area->name; 
+                 if(@$document->sub_area ){
+                    @$document->sub_area->label = $document->sub_area->name;
+                    @$document->sub_area->value = $document->sub_area->id;
+                 }
+
+                 $document->asset_type_name = @$document->asset_type->name; 
+                 if(@$document->asset_type ){
+                    @$document->asset_type->label = $document->asset_type->name;
+                    @$document->asset_type->value = $document->asset_type->id;
                  } 
 
-                 $payment->asset_model_name = $payment->asset_model->name; 
-                 if(@$payment->asset_model ){
-                    @$payment->asset_model->label = $payment->asset_model->name;
-                    @$payment->asset_model->value = $payment->asset_model->id;
-                 } 
-
-                 $payment->vendor_name = (@$payment->vendor->company_name && @$payment->vendor->name ) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : (@$payment->vendor->company_name ? @$payment->vendor->company_name : @$payment->vendor->name);
-                 
-                 if(@$payment->vendor ){
-                    @$payment->vendor->label = (@$payment->vendor->company_name && @$payment->vendor->name ) ? ( @$payment->vendor->company_name .'-'. @$payment->vendor->name ) : (@$payment->vendor->company_name ? @$payment->vendor->company_name : @$payment->vendor->name);
-                    @$payment->vendor->value = $payment->vendor->id;
+                 $document->tenant_name = @$document->tenant->name; 
+                 if(@$document->tenant ){
+                    @$document->tenant->label = $document->tenant->name;
+                    @$document->tenant->value = $document->tenant->id;
                  }
 
-                 $payment->contractor_name = (@$payment->contractor->company_name && @$payment->contractor->name ) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : (@$payment->contractor->company_name ? @$payment->contractor->company_name : @$payment->contractor->name);
-                 if(@$payment->contractor ){
-                    @$payment->contractor->label = (@$payment->contractor->company_name && @$payment->contractor->name ) ? ( @$payment->contractor->company_name .'-'. @$payment->contractor->name ) : (@$payment->contractor->company_name ? @$payment->contractor->company_name : @$payment->contractor->name);
-                    @$payment->contractor->value = $payment->contractor->id;
-                 }
-
-                  $payment->tenant_name = $payment->tenant->name; 
-                 if(@$payment->tenant ){
-                    @$payment->tenant->label = $payment->tenant->name;
-                    @$payment->tenant->value = $payment->tenant->id;
-                 }
-
-                 $payment->work_type_name = $payment->work_type->name; 
-                 if(@$payment->work_type ){
-                    @$payment->work_type->label = $payment->work_type->name;
-                    @$payment->work_type->value = $payment->work_type->id;
-                 }
-
-              $media =  @$payment->getMediaPathWithExtension()['file'] ? [@$payment->getMediaPathWithExtension()] : @$payment->getMediaPathWithExtension();
-               $payment->media = @collect($media)->all(); 
+              $media =  @$document->getMediaPathWithExtension()['file'] ? [@$document->getMediaPathWithExtension()] : @$document->getMediaPathWithExtension();
+               $document->media = @collect($media)->all(); 
         });
      
-        return compact('data','grandTotal');
+        return compact('data');
 
     }
 
@@ -984,11 +921,10 @@ class PaymentController extends Controller
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         }  
 
-         $validate = Validator::make($request->all(),[
-              'asset_model_id' => 'nullable|string'
-        ],[
-            'asset_model_id.required'=> 'Asset is Required!'
-           ]);
+        $validate = Validator::make($request->all(),[
+              'document_type_id' => 'required|string'
+        ]);
+
 
         if ($validate->fails()) {
             return response()->json([
@@ -997,16 +933,20 @@ class PaymentController extends Controller
             ], 401);
         }
          
-       $create =  Payment::create($data); 
+       $documentType = DocumentType::find($data['document_type_id']);
+
+       $documentType = (@$documentType) ? $documentType->name : '';
+       
+       $create =  Document::create($data); 
 
        if($request->hasFile('files')){
-              $create->toPath(Payment::PAYMENT_ATTACHMENTS)
-                        ->docType(DocumentType::PAYMENT)->storeFile('files',true);
+              $create->toPath(DOCUMENT::DOCUMENTS)
+                        ->docType($documentType)->storeFile('files',true);
         }
 
        if ($create) {
             return response()->json([
-                'message' => 'Payment successfully saved',
+                'message' => 'Document successfully saved',
                 'status' => 'success'
             ]);
         } else {
@@ -1037,11 +977,9 @@ class PaymentController extends Controller
 
   
         $validate = Validator::make($request->all(),[
-              'asset_model_id' => 'nullable|string'
-        ],[
-            'asset_model_id.required'=> 'Asset is Required!'
-           ]);
-        
+              'document_type_id' => 'required|string'
+        ]);
+
         if ($validate->fails()) {
             return response()->json([
                 'message' => $validate->errors(),
@@ -1049,18 +987,22 @@ class PaymentController extends Controller
             ], 401);
         }
 
-       $update =  Payment::find($request['id']);
-        $update->update($data);
+       $update =  Document::find($request['id']);
+       $update->update($data);
 
+       $documentType = DocumentType::find($data['document_type_id']);
+
+       $documentType = (@$documentType) ? $documentType->name : '';
+       
        if($request->hasFile('files')){
-              $update->toPath(Payment::PAYMENT_ATTACHMENTS)
-                        ->docType(DocumentType::PAYMENT)->storeFile('files',true);
+              $update->toPath(DOCUMENT::DOCUMENTS)
+                        ->docType($documentType)->storeFile('files',true);
         }
 
        if ($update) {
           
             return response()->json([
-                'message' => 'Payment successfully saved',
+                'message' => 'Document successfully saved',
                 'status' => 'success'
             ]);
         } else {
@@ -1086,32 +1028,32 @@ class PaymentController extends Controller
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
             
-        // $password = $request->password;
-        // $user = \Auth::user();
+        $password = $request->password;
+        $user = \Auth::user();
 
-        // if(!\Hash::check($password, $user->password)) { 
-        //   return response()->json(
-        //        [
-        //         'status' => 'error',
-        //         'message' => 'Password not matched!'
-        //        ]
-        //     );
-        // }
-           
-        $area = Payment::where('id',$request['id'])->first();
-        if (empty($area)) {
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+    
+        $document = Document::where('id',$request['id'])->first();
+        if (empty($document)) {
             return response()->json([
-                'message' => 'Payment Not Found',
+                'message' => 'Document Not Found',
                 'status' => 'error'
             ]);
         }
          
         // $area->deleteFile();
-        $delete  = $area->delete();
+        $delete  = $document->delete();
 
         if ($delete) {
             return response()->json([
-                'message' => 'Payment successfully deleted',
+                'message' => 'Document successfully deleted',
                 'status' => 'success'
             ]);
         } else {
@@ -1124,16 +1066,15 @@ class PaymentController extends Controller
 
      public function deleteAttachment(Request $request){
 
-         $destroy = Payment::find($request['id']);
+         $destroy = Document::find($request['id']);
 
          if(Gate::denies('administrator') && !User::propertyBelongsToUser($destroy['property_id'])) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         } 
           
-
         if (empty($destroy)) {
             return response()->json([
-                'message' => 'Payment Not Found',
+                'message' => 'Document Not Found',
                 'status' => 'error'
             ]);
         }
@@ -1161,7 +1102,6 @@ class PaymentController extends Controller
 
     public function download(Request $request, $view = false){
       
-
         $columns = $request->columns;
         $data = $this->getData($request);
         $items = @$data['data'];
@@ -1303,7 +1243,7 @@ class PaymentController extends Controller
         $sortBy = $request['sort_by'];
         $sortType = $request['sort_type'];
 
-        $data = Payment::orderBy($sortBy, $sortType);
+        $data = Document::orderBy($sortBy, $sortType);
 
         if ($request['query'] != '') {
             $data->where('brand', 'like', '%' . $request['query'] . '%');
@@ -1324,11 +1264,11 @@ class PaymentController extends Controller
          if(Gate::denies('delete')) {
              return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
         }
-        $restore = Payment::withTrashed()->where('id',$request['id'])->first();
+        $restore = Document::withTrashed()->where('id',$request['id'])->first();
           
         if (empty($restore)) {
             return response()->json([
-                'message' => 'Payment Not Found',
+                'message' => 'Document Not Found',
                 'status' => 'error'
             ]);
         }
@@ -1337,7 +1277,7 @@ class PaymentController extends Controller
 
         if ($restored) {
             return response()->json([
-                'message' => 'Payment successfully restored',
+                'message' => 'Document successfully restored',
                 'status' => 'success'
             ]);
         } else {

@@ -7,6 +7,7 @@
 /public/contractor_attachments/*
 /public/js/*
 /public/asset_attachments/*
+/public/documents_attachments/*
 /storage/*.key
 /vendor
 .env

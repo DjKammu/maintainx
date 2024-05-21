@@ -107,7 +107,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/payments', 'HomeController@payments')->name('payments.index');
     Route::get('/payments/create', 'HomeController@payments')->name('payments.create');
-    Route::get('/payments/{id}', 'HomeController@payments')->name('payments.show');
+    Route::get('/payments/{id}', 'HomeController@payments')->name('payments.show'); 
+
+    Route::get('/documents', 'HomeController@documents')->name('documents.index');
+    Route::get('/documents/create', 'HomeController@documents')->name('documents.create');
+    Route::get('/documents/{id}', 'HomeController@documents')->name('documents.show');
 
 });
 

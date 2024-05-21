@@ -39,6 +39,15 @@ class HomeController extends Controller
          }
 
         return view('payments');
+    } 
+
+    public function documents(){
+        
+        if(Gate::denies('view')) {
+               return abort('401');
+         }
+
+        return view('documents');
     }
 
 }

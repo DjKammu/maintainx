@@ -36,8 +36,6 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::get('/asset-types/trashed', 'Api\AssetTypeController@trashed'); 
      Route::post('/asset-types/restore', 'Api\AssetTypeController@restore');
 
-
-
      Route::get('/order-types', 'Api\OrderTypeController@index');
      Route::post('/order-types', 'Api\OrderTypeController@store');
      Route::post('/order-types/update', 'Api\OrderTypeController@update');
@@ -117,7 +115,6 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::get('/work-types/trashed', 'Api\WorkTypeController@trashed'); 
      Route::post('/work-types/restore', 'Api\WorkTypeController@restore');
 
-
      Route::get('/payments', 'Api\PaymentController@index');
      Route::get('/payments/attributes', 'Api\PaymentController@attributes');
      Route::get('/payments/asset-selection', 'Api\PaymentController@assetSelection');
@@ -135,6 +132,15 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'v1'], function () {
      Route::get('/payments/trashed', 'Api\PaymentController@trashed'); 
      Route::post('/payments/restore', 'Api\PaymentController@restore');
      Route::get('/payments/mails', 'Api\PaymentController@mails');
+
+
+     Route::get('/documents', 'Api\DocumentController@index');
+     Route::post('/documents', 'Api\DocumentController@store');
+     Route::post('/documents/update', 'Api\DocumentController@update');
+     Route::post('/documents/destroy', 'Api\DocumentController@destroy');
+     Route::get('/documents/trashed', 'Api\DocumentController@trashed'); 
+     Route::post('/documents/restore', 'Api\DocumentController@restore');
+
 });
 
 

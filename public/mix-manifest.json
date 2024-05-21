@@ -10,6 +10,7 @@
     "/js/views/Contractors.js": "/js/views/Contractors.js",
     "/js/views/Dashboard.js": "/js/views/Dashboard.js",
     "/js/views/DocumentTypes.js": "/js/views/DocumentTypes.js",
+    "/js/views/Documents.js": "/js/views/Documents.js",
     "/js/views/Leads.js": "/js/views/Leads.js",
     "/js/views/Login.js": "/js/views/Login.js",
     "/js/views/OrderStatuses.js": "/js/views/OrderStatuses.js",

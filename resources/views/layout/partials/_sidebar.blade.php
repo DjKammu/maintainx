@@ -27,7 +27,12 @@
                 <i class="mdi mdi-cash-100 menu-icon"></i>
               </a>
             </li>
-      
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('documents.index') }}">
+                <span class="menu-title"> Documents </span>
+                <i class="mdi mdi-file-document menu-icon"></i>
+              </a>
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="/setup">
                 <span class="menu-title">Set Up</span>
