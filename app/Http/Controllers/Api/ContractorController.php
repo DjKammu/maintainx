@@ -230,6 +230,47 @@ class ContractorController extends Controller
         }
     }
 
+     public function forceDelete(Request $request)
+    {
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+            
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+    
+        $contractor = Contractor::where('id',$request['id'])->onlyTrashed()->first();
+        if (empty($contractor)) {
+            return response()->json([
+                'message' => 'Contractor Not Found',
+                'status' => 'error'
+            ]);
+        }
+        $delete  = $contractor->forceDelete();
+
+        if ($delete) {
+            return response()->json([
+                'message' => 'Contractor successfully  permanentaly deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
 
      public function trashed(Request $request)
     {

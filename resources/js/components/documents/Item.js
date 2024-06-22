@@ -51,8 +51,8 @@ class Item extends Component {
                {this.props.columns.end_date && 
                    <td className="border px-4 py-3">{ this.props.obj.end_date }</td>
               }
-              {this.props.columns.dealer_name && 
-                  <td className="border px-4 py-3">{ this.props.obj.dealer_name }</td>
+              {this.props.columns.vendor_id && 
+                  <td className="border px-4 py-3">{ this.props.obj.vendor_name }</td>
                }
                {this.props.columns.property_type_id && 
                    <td className="border px-4 py-3">{ this.props.obj.property_type_name }</td>

@@ -50,6 +50,7 @@ function List(props) {
           start_date : true ,
           end_date : true ,
           dealer_name : true ,
+          vendor_id : true ,
       });
 
   
@@ -539,8 +540,8 @@ function List(props) {
                            <th className="px-4 py-2">End Date</th>
                           }
 
-                          {columns.dealer_name &&
-                           <th className="px-4 py-2">Dealer Name</th>
+                          {columns.vendor_id &&
+                           <th className="px-4 py-2">Vendor</th>
                           }
                          {columns.property_type_id &&
                            <th className="px-4 py-2">Property Type</th>

@@ -28,8 +28,10 @@ function New(props) {
     const [assetModels, setAssetModels] = useState([]);
     const [tenants, setTenants] = useState([]);
     const [areas, setAreas] = useState([]);
+    const [vendors, setVendors] = useState([]);
     const [subAreas, setSubAreas] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const selectedVendorOption = null;
     const [selectedDocumentTypeOption, setSelectedDocumentTypeOption]  = useState([]);
     const [selectedAssetTypeOption, setSelectedAssetTypeOption]  = useState([]);
     const [selectedTenantOption, setSelectedTenantOption]  = useState([]);
@@ -38,6 +40,7 @@ function New(props) {
     const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
     const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState([]);
     let assetTypesNullArr = [{'label' : 'Select Asset Type' , 'value' : null}];
+    let vendorsNullArr = [{'label' : 'Select Vendor' , 'value' : null}];
     let documentTypesNullArr = [{'label' : 'Select Document Type' , 'value' : null}];
     let propertyTypesNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
     let tenantsNullArr = [{'label' : 'Select Tenant' , 'value' : null}];
@@ -65,6 +68,7 @@ function New(props) {
         area_id: "",
         sub_area_id: "",
         tenant_id: "",
+        vendor_id: "",
         photos: "",
         loading: false,
         authUser: props.authUserProp
@@ -145,6 +149,13 @@ function New(props) {
               tenant_id: option.value,
           }));
           setSelectedTenantOption(option)
+      }
+
+      const handleSelectVendorChange = (option) => {
+         setState(state => ({
+              ...state,
+              vendor_id: option.value,
+          }));
       }
       
 
@@ -313,7 +324,7 @@ function New(props) {
                 setPropertyTypes(response.data.message.propertyTypes)  
                 setDocumentTypes(response.data.message.documentTypes)  
                 // setAssetModels(response.data.message.assetModels)  
-                // setVendors(response.data.message.vendors)  
+                setVendors(response.data.message.vendors)  
                 // setContractors(response.data.message.contractors)  
                 // setTenants(response.data.message.tenants)  
                 // setWorkTypes(response.data.message.workTypes)  
@@ -503,6 +514,26 @@ function New(props) {
       };
 
 
+      const  loadVendors = () => {
+            setIsLoading(true);
+            axios.get('/api/v1/payments/attributes',{
+                params: {
+                    api_token: authUser.api_token
+                }
+            })
+            .then(response => {
+                setIsLoading(false);
+                setVendors(response.data.message.vendors)  
+            })
+            .catch((error) => {
+                showSznNotification({
+                    type : 'error',
+                    message : 'Error! '
+                });
+            });
+        };
+
+
     const onSubmitHandle = (e) =>{
         e.preventDefault();
 
@@ -536,6 +567,7 @@ function New(props) {
             formData.append('area_id', state.area_id);
             formData.append('sub_area_id', state.sub_area_id);
             formData.append('tenant_id', state.tenant_id);
+            formData.append('vendor_id', state.vendor_id);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
@@ -870,18 +902,39 @@ function New(props) {
                                     </div>
 
                                  {/* dealer_name */}
+                                    {/* <div className="form-group">
+                                      <label>Dealer Name</label>
+                                      <div className="input-group input-group-sm">
+                                          <div className="input-group-prepend">
+                                              <span className="input-group-text bg-gradient-success text-white">
+                                                  <i className="mdi mdi-account"></i>
+                                              </span>
+                                          </div>
+                                          <input type="text" className="form-control form-control-sm" id="dealer_name" name="dealer_name" placeholder="Dealer Name" 
+                                          value={state.dealer_name} onChange={onChangeHandle}/>
+                                      </div>
+                                  </div> */}
+                                
+                                   {/* vendor_id */}
                                     <div className="form-group">
-                                        <label>Dealer Name</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="dealer_name" name="dealer_name" placeholder="Dealer Name" 
-                                            value={state.dealer_name} onChange={onChangeHandle}/>
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Vendor</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
                                         </div>
+                                        <Select
+                                        defaultValue={selectedVendorOption}
+                                        onChange={handleSelectVendorChange}
+                                        options={ (vendors.length > 0) ? [...vendorsNullArr, ...vendors] : []}
+                                      />  
+                                      <QuickAddVendor fn={loadVendors} />
                                     </div>
+                                    </div> 
+
 
 
                                 {/* property_type */}

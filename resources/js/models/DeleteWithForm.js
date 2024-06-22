@@ -136,7 +136,7 @@ function New(props) {
         <React.Fragment>
 
                   <button type="button"
-                      onClick={handleShow}
+                     onClick={handleShow}
                      className="btn btn-danger btn-sm btn-upper">
                       Delete
                     </button>

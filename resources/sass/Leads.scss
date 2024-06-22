@@ -25,7 +25,37 @@ table.table-fixed.w-full {
 
 .table-outer{
     overflow:auto;
+    transform: rotateX(180deg);
 }
+
+table.responsive-table.w-full {
+    transform: rotateX(180deg) !important;
+}
+
+.table-outer > div {
+    transform: rotateX(180deg) !important;
+}
+
+.table-outer thead tr th:nth-child(3),
+.table-outer thead tr th:nth-child(8),
+.table-outer thead tr th:nth-child(6),
+.table-outer tbody tr td:nth-child(3),
+.table-outer tbody tr td:nth-child(8),
+.table-outer tbody tr td:nth-child(6),{
+     max-width: 150px;
+}
+
+
+.table-outer thead tr th:nth-child(4),
+.table-outer thead tr th:nth-child(5),
+.table-outer tbody tr td:nth-child(4),
+.table-outer tbody tr td:nth-child(5){
+   min-width: 120px;
+}
+.table-outer thead tr th {
+    padding-bottom: 1.5rem !important;
+}
+
 .delete-modal .modal-content{
     background-color: transparent;
     border: none;

@@ -227,6 +227,49 @@ class WorkTypeController extends Controller
         }
     }
 
+
+    public function forceDelete(Request $request)
+    {
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+            
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+    
+        $workType = WorkType::where('id',$request['id'])->onlyTrashed()->first();
+        if (empty($workType)) {
+            return response()->json([
+                'message' => 'Work Type Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $delete  = $workType->forceDelete();
+
+        if ($delete) {
+            return response()->json([
+                'message' => 'Work Type successfully  permanentaly deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
     public function restore(Request $request)
     {
          if(Gate::denies('delete')) {

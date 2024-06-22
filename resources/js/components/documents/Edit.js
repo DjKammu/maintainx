@@ -27,9 +27,11 @@ function Edit(props) {
     const [documentTypes, setDocumentTypes] = useState([]);
     const [assetModels, setAssetModels] = useState([]);
     const [tenants, setTenants] = useState([]);
+    const [vendors, setVendors] = useState([]);
     const [areas, setAreas] = useState([]);
     const [subAreas, setSubAreas] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedVendorOption, setSelectedVendorOption]  = useState([]);
     const [selectedDocumentTypeOption, setSelectedDocumentTypeOption]  = useState([]);
     const [selectedAssetTypeOption, setSelectedAssetTypeOption]  = useState([]);
     const [selectedTenantOption, setSelectedTenantOption]  = useState([]);
@@ -38,6 +40,7 @@ function Edit(props) {
     const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
     const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState([]);
     let assetTypesNullArr = [{'label' : 'Select Asset Type' , 'value' : null}];
+    let vendorsNullArr = [{'label' : 'Select Vendor' , 'value' : null}];
     let documentTypesNullArr = [{'label' : 'Select Document Type' , 'value' : null}];
     let propertyTypesNullArr = [{'label' : 'Select Property Type' , 'value' : null}];
     let tenantsNullArr = [{'label' : 'Select Tenant' , 'value' : null}];
@@ -70,6 +73,7 @@ function Edit(props) {
         area_id: "",
         sub_area_id: "",
         tenant_id: "",
+        vendor_id: "",
         photos: "",
         loading: false,
         authUser: props.authUserProp
@@ -358,6 +362,14 @@ function Edit(props) {
          setSelectedTenantOption(option)
       }
       
+      const handleSelectVendorChange = (option) => {
+         setState(state => ({
+              ...state,
+              vendor_id: option.value,
+          }));
+         setSelectedVendorOption(option)
+      }
+
        const handleSelectPropertyTypeChange = (selectedOption) => {
 
          // if(state.non_asset === '0'){
@@ -537,6 +549,7 @@ function Edit(props) {
                 area_id: props.location.state.area ? props.location.state.area.id : null, 
                 sub_area_id: props.location.state.sub_area ? props.location.state.sub_area.id : null,
                 tenant_id: props.location.state.tenant ? props.location.state.tenant.id : null, 
+                vendor_id: props.location.state.vendor ? props.location.state.vendor.id : null, 
                 media: props.location.state.media
             }));
 
@@ -554,12 +567,12 @@ function Edit(props) {
             setPropertyTypes((props.location.state.property_type  != 'null' ? [props.location.state.property_type] : null ));
             setAreas((props.location.state.area != 'null' ? [props.location.state.area] : null ));
             setSubAreas((props.location.state.sub_area  != 'null' ? [props.location.state.sub_area] : null ));
-
+            setSelectedVendorOption((props.location.state.vendor ? props.location.state.vendor : null)); 
             return;
           }
 
         
-          axios.get('/api/v1/payments?id='+id,{
+          axios.get('/api/v1/documents?id='+id,{
                 params: {
                     api_token: authUser.api_token
                 }
@@ -591,6 +604,7 @@ function Edit(props) {
                       area_id: _data.area ? _data.area.id : null, 
                       sub_area_id: _data.sub_area ? _data.sub_area.id : null,
                       tenant_id: _data.tenant ? _data.tenant.id : null, 
+                      vendor_id: _data.vendor ? _data.vendor.id : null, 
                       media: _data.media,
                   }));
 
@@ -601,6 +615,7 @@ function Edit(props) {
                     setSelectedSubAreaOption((_data.sub_area ? _data.sub_area : null ));
                     setSelectedPropertyTypeOption((_data.property_type ? _data.property_type : null ));
                     setSelectedTenantOption((_data.tenant ? _data.tenant : null ));
+                    setSelectedVendorOption((_data.vendor ? _data.vendor : null)); 
                     setProperties((_data.property != 'null' ? [_data.property] : null ));
                     setPropertyTypes((_data.property_type != 'null' ? [_data.property_type] : null ));
                     setAreas((_data.area != 'null'? [_data.area] : null ));
@@ -636,6 +651,7 @@ function Edit(props) {
               setSubAreas(response.data.message.sub_areas)  
               setPropertyTypes(response.data.message.propertyTypes)  
               setTenants(response.data.message.tenants)  
+              setVendors(response.data.message.vendors)
           })
           .catch((error) => {
               showSznNotification({
@@ -644,6 +660,25 @@ function Edit(props) {
               });
           });
       };  
+
+      const  loadVendors = () => {
+            setIsLoading(true);
+            axios.get('/api/v1/payments/attributes',{
+                params: {
+                    api_token: authUser.api_token
+                }
+            })
+            .then(response => {
+                setIsLoading(false);
+                setVendors(response.data.message.vendors)  
+            })
+            .catch((error) => {
+                showSznNotification({
+                    type : 'error',
+                    message : 'Error! '
+                });
+            });
+        };
 
    
     const onSubmitHandle = (e) =>{
@@ -680,6 +715,7 @@ function Edit(props) {
             formData.append('area_id', state.area_id);
             formData.append('sub_area_id', state.sub_area_id);
             formData.append('tenant_id', state.tenant_id);
+            formData.append('vendor_id', state.vendor_id);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
@@ -1060,18 +1096,39 @@ function Edit(props) {
                                     </div>
 
                                  {/* dealer_name */}
+                                 {/* <div className="form-group">
+                                     <label>Dealer Name</label>
+                                     <div className="input-group input-group-sm">
+                                         <div className="input-group-prepend">
+                                             <span className="input-group-text bg-gradient-success text-white">
+                                                 <i className="mdi mdi-account"></i>
+                                             </span>
+                                         </div>
+                                         <input type="text" className="form-control form-control-sm" id="dealer_name" name="dealer_name" placeholder="Dealer Name" 
+                                         value={state.dealer_name} onChange={onChangeHandle}/>
+                                     </div>
+                                 </div> */}
+
+
+                                    {/* vendor_id */}
                                     <div className="form-group">
-                                        <label>Dealer Name</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="dealer_name" name="dealer_name" placeholder="Dealer Name" 
-                                            value={state.dealer_name} onChange={onChangeHandle}/>
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Vendor</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
                                         </div>
+                                        <Select
+                                        value={selectedVendorOption}
+                                        onChange={handleSelectVendorChange}
+                                        options={ (vendors.length > 0) ? [...vendorsNullArr, ...vendors] : []}
+                                      />  
+                                      <QuickAddVendor fn={loadVendors} />
                                     </div>
+                                    </div> 
 
 
                                 {/* property_type */}

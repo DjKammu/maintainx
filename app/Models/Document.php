@@ -19,11 +19,11 @@ class Document extends Model
         'description', 'install_date', 'registration_date','manufactare_date',
         'coverage_term', 'coverage_type', 'start_date', 'end_date',
         'dealer_name', 'property_type_id', 'property_id','area_id',
-        'sub_area_id','tenant_id'
+        'sub_area_id','tenant_id','vendor_id'
     ];
 
-
-     public function property()
+    
+    public function property()
     {
         return $this->hasOne('App\Models\Property', 'id', 'property_id');
     }
@@ -57,6 +57,12 @@ class Document extends Model
     {
         return $this->hasOne('App\Models\Tenant', 'id', 'tenant_id');
     }
+
+    public function vendor()
+    {
+        return $this->hasOne('App\Models\Vendor', 'id', 'vendor_id');
+    }
+
 
     public function setPropertyIdAttribute($value)
     {
@@ -117,6 +123,11 @@ class Document extends Model
     {
         $this->attributes['end_date'] =  ($value == 'null') ? NULL :  $value;
     } 
+
+    public function setVendorIdAttribute($value)
+    {
+        $this->attributes['vendor_id'] =  ($value == 'null') ? NULL :  $value;
+    }
 
 
     public function getInstallDateAttribute($value)

@@ -318,6 +318,48 @@ class PropertyController extends Controller
         }
     }
 
+     public function forceDelete(Request $request)
+    {
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+            
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+    
+        $property = Property::where('id',$request['id'])->onlyTrashed()->first();
+        if (empty($property)) {
+            return response()->json([
+                'message' => 'Property Not Found',
+                'status' => 'error'
+            ]);
+        }
+        $property->deleteFile();
+        $delete  = $property->forceDelete();
+
+        if ($delete) {
+            return response()->json([
+                'message' => 'Property successfully  permanentaly deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -157,6 +157,19 @@ class DocumentController extends Controller
               });
         }); 
 
+        $vendor = $request['vendor'];
+
+        $data->where(function($q) use ($vendor){
+              $q->whereHas('vendor', function($q) use ($vendor){
+                  $q->when($vendor, function ($q) use 
+                   ($vendor) {
+                      $q->where('id',$vendor);
+                  });
+              })->when(!$vendor, function ($q){
+                      $q->orWhereNull('vendor_id');
+              });
+        });
+
 
         $asset_type = $request['asset_type'];
         $data->where(function($q) use ($asset_type){
@@ -234,6 +247,14 @@ class DocumentController extends Controller
                     @$document->tenant->label = $document->tenant->name;
                     @$document->tenant->value = $document->tenant->id;
                  }
+
+                $document->vendor_name = (@$document->vendor->company_name && @$document->vendor->name ) ? ( @$document->vendor->company_name .'-'. @$document->vendor->name ) : (@$document->vendor->company_name ? @$document->vendor->company_name : @$document->vendor->name);
+                 
+                 if(@$document->vendor ){
+                    @$document->vendor->label = (@$document->vendor->company_name && @$document->vendor->name ) ? ( @$document->vendor->company_name .'-'. @$document->vendor->name ) : (@$document->vendor->company_name ? @$document->vendor->company_name : @$document->vendor->name);
+                    @$document->vendor->value = $document->vendor->id;
+                 }
+
 
               $media =  @$document->getMediaPathWithExtension()['file'] ? [@$document->getMediaPathWithExtension()] : @$document->getMediaPathWithExtension();
                $document->media = @collect($media)->all(); 
@@ -1054,6 +1075,50 @@ class DocumentController extends Controller
         if ($delete) {
             return response()->json([
                 'message' => 'Document successfully deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }  
+
+
+    public function forceDelete(Request $request)
+    {
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+            
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+    
+        $document = Document::where('id',$request['id'])->onlyTrashed()->first();
+        if (empty($document)) {
+            return response()->json([
+                'message' => 'Document Not Found',
+                'status' => 'error'
+            ]);
+        }
+         
+        $document->deleteFile();
+        $delete  = $document->forceDelete();
+
+        if ($delete) {
+            return response()->json([
+                'message' => 'Document successfully  permanentaly deleted',
                 'status' => 'success'
             ]);
         } else {

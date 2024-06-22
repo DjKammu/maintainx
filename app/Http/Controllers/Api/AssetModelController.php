@@ -343,6 +343,47 @@ class AssetModelController extends Controller
         }
     }
 
+    public function forceDelete(Request $request)
+    {
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+            
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+    
+        $assetModel = AssetModel::where('id',$request['id'])->onlyTrashed()->first();
+        if (empty($assetModel)) {
+            return response()->json([
+                'message' => 'Asset Model Not Found',
+                'status' => 'error'
+            ]);
+        }
+        $delete  = $assetModel->forceDelete();
+
+        if ($delete) {
+            return response()->json([
+                'message' => 'Asset Model successfully  permanentaly deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
 
      
     public function deleteAttachment(Request $request){

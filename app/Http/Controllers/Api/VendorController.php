@@ -231,6 +231,47 @@ class VendorController extends Controller
         }
     }
 
+     public function forceDelete(Request $request)
+    {
+
+        if(Gate::denies('administrator') && !User::propertyBelongsToUser($area['property_id'])) {
+             return response()->json(['status' => 'error', 'message' => 'Unauthenticated.'], 401);
+        } 
+            
+        $password = $request->password;
+        $user = \Auth::user();
+
+        if(!\Hash::check($password, $user->password)) { 
+          return response()->json(
+               [
+                'status' => 'error',
+                'message' => 'Password not matched!'
+               ]
+            );
+        }
+    
+        $vendor = Vendor::where('id',$request['id'])->onlyTrashed()->first();
+        if (empty($vendor)) {
+            return response()->json([
+                'message' => 'Vendor Not Found',
+                'status' => 'error'
+            ]);
+        }
+        $delete  = $vendor->forceDelete();
+
+        if ($delete) {
+            return response()->json([
+                'message' => 'Vendor successfully  permanentaly deleted',
+                'status' => 'success'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'status' => 'error'
+            ]);
+        }
+    }
+
 
      public function trashed(Request $request)
     {
