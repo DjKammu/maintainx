@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch, Link } from 'react-router-dom'
 import List from '../components/payments/List'
 import New from '../components/payments/New'
 import Edit from '../components/payments/Edit'
+import View from '../components/payments/View'
 import '../variables'
 import {createStore} from 'redux';
 import rootReducer from '../redux/reducers/index'
@@ -33,12 +34,12 @@ function App() {
 					<span className="page-title-icon bg-gradient-primary text-white mr-2">
 						{ activeComponent && activeComponent == 'List' ?  
 						<i className="mdi mdi-account-multiple"></i> : (activeComponent && activeComponent == 'New' ? <i className="mdi mdi-account-plus"></i> : 
-						(activeComponent && activeComponent == 'Edit' ? <i className="mdi mdi-folder-account"></i> : '' ) )
+						(activeComponent && activeComponent == 'Edit' ? <i className="mdi mdi-folder-account"></i> :  (activeComponent && activeComponent == 'View' ? <i className="mdi mdi-folder-account"></i> : '' )  ) )
 					}
 					</span>
 				 	{ activeComponent && activeComponent == 'List' ?  
 						'All Payments' : (activeComponent && activeComponent == 'New' ? 'New Payment' : 
-						(activeComponent && activeComponent == 'Edit' ? 'Edit Payment' : '' ) )
+						(activeComponent && activeComponent == 'Edit' ? 'Edit Payment' :  (activeComponent && activeComponent == 'View' ? 'View Payment' : '' ) ) )
 					}
 				</h3>
 				<nav aria-label="breadcrumb">
@@ -54,6 +55,7 @@ function App() {
 							<Route exact path='/payments'  > <List /> </Route>
 							<Route path='/payments/create' > <New /> </Route>
 							<Route path='/payments/:id' component={Edit} /> 
+							<Route path='/view/payments/:id' component={View} /> 
 						</Switch>
 
 				</div>

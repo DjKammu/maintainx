@@ -128,7 +128,21 @@ class Document extends Model
     {
         $this->attributes['vendor_id'] =  ($value == 'null') ? NULL :  $value;
     }
-
+    
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['description'] =  ($value == 'null') ? NULL :  $value;
+    }
+    
+    public function setSerialNumberAttribute($value)
+    {
+        $this->attributes['serial_number'] =  ($value == 'null') ? NULL :  $value;
+    } 
+    
+    public function setModelNumberAttribute($value)
+    {
+        $this->attributes['model_number'] =  ($value == 'null') ? NULL :  $value;
+    } 
 
     public function getInstallDateAttribute($value)
     {

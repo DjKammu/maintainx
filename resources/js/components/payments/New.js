@@ -815,7 +815,31 @@ function New(props) {
                                            </div>
                                           </div>
 
-                                       {state.non_asset ===  "0" &&
+                                     
+                                           {/* {state.non_asset ===  "1" &&  */}
+
+                                          <div className="form-group">
+                                          <label>
+                                            <span>Description</span>
+                                          </label>
+                                          <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-circle-edit-outline"></i>
+                                                </span>
+                                            </div>
+                                            <textarea  name="description" placeholder="Description"
+                                              onChange={onChangeHandle}
+                                              value={state.description}
+                                              className="form-control form-control-sm"></textarea>
+                                              </div>
+                                          </div>
+                                
+
+                                         {/* } property }
+
+                                        {state.non_asset ===  "0" &&
+                                        
                                           <div className="form-group" >
                                             <label className="block text-sm font-medium text-gray-700" htmlFor="property">
                                               <span>Asset Type</span>
@@ -835,33 +859,8 @@ function New(props) {
                                           </div>
                                           </div>
                                           }
-
-
-                                          {state.non_asset ===  "1" &&
-
-                                          <div className="form-group">
-                                          <label>
-                                            <span>Description</span>
-                                          </label>
-                                          <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-circle-edit-outline"></i>
-                                                </span>
-                                            </div>
-                                            <textarea  name="description" placeholder="Description"
-                                              onChange={onChangeHandle}
-                                              value={state.description}
-                                              className="form-control form-control-sm"></textarea>
-                                              </div>
-                                          </div>
-
-
-                                          }
-
-
                                     
-                                      <div className="form-group">
+                                      {/* <div className="form-group">
                                         <label>Brand</label>
                                         <div className="input-group input-group-sm">
                                             <div className="input-group-prepend">
@@ -872,7 +871,7 @@ function New(props) {
                                             <input type="text" className="form-control form-control-sm" id="brand" name="brand" placeholder="Brand Name" 
                                             value={state.brand} onChange={onChangeHandle}/>
                                         </div>
-                                    </div>
+                                    </div>*/}
 
 
                                 {/* property_type */}

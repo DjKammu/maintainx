@@ -32,6 +32,7 @@ function New(props) {
     const [subAreas, setSubAreas] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const selectedVendorOption = null;
+    const [selectedAssetModelOption, setSelectedAssetModelOption]  = useState([]);
     const [selectedDocumentTypeOption, setSelectedDocumentTypeOption]  = useState([]);
     const [selectedAssetTypeOption, setSelectedAssetTypeOption]  = useState([]);
     const [selectedTenantOption, setSelectedTenantOption]  = useState([]);
@@ -39,6 +40,7 @@ function New(props) {
     const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState([]);
     const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
     const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState([]);
+    let assetModelsNullArr = [{'label' : 'Select Asset' , 'value' : null}];
     let assetTypesNullArr = [{'label' : 'Select Asset Type' , 'value' : null}];
     let vendorsNullArr = [{'label' : 'Select Vendor' , 'value' : null}];
     let documentTypesNullArr = [{'label' : 'Select Document Type' , 'value' : null}];
@@ -96,7 +98,7 @@ function New(props) {
             [name] : value
         });
     }
-
+    
     const handleFileChange = (e) => {
          e.persist();
          const { name  } = e.target;
@@ -105,6 +107,60 @@ function New(props) {
               [name]:  Array.from(e.target.files)
           }));  
      }
+
+     const handleSelectAssetModelChange = (option) => {
+         setState(state => ({
+              ...state,
+              asset_model_id: option.value,
+          }));
+
+        // setPropertyTypes([]);
+        // setSelectedPropertyTypeOption([]);
+        // setProperties([]);
+        // setSelectedPropertyOption([]);
+        // setAreas([]);
+        // setSelectedAreaOption([]);
+        // setSubAreas([]);
+        // setTenants([]);
+        // setSelectedSubAreaOption([]);
+        // setSelectedTenantOption([]);
+
+        setIsLoading(true);
+
+        axios.get('/api/v1/payments/asset-selection',{
+            params: {
+                api_token: authUser.api_token,
+                asset : option.value
+             }
+            })
+          .then(response => {
+            setIsLoading(false);
+          //   setSelectedPropertyTypeOption(response.data.message.asset.property_type)
+          //   setSelectedPropertyOption(response.data.message.asset.property)
+          //   setSelectedAreaOption(response.data.message.asset.area)
+          //   setSelectedSubAreaOption(response.data.message.asset.sub_area)
+          //   setTenants(response.data.message.tenants)  
+
+          //    setState(state => ({
+          //     ...state,
+          //     asset_model_id: option.value,
+          //     property_type_id: response.data.message.asset.property_type_id,
+          //     property_id: response.data.message.asset.property_id,
+          //     area_id: response.data.message.asset.area_id,
+          //     sub_area_id: response.data.message.asset.sub_area_id
+          // }));
+
+          })
+          .catch(error => {
+                 showSznNotification({
+                    type : 'error',
+                    message : error.response.data.message
+                });
+          });
+
+
+      }  
+
     
       const handleSelectAssetTypeChange = (option) => {
          setState(state => ({
@@ -704,48 +760,35 @@ function New(props) {
                                       <QuickAddAssetType fn={loadAssetTypes} />
                                     </div>
                                     </div>
-                
-                                        {/* brand */}
-                                      <div className="form-group">
-                                        <label>Brand</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="brand" name="brand" placeholder="Brand Name" 
-                                            value={state.brand} onChange={onChangeHandle}/>
-                                        </div>
-                                    </div>
 
-                                    {/* serial_number */}
+                                     {/* asset_model */}
                                     <div className="form-group">
-                                        <label>Serial Number</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="serial_number" name="serial_number" placeholder="Serial Number" 
-                                            value={state.serial_number} onChange={onChangeHandle}/>
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Asset</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
                                         </div>
+                                        <Select
+                                        defaultValue={selectedAssetModelOption}
+                                        onChange={handleSelectAssetModelChange}
+                                        options={ (assetModels.length > 0) ? [...assetModelsNullArr, ...assetModels] : []}
+                                      />  
+                                       <QuickAddAsset fn={loadAssets} dropdowns={
+                                          { 
+                                              asset_type : selectedAssetTypeOption,
+                                              area : selectedAreaOption , 
+                                              sub_area : selectedSubAreaOption ,
+                                              property : selectedPropertyOption ,
+                                              property_type : selectedPropertyTypeOption 
+                                         }
+                                      }/>
                                     </div>
-
-                                    {/* model_number */}
-                                    <div className="form-group">
-                                        <label>Model Number</label>
-                                        <div className="input-group input-group-sm">
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text bg-gradient-success text-white">
-                                                    <i className="mdi mdi-account"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" className="form-control form-control-sm" id="model_number" name="model_number" placeholder="Model Number" 
-                                            value={state.model_number} onChange={onChangeHandle}/>
-                                        </div>
-                                    </div>
+                                    {simpleValidator.current.message('Asset', state.asset_model_id, 'required')}
+                                </div>
 
                                   {/* coverage_term */}
                                     <div className="form-group">

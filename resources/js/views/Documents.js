@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch, Link } from 'react-router-dom'
 import List from '../components/documents/List'
 import New from '../components/documents/New'
 import Edit from '../components/documents/Edit'
+import View from '../components/documents/View'
 import '../variables'
 import {createStore} from 'redux';
 import rootReducer from '../redux/reducers/index'
@@ -33,12 +34,12 @@ function App() {
 					<span className="page-title-icon bg-gradient-primary text-white mr-2">
 						{ activeComponent && activeComponent == 'List' ?  
 						<i className="mdi mdi-account-multiple"></i> : (activeComponent && activeComponent == 'New' ? <i className="mdi mdi-account-plus"></i> : 
-						(activeComponent && activeComponent == 'Edit' ? <i className="mdi mdi-folder-account"></i> : '' ) )
+						(activeComponent && activeComponent == 'Edit' ? <i className="mdi mdi-folder-account"></i> :(activeComponent && activeComponent == 'View' ? <i className="mdi mdi-folder-account"></i> : '' )  ) )
 					}
 					</span>
 				 	{ activeComponent && activeComponent == 'List' ?  
 						'All Documents' : (activeComponent && activeComponent == 'New' ? 'New Document' : 
-						(activeComponent && activeComponent == 'Edit' ? 'Edit Document' : '' ) )
+						(activeComponent && activeComponent == 'Edit' ? 'Edit Document' : (activeComponent && activeComponent == 'View' ? 'View Document' : '' ) ) )
 					}
 				</h3>
 				<nav aria-label="breadcrumb">
@@ -54,6 +55,7 @@ function App() {
 							<Route exact path='/documents'  > <List /> </Route>
 							<Route path='/documents/create' > <New /> </Route>
 							<Route path='/documents/:id' component={Edit} /> 
+							<Route path='/view/documents/:id' component={View} /> 
 						</Switch>
 
 				</div>

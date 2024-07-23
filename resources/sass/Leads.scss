@@ -52,8 +52,13 @@ table.responsive-table.w-full {
 .table-outer tbody tr td:nth-child(5){
    min-width: 120px;
 }
+
 .table-outer thead tr th {
     padding-bottom: 1.5rem !important;
+}
+
+.table-outer tbody tr td:last-child{
+    white-space: nowrap;
 }
 
 .delete-modal .modal-content{

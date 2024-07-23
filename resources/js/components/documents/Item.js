@@ -84,6 +84,10 @@ class Item extends Component {
               <td className="border px-4 py-3 w-auto">
               <div className="input-group-prepend szn-widget__action">
               <Link to={{
+                  pathname: `/view/documents/${this.props.obj.id}`,
+                  state: this.props.obj
+              }} type="button" className="btn btn-outline-primary btn-sm btn-upper">View</Link>&nbsp; 
+              <Link to={{
                   pathname: `/documents/${this.props.obj.id}`,
                   state: this.props.obj
               }} type="button" className="btn btn-outline-success btn-sm btn-upper">Edit</Link>&nbsp;

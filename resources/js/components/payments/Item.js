@@ -60,9 +60,9 @@ class Item extends Component {
               {this.props.columns.notes && 
                    <td className="border px-2 py-3 text-center">{ this.props.obj.notes }</td>
               }
-              {this.props.columns.brand && 
+             {/* {this.props.columns.brand && 
                    <td className="border px-2 py-3 text-center">{ this.props.obj.brand }</td>
-              }
+              } */}
               {this.props.columns.description && 
                    <td className="border px-2 py-3 text-center">{ this.props.obj.description }</td>
               }{this.props.columns.non_asset && 
@@ -81,6 +81,10 @@ class Item extends Component {
               </td>
               <td className="border px-4 py-3 w-auto">
               <div className="input-group-prepend szn-widget__action">
+              <Link to={{
+                  pathname: `/view/payments/${this.props.obj.id}`,
+                  state: this.props.obj
+              }} type="button" className="btn btn-outline-primary btn-sm btn-upper">View</Link>&nbsp; 
               <Link to={{
                   pathname: `/payments/${this.props.obj.id}`,
                   state: this.props.obj

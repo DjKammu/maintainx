@@ -45,7 +45,7 @@ function List(props) {
           payment : true ,
           notes : false ,
           payment_date : true ,
-          brand : false ,
+           brand : false ,
           description : false ,
           non_asset : false ,
       });
@@ -547,9 +547,9 @@ function List(props) {
                           {columns.notes &&
                            <th className="px-4 py-2">Notes</th>
                           }
-                          {columns.brand &&
-                           <th className="px-4 py-2">Brand</th>
-                          }
+                          {/* {columns.brand &&
+                             <th className="px-4 py-2">Brand</th>
+                            } */}
                           {columns.description &&
                            <th className="px-4 py-2">Description</th>
                           }
@@ -655,7 +655,7 @@ function List(props) {
                                 <li > <input defaultChecked={columns.payment}  onChange={onClickSelectCoulmn} name="payment" type="checkbox" />Payment
                                  <input defaultChecked={columns.notes}  onChange={onClickSelectCoulmn} name="notes" type="checkbox" />Notes</li>
                                 <li > <input defaultChecked={columns.payment_date}  onChange={onClickSelectCoulmn} name="payment_date" type="checkbox" />Payment Date 
-                                <input defaultChecked={columns.brand}  onChange={onClickSelectCoulmn} name="brand" type="checkbox" />Brand </li>
+                               {/* <input defaultChecked={columns.brand}  onChange={onClickSelectCoulmn} name="brand" type="checkbox" />Brand */} </li>
                                 <li > <input defaultChecked={columns.description}  onChange={onClickSelectCoulmn} name="description" type="checkbox" />Description 
                                  <input defaultChecked={columns.non_asset}  onChange={onClickSelectCoulmn} name="non_asset" type="checkbox" />Non Asset </li>
                               </ul>
