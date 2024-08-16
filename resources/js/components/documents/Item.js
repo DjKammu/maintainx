@@ -24,7 +24,12 @@ class Item extends Component {
               {this.props.columns.asset_type_id && 
                    <td className="border px-4 py-3">{ this.props.obj.asset_type_name }</td>
               }
-              {this.props.columns.brand && 
+
+              {this.props.columns.asset_model_id && 
+                   <td className="border px-4 py-3">{ this.props.obj.asset_model_name }</td>
+              }
+              
+              {/* {this.props.columns.brand && 
                   <td className="border px-4 py-3">{ this.props.obj.brand }</td>
                }
                {this.props.columns.serial_number && 
@@ -32,7 +37,7 @@ class Item extends Component {
               }
               {this.props.columns.model_number && 
                    <td className="border px-4 py-3">{ this.props.obj.model_number }</td>
-              }
+              } */}
               {this.props.columns.registration_date && 
                    <td className="border px-4 py-3">{ this.props.obj.registration_date }</td>
               }

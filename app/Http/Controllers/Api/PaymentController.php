@@ -12,6 +12,7 @@ use App\Models\AssetType;
 use App\Models\WorkType;
 use App\Models\Property;
 use App\Models\Payment;
+use App\Models\Document;
 use App\Models\Tenant;
 use App\Models\Vendor;
 use App\Models\SubArea;
@@ -628,7 +629,7 @@ class PaymentController extends Controller
               return $assetType;
           });
          
-          $payment = Payment::query();
+        $payment = Payment::query();
         
         if ($request['id'] != '') {
             $payment->where('id',$request['id']);
@@ -711,6 +712,25 @@ class PaymentController extends Controller
               $assetModel->value = $assetModel->id;
               return $assetModel;
           });
+
+        if($request['id'] != '' && $request->filled('type') && $request->type == Document::DOCUMENTS_TYPE){
+              $id = $request['id'];
+              $assetModels = AssetModel::where(function($q) use ($id){
+                      $q->whereHas('asset_type', function($q) use ($id){
+                                $q->where('id',Document::select('asset_type_id')
+                                ->whereId($id)->pluck('asset_type_id'));
+                      });
+              })->get();
+
+              $assetModels = @$assetModels->filter(function($assetModel){
+                $assetModel->label = $assetModel->name;
+                $assetModel->value = $assetModel->id;
+                return $assetModel;
+            });
+
+        }
+
+
          $vendors = Vendor::orderBy('name')->get();
          $vendors = @$vendors->filter(function($vendor){
               $vendor->label = ($vendor->company_name && $vendor->name) ? ( $vendor->company_name .'-'. $vendor->name ) : ($vendor->company_name ? $vendor->company_name : $vendor->name);

@@ -53,6 +53,7 @@ function New(props) {
     const [state, setState] = useState({
         document_type_id: "",
         asset_type_id: "",
+        asset_model_id: "",
         brand: "",
         serial_number: "",
         model_number: "",
@@ -135,20 +136,20 @@ function New(props) {
             })
           .then(response => {
             setIsLoading(false);
-          //   setSelectedPropertyTypeOption(response.data.message.asset.property_type)
-          //   setSelectedPropertyOption(response.data.message.asset.property)
-          //   setSelectedAreaOption(response.data.message.asset.area)
-          //   setSelectedSubAreaOption(response.data.message.asset.sub_area)
-          //   setTenants(response.data.message.tenants)  
+              setSelectedPropertyTypeOption(response.data.message.asset.property_type)
+              setSelectedPropertyOption(response.data.message.asset.property)
+              setSelectedAreaOption(response.data.message.asset.area)
+              setSelectedSubAreaOption(response.data.message.asset.sub_area)
+              setTenants(response.data.message.tenants)  
 
-          //    setState(state => ({
-          //     ...state,
-          //     asset_model_id: option.value,
-          //     property_type_id: response.data.message.asset.property_type_id,
-          //     property_id: response.data.message.asset.property_id,
-          //     area_id: response.data.message.asset.area_id,
-          //     sub_area_id: response.data.message.asset.sub_area_id
-          // }));
+               setState(state => ({
+                ...state,
+                asset_model_id: option.value,
+                property_type_id: response.data.message.asset.property_type_id,
+                property_id: response.data.message.asset.property_id,
+                area_id: response.data.message.asset.area_id,
+                sub_area_id: response.data.message.asset.sub_area_id
+            }));
 
           })
           .catch(error => {
@@ -168,7 +169,7 @@ function New(props) {
               asset_type_id: option.value
           }));  
         setSelectedAssetTypeOption(option);
-        return;
+        // return;
 
         setIsLoading(true);
 
@@ -180,7 +181,7 @@ function New(props) {
             })
           .then(response => {
             setIsLoading(false);
-            // setAssetModels(response.data.message.assets)
+            setAssetModels(response.data.message.assets)
           })
           .catch(error => {
                  showSznNotification({
@@ -606,9 +607,10 @@ function New(props) {
             var formData = new FormData();
             formData.append('document_type_id', state.document_type_id);
             formData.append('asset_type_id', state.asset_type_id);
-            formData.append('brand', state.brand);
-            formData.append('serial_number', state.serial_number);
-            formData.append('model_number', state.model_number);
+            formData.append('asset_model_id', state.asset_model_id);
+            // formData.append('brand', state.brand);
+            // formData.append('serial_number', state.serial_number);
+            // formData.append('model_number', state.model_number);
             formData.append('description', state.description);
             formData.append('install_date', state.install_date);
             formData.append('registration_date', state.registration_date);
@@ -618,10 +620,10 @@ function New(props) {
             formData.append('start_date', state.start_date);
             formData.append('end_date', state.end_date);
             formData.append('dealer_name', state.dealer_name);
-            formData.append('property_type_id', state.property_type_id);
-            formData.append('property_id', state.property_id);
-            formData.append('area_id', state.area_id);
-            formData.append('sub_area_id', state.sub_area_id);
+            // formData.append('property_type_id', state.property_type_id);
+            // formData.append('property_id', state.property_id);
+            // formData.append('area_id', state.area_id);
+            // formData.append('sub_area_id', state.sub_area_id);
             formData.append('tenant_id', state.tenant_id);
             formData.append('vendor_id', state.vendor_id);
             if(state.files && state.files.length > 0){
@@ -629,7 +631,7 @@ function New(props) {
                      formData.append('files[]', file);
                 });  
             }
-          
+
             axios.post(
               '/api/v1/documents',formData,{
               params: {
@@ -790,6 +792,88 @@ function New(props) {
                                     {simpleValidator.current.message('Asset', state.asset_model_id, 'required')}
                                 </div>
 
+
+                                  {/* property_type */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property Type</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedPropertyTypeOption}
+                                        options={ ( selectedPropertyTypeOption && selectedPropertyTypeOption.length > 0) ? [selectedPropertyTypeOption] : []}
+                                      />  
+                                     
+                                    </div>
+                                    </div> 
+
+
+                                {/* property */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Property</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-outline"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedPropertyOption}
+                                        options={ (selectedPropertyOption  && selectedPropertyOption.length > 0) ? [selectedPropertyOption] : []}
+                                      />  
+                                    
+                                        
+                                    </div>
+                                    </div>
+
+
+                                     {/* area */}
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
+                                        <span>Area</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-variant"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedAreaOption}
+                                        options={ (selectedAreaOption && selectedAreaOption.length > 0) ? [selectedAreaOption] : []}
+                                      />  
+                                   
+                                    </div>
+                                    </div>
+                                       
+
+                                    {/* sub_area */}
+
+                                    <div className="form-group">
+                                      <label className="block text-sm font-medium text-gray-700" htmlFor="sub_area">
+                                        <span>Sub Area</span>
+                                      </label>
+                                       <div className="input-group input-group-sm">
+                                        <div className="input-group-prepend">
+                                            <span className="input-group-text bg-gradient-success text-white">
+                                                <i className="mdi mdi-home-variant"></i>
+                                            </span>
+                                        </div>
+                                        <Select
+                                        value={selectedSubAreaOption}
+                                        options={ (selectedSubAreaOption && selectedSubAreaOption.length > 0) ? [selectedSubAreaOption] : []}
+                                      />
+                                     
+                                    </div>
+                                    </div>
+
                                   {/* coverage_term */}
                                     <div className="form-group">
                                         <label>Coverage Term</label>
@@ -820,7 +904,6 @@ function New(props) {
                                     </div>
 
                                  
-
                                            {/* description */}
                                           <div className="form-group">
                                           <label>
@@ -980,109 +1063,7 @@ function New(props) {
 
 
 
-                                {/* property_type */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Property Type</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-outline"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedPropertyTypeOption}
-                                        onChange={handleSelectPropertyTypeChange}
-                                        options={ (propertyTypes.length > 0) ? propertyTypes : []}
-                                      />  
-                                       <QuickAddPropertyType fn={loadPropertyTypes} />
-                                      
-                                    </div>
-                                    </div> 
-
-
-                                {/* property */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Property</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-outline"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedPropertyOption}
-                                        onChange={handleSelectPropertyChange}
-                                        options={ (properties.length > 0) ? [...propertyNullArr, ...properties] : []}
-                                      />  
-                                       <QuickAddProperty fn={loadProperty} 
-                                       dropdowns={
-                                            {
-                                             property_type : selectedPropertyTypeOption 
-                                           }
-                                        }
-                                        />
-                                        
-                                    </div>
-                                    </div>
-
-
-                                     {/* area */}
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="property">
-                                        <span>Area</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-variant"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedAreaOption}
-                                        onChange={handleSelectAreaChange}
-                                        options={ (areas.length > 0) ? areas : []}
-                                      />  
-                                      <QuickAddArea fn={loadArea} 
-                                       dropdowns={
-                                            {
-                                             property : selectedPropertyOption 
-                                           }
-                                        }
-                                        />
-                                    </div>
-                                    </div>
-                                       
-
-                                    {/* sub_area */}
-
-                                    <div className="form-group">
-                                      <label className="block text-sm font-medium text-gray-700" htmlFor="sub_area">
-                                        <span>Sub Area</span>
-                                      </label>
-                                       <div className="input-group input-group-sm">
-                                        <div className="input-group-prepend">
-                                            <span className="input-group-text bg-gradient-success text-white">
-                                                <i className="mdi mdi-home-variant"></i>
-                                            </span>
-                                        </div>
-                                        <Select
-                                        value={selectedSubAreaOption}
-                                        onChange={handleSelectSubAreaChange}
-                                        options={ (subAreas.length > 0) ? subAreas : []}
-                                      />
-                                      <QuickAddSubArea fn={loadSubarea} 
-                                       dropdowns={
-                                            { area : selectedAreaOption , 
-                                             property : selectedPropertyOption 
-                                           }
-                                        }
-                                       />  
-                                    </div>
-                                    </div>
+                              
                                       
                                   
                                      {/* tenant_id */}

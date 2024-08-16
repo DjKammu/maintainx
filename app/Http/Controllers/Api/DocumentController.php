@@ -95,53 +95,53 @@ class DocumentController extends Controller
         }); 
 
 
-       $property_type = $request['property_type'];
-       $data->where(function($q) use ($property_type){
-              $q->whereHas('property_type', function($q) use ($property_type){
-                  $q->when($property_type, function ($q) use 
-                   ($property_type) {
-                      $q->where('id',$property_type);
-                  });
-              })->when(!$property_type, function ($q){
-                      $q->orWhereNull('property_type_id');
-              });
-        });
+       // $property_type = $request['property_type'];
+       // $data->where(function($q) use ($property_type){
+       //        $q->whereHas('property_type', function($q) use ($property_type){
+       //            $q->when($property_type, function ($q) use 
+       //             ($property_type) {
+       //                $q->where('id',$property_type);
+       //            });
+       //        })->when(!$property_type, function ($q){
+       //                $q->orWhereNull('property_type_id');
+       //        });
+       //  });
 
-       $property = $request['property'];
-        $data->where(function($q) use ($property){
-              $q->whereHas('property', function($q) use ($property){
-                  $q->when($property, function ($q) use 
-                   ($property) {
-                      $q->where('id',$property);
-                  });
-              })->when(!$property, function ($q){
-                      $q->orWhereNull('property_id');
-              });
-        });
+       // $property = $request['property'];
+       //  $data->where(function($q) use ($property){
+       //        $q->whereHas('property', function($q) use ($property){
+       //            $q->when($property, function ($q) use 
+       //             ($property) {
+       //                $q->where('id',$property);
+       //            });
+       //        })->when(!$property, function ($q){
+       //                $q->orWhereNull('property_id');
+       //        });
+       //  });
 
-        $area = $request['area'];
-        $data->where(function($q) use ($area){
-              $q->whereHas('area', function($q) use ($area){
-                  $q->when($area, function ($q) use 
-                   ($area) {
-                      $q->where('id',$area);
-                  });
-              })->when(!$area, function ($q){
-                      $q->orWhereNull('area_id');
-              });
-        });
+       //  $area = $request['area'];
+       //  $data->where(function($q) use ($area){
+       //        $q->whereHas('area', function($q) use ($area){
+       //            $q->when($area, function ($q) use 
+       //             ($area) {
+       //                $q->where('id',$area);
+       //            });
+       //        })->when(!$area, function ($q){
+       //                $q->orWhereNull('area_id');
+       //        });
+       //  });
         
-        $sub_area = $request['sub_area'];
-        $data->where(function($q) use ($sub_area){
-              $q->whereHas('sub_area', function($q) use ($sub_area){
-                  $q->when($sub_area, function ($q) use 
-                   ($sub_area) {
-                      $q->where('id',$sub_area);
-                  });
-              })->when(!$sub_area, function ($q){
-                      $q->orWhereNull('sub_area_id');
-              });
-        });
+       //  $sub_area = $request['sub_area'];
+       //  $data->where(function($q) use ($sub_area){
+       //        $q->whereHas('sub_area', function($q) use ($sub_area){
+       //            $q->when($sub_area, function ($q) use 
+       //             ($sub_area) {
+       //                $q->where('id',$sub_area);
+       //            });
+       //        })->when(!$sub_area, function ($q){
+       //                $q->orWhereNull('sub_area_id');
+       //        });
+       //  });
 
 
         $tenant = $request['tenant'];
@@ -191,7 +191,7 @@ class DocumentController extends Controller
            // $vData = $allData;
            // $items = $allData;
         } else{
-             $data = $data->paginate($perPage);
+              $data = $data->paginate($perPage);
               $vData =  @$data->data; 
               $items = $data->items();
         }
@@ -206,41 +206,70 @@ class DocumentController extends Controller
                     @$document->document_type->value = $document->document_type->id;
                  }
 
-                 $document->property_name = @$document->property->name; 
-                 if(@$document->property ){
-                    @$document->property->label = $document->property->name;
-                    @$document->property->value = $document->property->id;
-                 }
+                 // $document->property_name = @$document->property->name; 
+                 // if(@$document->property ){
+                 //    @$document->property->label = $document->property->name;
+                 //    @$document->property->value = $document->property->id;
+                 // }
 
-                 $document->property_type_name = @$document->property_type->name; 
-                 if(@$document->property_type ){
-                    @$document->property_type->label = $document->property_type->name;
-                    @$document->property_type->value = $document->property_type->id;
-                 }
+                 // $document->property_type_name = @$document->property_type->name; 
+                 // if(@$document->property_type ){
+                 //    @$document->property_type->label = $document->property_type->name;
+                 //    @$document->property_type->value = $document->property_type->id;
+                 // }
 
-                 $document->area_name = @$document->area->name; 
-                 if(@$document->area ){
-                    @$document->area->label = $document->area->name;
-                    @$document->area->value = $document->area->id;
-                 }
+                 // $document->area_name = @$document->area->name; 
+                 // if(@$document->area ){
+                 //    @$document->area->label = $document->area->name;
+                 //    @$document->area->value = $document->area->id;
+                 // }
 
-                 $document->area_name = @$document->area->name; 
-                 if(@$document->area ){
-                    @$document->area->label = $document->area->name;
-                    @$document->area->value = $document->area->id;
-                 }
+                 // $document->area_name = @$document->area->name; 
+                 // if(@$document->area ){
+                 //    @$document->area->label = $document->area->name;
+                 //    @$document->area->value = $document->area->id;
+                 // }
 
-                 $document->sub_area_name = @$document->sub_area->name; 
-                 if(@$document->sub_area ){
-                    @$document->sub_area->label = $document->sub_area->name;
-                    @$document->sub_area->value = $document->sub_area->id;
-                 }
+                 // $document->sub_area_name = @$document->sub_area->name; 
+                 // if(@$document->sub_area ){
+                 //    @$document->sub_area->label = $document->sub_area->name;
+                 //    @$document->sub_area->value = $document->sub_area->id;
+                 // }
 
                  $document->asset_type_name = @$document->asset_type->name; 
                  if(@$document->asset_type ){
                     @$document->asset_type->label = $document->asset_type->name;
                     @$document->asset_type->value = $document->asset_type->id;
+                 }  
+
+                 $document->asset_model_name = @$document->asset_model->name; 
+                 if(@$document->asset_model ){
+                    @$document->asset_model->label = $document->asset_model->name;
+                    @$document->asset_model->value = $document->asset_model->id;
                  } 
+
+
+
+                 if($document->asset_model){
+
+                   $document->property_type_name = @$document->asset_model->property_type->name; 
+                   $document->property_name = @$document->asset_model->property->name; 
+                   $document->area_name = @$document->asset_model->area->name; 
+                   $document->sub_area_name = @$document->asset_model->sub_area->name; 
+
+                   $document->property =  ['label' => $document->asset_model->property->name, 
+                                           'value' =>$document->asset_model->property->id];
+
+                   $document->property_type =  ['label' => $document->asset_model->property_type->name, 
+                                           'value' =>$document->asset_model->property_type->id];
+
+                   $document->area =  ['label' => $document->asset_model->area->name, 
+                                           'value' =>$document->asset_model->area->id];
+
+                   $document->sub_area =  ['label' => $document->asset_model->sub_area->name, 
+                                           'value' =>$document->asset_model->sub_area->id];
+
+                 }
 
                  $document->tenant_name = @$document->tenant->name; 
                  if(@$document->tenant ){
@@ -257,9 +286,10 @@ class DocumentController extends Controller
 
 
               $media =  @$document->getMediaPathWithExtension()['file'] ? [@$document->getMediaPathWithExtension()] : @$document->getMediaPathWithExtension();
-               $document->media = @collect($media)->all(); 
+               $document->media = @collect($media)->all();
+ 
         });
-     
+
         return compact('data');
 
     }

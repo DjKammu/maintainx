@@ -33,6 +33,7 @@ function List(props) {
           all : true ,
           document_type_id : true ,
           asset_type_id : true ,
+          asset_model_id : true ,
           brand : false ,
           serial_number : true ,
           model_number : true ,
@@ -510,7 +511,11 @@ function List(props) {
                         {columns.asset_type_id &&
                            <th className="px-4 py-2">Asset Type</th>
                          }
-                         {columns.brand && 
+
+                         {columns.asset_model_id &&
+                           <th className="px-4 py-2">Asset</th>
+                         }
+                         {/* {columns.brand && 
                            <th className="px-4 py-2">Brand</th>
                          }
 
@@ -519,7 +524,7 @@ function List(props) {
                          }
                          {columns.model_number &&
                            <th className="px-4 py-2">Model Number</th>
-                         }
+                         } */}
                          {columns.registration_date &&
                            <th className="px-4 py-2">Registration Date </th>
                          }
