@@ -265,7 +265,7 @@ function View(props) {
                                               checked
                                             />  
                                            <label  className="mx-1 mr-4 my-1" >
-                                                {state.non_asset ===  "0" && 
+                                                {state.non_asset ===  "1" && 
                                                   'Non'
                                                 } Asset</label>
                                            </div>

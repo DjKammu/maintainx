@@ -836,7 +836,7 @@ function New(props) {
                                           </div>
                                 
 
-                                         {/* } property }
+                                         {/* } */}
 
                                         {state.non_asset ===  "0" &&
                                         
