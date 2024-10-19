@@ -35583,15 +35583,9 @@ if (token) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-<<<<<<< HEAD
 __webpack_require__(/*! D:\xampp\htdocs\maintenance\resources\js\app.js */"./resources/js/app.js");
 __webpack_require__(/*! D:\xampp\htdocs\maintenance\resources\sass\app.scss */"./resources/sass/app.scss");
 module.exports = __webpack_require__(/*! D:\xampp\htdocs\maintenance\resources\sass\Leads.scss */"./resources/sass/Leads.scss");
-=======
-__webpack_require__(/*! F:\xampp\htdocs\maintenance\resources\js\app.js */"./resources/js/app.js");
-__webpack_require__(/*! F:\xampp\htdocs\maintenance\resources\sass\app.scss */"./resources/sass/app.scss");
-module.exports = __webpack_require__(/*! F:\xampp\htdocs\maintenance\resources\sass\Leads.scss */"./resources/sass/Leads.scss");
->>>>>>> 5c714859af12bc0b657ca535ca30df6ff959548c
 
 
 /***/ })

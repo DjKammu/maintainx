@@ -25,15 +25,15 @@ class Document extends Model
     ];
 
     
-    // public function property()
-    // {
-    //     return $this->hasOne('App\Models\Property', 'id', 'property_id');
-    // }
+    public function property()
+    {
+        return $this->hasOne('App\Models\Property', 'id', 'property_id');
+    }
 
-    // public function area()
-    // {
-    //     return $this->hasOne('App\Models\Area', 'id', 'area_id');
-    // }
+    public function area()
+    {
+        return $this->hasOne('App\Models\Area', 'id', 'area_id');
+    }
 
     public function asset_type()
     {
@@ -50,15 +50,15 @@ class Document extends Model
         return $this->hasOne('App\Models\DocumentType', 'id', 'document_type_id');
     } 
 
-    // public function property_type()
-    // {
-    //     return $this->hasOne('App\Models\PropertyType', 'id', 'property_type_id');
-    // }
+    public function property_type()
+    {
+        return $this->hasOne('App\Models\PropertyType', 'id', 'property_type_id');
+    }
 
-    // public function sub_area()
-    // {
-    //     return $this->hasOne('App\Models\SubArea', 'id', 'sub_area_id');
-    // } 
+    public function sub_area()
+    {
+        return $this->hasOne('App\Models\SubArea', 'id', 'sub_area_id');
+    } 
 
     public function tenant()
     {

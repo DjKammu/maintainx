@@ -95,53 +95,53 @@ class DocumentController extends Controller
         }); 
 
 
-       // $property_type = $request['property_type'];
-       // $data->where(function($q) use ($property_type){
-       //        $q->whereHas('property_type', function($q) use ($property_type){
-       //            $q->when($property_type, function ($q) use 
-       //             ($property_type) {
-       //                $q->where('id',$property_type);
-       //            });
-       //        })->when(!$property_type, function ($q){
-       //                $q->orWhereNull('property_type_id');
-       //        });
-       //  });
+       $property_type = $request['property_type'];
+       $data->where(function($q) use ($property_type){
+              $q->whereHas('property_type', function($q) use ($property_type){
+                  $q->when($property_type, function ($q) use 
+                   ($property_type) {
+                      $q->where('id',$property_type);
+                  });
+              })->when(!$property_type, function ($q){
+                      $q->orWhereNull('property_type_id');
+              });
+        });
 
-       // $property = $request['property'];
-       //  $data->where(function($q) use ($property){
-       //        $q->whereHas('property', function($q) use ($property){
-       //            $q->when($property, function ($q) use 
-       //             ($property) {
-       //                $q->where('id',$property);
-       //            });
-       //        })->when(!$property, function ($q){
-       //                $q->orWhereNull('property_id');
-       //        });
-       //  });
+       $property = $request['property'];
+        $data->where(function($q) use ($property){
+              $q->whereHas('property', function($q) use ($property){
+                  $q->when($property, function ($q) use 
+                   ($property) {
+                      $q->where('id',$property);
+                  });
+              })->when(!$property, function ($q){
+                      $q->orWhereNull('property_id');
+              });
+        });
 
-       //  $area = $request['area'];
-       //  $data->where(function($q) use ($area){
-       //        $q->whereHas('area', function($q) use ($area){
-       //            $q->when($area, function ($q) use 
-       //             ($area) {
-       //                $q->where('id',$area);
-       //            });
-       //        })->when(!$area, function ($q){
-       //                $q->orWhereNull('area_id');
-       //        });
-       //  });
+        $area = $request['area'];
+        $data->where(function($q) use ($area){
+              $q->whereHas('area', function($q) use ($area){
+                  $q->when($area, function ($q) use 
+                   ($area) {
+                      $q->where('id',$area);
+                  });
+              })->when(!$area, function ($q){
+                      $q->orWhereNull('area_id');
+              });
+        });
         
-       //  $sub_area = $request['sub_area'];
-       //  $data->where(function($q) use ($sub_area){
-       //        $q->whereHas('sub_area', function($q) use ($sub_area){
-       //            $q->when($sub_area, function ($q) use 
-       //             ($sub_area) {
-       //                $q->where('id',$sub_area);
-       //            });
-       //        })->when(!$sub_area, function ($q){
-       //                $q->orWhereNull('sub_area_id');
-       //        });
-       //  });
+        $sub_area = $request['sub_area'];
+        $data->where(function($q) use ($sub_area){
+              $q->whereHas('sub_area', function($q) use ($sub_area){
+                  $q->when($sub_area, function ($q) use 
+                   ($sub_area) {
+                      $q->where('id',$sub_area);
+                  });
+              })->when(!$sub_area, function ($q){
+                      $q->orWhereNull('sub_area_id');
+              });
+        });
 
 
         $tenant = $request['tenant'];

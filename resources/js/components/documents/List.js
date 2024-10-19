@@ -93,18 +93,18 @@ function List(props) {
          loadData();
 
          if ((state.propertyType  == '' && (state.property == '') ) ||  (state.propertyType && (state.property == '') )) {
-          // loadProperty();
+          loadProperty();
        // } 
         //if (state.propertyType && (state.property == '')) {
           // loadProperty();
            // console.log('property');
         }
         if (/*state.propertyType && */state.property && (state.area == '')) {
-          // loadArea();
+           loadArea();
            // console.log('areaa');
         }
         if (/*state.propertyType &&*/ state.property && state.area && (state.subArea == '')) {
-          // loadSubArea();
+          loadSubArea();
            // console.log('subarea');
         }
     }, [state.currentPage, state.resetCurrentPage, state.perPage, state.sortBy, state.sortType,state.propertyType,
