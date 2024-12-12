@@ -54,6 +54,9 @@ function View(props) {
         notes: "",
         payment:'',
         payment_date:'',
+         invoice_date:'',
+        invoice_number:'',
+        draw_number:'',
         media: "",
         brand: "",
         non_asset: "0",
@@ -91,7 +94,10 @@ function View(props) {
                 brand: props.location.state.brand,
                 description: props.location.state.description,
                 non_asset: props.location.state.non_asset,
+                invoice_number: props.location.state.invoice_number,
+                draw_number: props.location.state.draw_number,
                 payment_date: props.location.state.payment_date ? new Date(props.location.state.payment_date).toLocaleDateString('en-CA') : null,
+                invoice_date: props.location.state.invoice_date ? new Date(props.location.state.invoice_date).toLocaleDateString('en-CA') : null,
                 property_id: props.location.state.property ? props.location.state.property.id : null, 
                 asset_type_id:props.location.state.asset_type ? props.location.state.asset_type.id : null,   
                 asset_model_id: props.location.state.asset_model ? props.location.state.asset_model.id : null, 
@@ -144,9 +150,12 @@ function View(props) {
                       notes: _data.notes,
                       payment: _data.payment,
                       payment_date: _data.payment_date ? new Date(_data.payment_date).toLocaleDateString('en-CA') : null,
+                      invoice_date: _data.invoice_date ? new Date(_data.invoice_date).toLocaleDateString('en-CA') : null,
                       brand: _data.brand,
                       description: _data.description,
                       non_asset: _data.non_asset,
+                      invoice_number: _data.invoice_number,
+                      draw_number: _data.draw_number,
                       property_id: _data.property ? _data.property.id : null, 
                       asset_type_id:_data.asset_type ? _data.asset_type.id : null,   
                       asset_model_id: _data.asset_model ? _data.asset_model.id : null, 
@@ -529,6 +538,58 @@ function View(props) {
                                         </div>
                                     </div>
 
+                                      <div className="form-group">
+                                        <label>Invoice Date</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-calendar"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="invoice_date"
+                                            value={state.invoice_date}
+                                          
+                                            className="form-control form-control-sm"
+                                            type="date" readOnly/>
+
+                                        </div>
+                                    </div> 
+
+                                    <div className="form-group">
+                                        <label>Invoice Number</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="invoice_number"
+                                            value={state.invoice_number}
+                                          
+                                            className="form-control form-control-sm"
+                                            type="text" readOnly/>
+
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Draw Number</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="draw_number"
+                                            value={state.draw_number}
+                                           
+                                            className="form-control form-control-sm"
+                                            type="text" readOnly/>
+
+                                        </div>
+                                    </div>
 
                                       <div className="form-group">
                                           <label>

@@ -14,14 +14,17 @@ class Payment extends Model
 
     CONST PAYMENT_ATTACHMENTS = "payment_attachments";
 
+    CONST DUPLICATE_ERROR = "This Invoice no./ Invoice Date/ Vendor combination exists in the database.";
+    CONST DRAW_ERROR = "This Draw Number should be different.";
+
     protected $fillable = [
         'asset_type_id','asset_model_id','asset_serial_number',
         'vendor_id','contractor_id','property_type_id',
         'property_id','area_id','sub_area_id',
-        'tenant_id',
-        'work_type_id',
-        'notes','payment','payment_date',
-        'brand','description','non_asset'
+        'tenant_id','work_type_id','notes',
+        'payment','payment_date','brand',
+        'description','non_asset',
+        'invoice_number','invoice_date','draw_number'
     ];
 
     public function property()
@@ -133,6 +136,10 @@ class Payment extends Model
     public function setPaymentDateAttribute($value)
     {
         $this->attributes['payment_date'] =  ($value == 'null') ? NULL :  $value;
+    }  
+    public function setInvoiceDateAttribute($value)
+    {
+        $this->attributes['invoice_date'] =  ($value == 'null') ? NULL :  $value;
     } 
 
     public function setNotesAttribute($value)
@@ -143,6 +150,15 @@ class Payment extends Model
     public function setDescriptionAttribute($value)
     {
         $this->attributes['description'] =  ($value == 'null') ? NULL :  $value;
+    } 
+    public function setInvoiceNumberAttribute($value)
+    {
+        $this->attributes['invoice_number'] =  ($value == 'null') ? NULL :  $value;
+    } 
+
+    public function setDrawNumberAttribute($value)
+    {
+        $this->attributes['draw_number'] =  ($value == 'null') ? NULL :  $value;
     } 
 
     public function getPaymentAttribute($value)
@@ -155,9 +171,48 @@ class Payment extends Model
         return  ($value) ? Carbon::parse($value)->format('m-d-Y') : NULL;
     }
 
+    public function getInvoiceDateAttribute($value)
+    {
+        return  ($value) ? Carbon::parse($value)->format('m-d-Y') : NULL;
+    }
+
      public static function format($num){
         return number_format($num, 2, '.', ',');
         return preg_replace("/(\d+?)(?=(\d\d)+(\d)(?!\d))(\.\d+)?/i", "$1,", $num);
     }
+
+    public static function isDuplicateDraw($id = null){
+       $request = request();
+
+        if(!$request->filled('draw_number')){
+            return;
+        }
+        $where = [
+         'draw_number' => $request->draw_number
+        ];
+        return self::isDuplicateEntry($where,$id);
+        
+    }
+    public static function isDuplicateEntry($whereDraw = [],$id = null){
+
+        $request = request();
+        if(!$request->filled('vendor_id') || !$request->filled('invoice_date') || !$request->filled('invoice_number')){
+            return;
+        }
+        $where = [
+         'vendor_id' => $request->vendor_id,
+         'invoice_date' => $request->invoice_date,
+         'invoice_number' => $request->invoice_number
+        ];
+        $where = (count($whereDraw) > 0)  ? array_merge($whereDraw,$where) : $where;    
+        return self::paymentQuery($where,$id);
+    }
+
+   public static function paymentQuery($where, $id = null){
+
+     return self::where($where)->when($id, function ($q) use ($id){
+                      $q->whereNotIn('id', [$id]);
+              })->count() > 0;
+   }
 
 }

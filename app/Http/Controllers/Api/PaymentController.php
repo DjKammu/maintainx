@@ -1021,6 +1021,17 @@ class PaymentController extends Controller
                 'status' => 'validation-error'
             ], 401);
         }
+        else if(Payment::isDuplicateEntry() && !$data['allow_duplicate']){
+          return response()->json([
+                'message' => Payment::DUPLICATE_ERROR,
+                'status' => 'duplicate-error'
+            ]);
+        }else if(Payment::isDuplicateDraw()){
+            return response()->json([
+                'message' => Payment::DRAW_ERROR,
+                'status' => 'error'
+            ]);
+        }
          
        $create =  Payment::create($data); 
 
@@ -1067,13 +1078,23 @@ class PaymentController extends Controller
             'asset_model_id.required'=> 'Asset is Required!'
            ]);
         
-        if ($validate->fails()) {
+         if ($validate->fails()) {
             return response()->json([
                 'message' => $validate->errors(),
                 'status' => 'validation-error'
             ], 401);
         }
-
+        else if(Payment::isDuplicateEntry() && !$data['allow_duplicate']){
+          return response()->json([
+                'message' => Payment::DUPLICATE_ERROR,
+                'status' => 'duplicate-error'
+            ]);
+        }else if(Payment::isDuplicateDraw($request['id'])){
+            return response()->json([
+                'message' => Payment::DRAW_ERROR,
+                'status' => 'error'
+            ]);
+        }
        $update =  Payment::find($request['id']);
         $update->update($data);
 
@@ -1085,7 +1106,7 @@ class PaymentController extends Controller
        if ($update) {
           
             return response()->json([
-                'message' => 'Payment successfully saved',
+                'message' => 'Payment successfully updated!',
                 'status' => 'success'
             ]);
         } else {

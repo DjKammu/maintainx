@@ -18,6 +18,8 @@ import QuickAddSubArea from '../sub-areas/QuickAdd';
 import QuickAddContractor from '../contractors/QuickAdd';
 import QuickAddVendor from '../vendors/QuickAdd';
 import QuickAddWorkType from '../work-types/QuickAdd';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 function Edit(props) {
     
@@ -45,6 +47,8 @@ function Edit(props) {
     const [selectedSubAreaOption, setSelectedSubAreaOption]  = useState([]);
     const [selectedPropertyOption, setSelectedPropertyOption]  = useState([]);
     const [selectedPropertyTypeOption, setSelectedPropertyTypeOption]  = useState([]);
+    const [allowDuplicate, setAllowDuplicate] = useState(0);
+    const [duplicateError, setDuplicateError] = useState(null);
 
 
     let assetTypesNullArr = [{'label' : 'Select Asset Type' , 'value' : null}];
@@ -76,6 +80,9 @@ function Edit(props) {
         notes: "",
         payment:'',
         payment_date:'',
+        invoice_date:'',
+        invoice_number:'',
+        draw_number:'',
         media: "",
         brand: "",
         non_asset: "0",
@@ -706,7 +713,10 @@ function Edit(props) {
                 brand: props.location.state.brand,
                 description: props.location.state.description,
                 non_asset: props.location.state.non_asset,
+                invoice_number: props.location.state.invoice_number,
+                draw_number: props.location.state.draw_number,
                 payment_date: props.location.state.payment_date ? new Date(props.location.state.payment_date).toLocaleDateString('en-CA') : null,
+                invoice_date: props.location.state.invoice_date ? new Date(props.location.state.invoice_date).toLocaleDateString('en-CA') : null,
                 property_id: props.location.state.property ? props.location.state.property.id : null, 
                 asset_type_id:props.location.state.asset_type ? props.location.state.asset_type.id : null,   
                 asset_model_id: props.location.state.asset_model ? props.location.state.asset_model.id : null, 
@@ -759,9 +769,12 @@ function Edit(props) {
                       notes: _data.notes,
                       payment: _data.payment,
                       payment_date: _data.payment_date ? new Date(_data.payment_date).toLocaleDateString('en-CA') : null,
+                      invoice_date: _data.invoice_date ? new Date(_data.invoice_date).toLocaleDateString('en-CA') : null,
                       brand: _data.brand,
                       description: _data.description,
                       non_asset: _data.non_asset,
+                      invoice_number: _data.invoice_number,
+                      draw_number: _data.draw_number,
                       property_id: _data.property ? _data.property.id : null, 
                       asset_type_id:_data.asset_type ? _data.asset_type.id : null,   
                       asset_model_id: _data.asset_model ? _data.asset_model.id : null, 
@@ -835,18 +848,21 @@ function Edit(props) {
    
     const onSubmitHandle = (e) =>{
         e.preventDefault();
-        
+        submitPaymentData();
+    }
+
+
+      const submitPaymentData = (allowD = 0) => {
          if (state.non_asset === '0' && !simpleValidator.current.allValid()) {
             simpleValidator.current.showMessages();
             forceUpdate(1);
             return;
           }
-          
             setState({
                 ...state,
                 loading: true
             });
-
+            allowD = (allowDuplicate == 1) ? allowDuplicate : allowD;
             var formData = new FormData();
             formData.append('asset_type_id', state.asset_type_id);
             formData.append('asset_model_id', state.asset_model_id);
@@ -861,26 +877,34 @@ function Edit(props) {
             formData.append('notes', state.notes);
             formData.append('payment', state.payment);
             formData.append('payment_date', state.payment_date);
+            formData.append('invoice_date', state.invoice_date);
+            formData.append('invoice_number', state.invoice_number);
+            formData.append('draw_number', state.draw_number);
             formData.append('brand', state.brand);
             formData.append('description', state.description);
             formData.append('non_asset', state.non_asset);
+            formData.append('allow_duplicate', allowD);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
                 });  
             }
 
-            axios.post('/api/v1/payments/update', formData,{
-                params: {
+            axios.post(
+              '/api/v1/payments/update',formData,{
+              params: {
                     api_token: authUser.api_token,
                     id: state.id
                 }
-            }).then(response => {
+            })
+            .then(response => {
                 setState({
                     ...state,
                     loading: false
                 });
-                if (response.data.status == 'validation-error') {
+                if (response.data.status == 'duplicate-error') {
+                    onClickDuplicateHandler(response.data.message);
+                }else if (response.data.status == 'validation-error') {
                     var errorArray = response.data.message;
                     $.each( errorArray, function( key, errors ) {
                         $.each( errors, function( key, errorMessage ) {
@@ -904,8 +928,6 @@ function Edit(props) {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                
                 setState({
                     ...state,
                     loading: false
@@ -927,11 +949,32 @@ function Edit(props) {
                     });
                 } 
             });
-        // } else {
-        //     simpleValidator.current.showMessages();
-        //     forceUpdate(1);
-        // }
+    }
 
+   const onClickDuplicateHandler = (duplicateError) => {
+
+        confirmAlert({
+            title: 'Are you sure?',
+            message: duplicateError,
+            buttons: [
+                {
+                label: 'Yes',
+                    onClick: () => {
+                        setIsLoading(true);
+                        setAllowDuplicate(1);
+                        submitPaymentData(1);
+                    }
+                },
+                {
+                label: 'No',
+                    onClick: () => {
+                        setIsLoading(true);
+                        history.push('/payments')
+                    }
+                }
+            ]
+        });
+        
     }
 
      const deleteFunc = (e) => {
@@ -1345,7 +1388,59 @@ function Edit(props) {
 
                                         </div>
                                     </div>
+                                     
+                                       <div className="form-group">
+                                        <label>Invoice Date</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-calendar"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="invoice_date"
+                                            value={state.invoice_date}
+                                            onChange={onChangeHandle} 
+                                            className="form-control form-control-sm"
+                                            type="date" />
 
+                                        </div>
+                                    </div> 
+
+                                    <div className="form-group">
+                                        <label>Invoice Number</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="invoice_number"
+                                            value={state.invoice_number}
+                                            onChange={onChangeHandle} 
+                                            className="form-control form-control-sm"
+                                            type="text" />
+
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Draw Number</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="draw_number"
+                                            value={state.draw_number}
+                                            onChange={onChangeHandle} 
+                                            className="form-control form-control-sm"
+                                            type="text" />
+
+                                        </div>
+                                    </div>
 
                                       <div className="form-group">
                                           <label>

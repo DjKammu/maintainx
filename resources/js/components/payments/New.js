@@ -18,6 +18,8 @@ import QuickAddSubArea from '../sub-areas/QuickAdd';
 import QuickAddContractor from '../contractors/QuickAdd';
 import QuickAddVendor from '../vendors/QuickAdd';
 import QuickAddWorkType from '../work-types/QuickAdd';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 function New(props) {
     
@@ -53,6 +55,8 @@ function New(props) {
     let propertyNullArr = [{'label' : 'Select Property' , 'value' : null}];
     let areaNullArr = [{'label' : 'Select Area' , 'value' : null}];
     let subAreaNullArr = [{'label' : 'Select Sub Area' , 'value' : null}];
+    const [allowDuplicate, setAllowDuplicate] = useState(0);
+    const [duplicateError, setDuplicateError] = useState(null);
 
     const [state, setState] = useState({
         asset_type_id: "",
@@ -68,6 +72,9 @@ function New(props) {
         notes: "",
         payment: 0,
         payment_date:'',
+        invoice_date:'',
+        invoice_number:'',
+        draw_number:'',
         photos: "",
         brand: "",
         non_asset: "0",
@@ -665,8 +672,11 @@ function New(props) {
 
     const onSubmitHandle = (e) =>{
         e.preventDefault();
+         submitPaymentData();
+    }
 
-        if (state.non_asset === '0' && !simpleValidator.current.allValid()) {
+    const submitPaymentData = (allowD = 0) => {
+         if (state.non_asset === '0' && !simpleValidator.current.allValid()) {
             simpleValidator.current.showMessages();
             forceUpdate(1);
             return;
@@ -675,7 +685,7 @@ function New(props) {
                 ...state,
                 loading: true
             });
-
+            allowD = (allowDuplicate == 1) ? allowDuplicate : allowD;
             var formData = new FormData();
             formData.append('asset_type_id', state.asset_type_id);
             formData.append('asset_model_id', state.asset_model_id);
@@ -690,15 +700,19 @@ function New(props) {
             formData.append('notes', state.notes);
             formData.append('payment', state.payment);
             formData.append('payment_date', state.payment_date);
+            formData.append('invoice_date', state.invoice_date);
+            formData.append('invoice_number', state.invoice_number);
+            formData.append('draw_number', state.draw_number);
             formData.append('brand', state.brand);
             formData.append('description', state.description);
             formData.append('non_asset', state.non_asset);
+            formData.append('allow_duplicate', allowD);
             if(state.files && state.files.length > 0){
                state.files.map((file) => {
                      formData.append('files[]', file);
                 });  
             }
-          
+
             axios.post(
               '/api/v1/payments',formData,{
               params: {
@@ -710,7 +724,9 @@ function New(props) {
                     ...state,
                     loading: false
                 });
-                if (response.data.status == 'validation-error') {
+                if (response.data.status == 'duplicate-error') {
+                    onClickDuplicateHandler(response.data.message);
+                }else if (response.data.status == 'validation-error') {
                     var errorArray = response.data.message;
                     $.each( errorArray, function( key, errors ) {
                         $.each( errors, function( key, errorMessage ) {
@@ -755,12 +771,33 @@ function New(props) {
                     });
                 } 
             });
-        // } else {
-        //     simpleValidator.current.showMessages();
-        //     forceUpdate(1);
-        // }
-
     }
+
+   const onClickDuplicateHandler = (duplicateError) => {
+
+        confirmAlert({
+            title: 'Are you sure?',
+            message: duplicateError,
+            buttons: [
+                {
+                label: 'Yes',
+                    onClick: () => {
+                        setIsLoading(true);
+                        setAllowDuplicate(1);
+                        submitPaymentData(1);
+                    }
+                },
+                {
+                label: 'No',
+                    onClick: () => {
+                        setIsLoading(true);
+                        history.push('/payments')
+                    }
+                }
+            ]
+        });
+        
+    };
 
     return (
         <React.Fragment>
@@ -1127,6 +1164,59 @@ function New(props) {
                                             onChange={onDateHandle} 
                                             className="form-control form-control-sm"
                                             type="date" />
+
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Invoice Date</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-calendar"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="invoice_date"
+                                            value={state.invoice_date}
+                                            onChange={onChangeHandle} 
+                                            className="form-control form-control-sm"
+                                            type="date" />
+
+                                        </div>
+                                    </div> 
+
+                                    <div className="form-group">
+                                        <label>Invoice Number</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="invoice_number"
+                                            value={state.invoice_number}
+                                            onChange={onChangeHandle} 
+                                            className="form-control form-control-sm"
+                                            type="text" />
+
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Draw Number</label>
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text bg-gradient-success text-white">
+                                                    <i className="mdi mdi-account"></i>
+                                                </span>
+                                            </div>
+                                           <input  
+                                            name="draw_number"
+                                            value={state.draw_number}
+                                            onChange={onChangeHandle} 
+                                            className="form-control form-control-sm"
+                                            type="text" />
 
                                         </div>
                                     </div>
